@@ -1,0 +1,295 @@
+Backend testing instructions Part 1 (Auth)
+# 1. Login as the seeded admin, grab the token
+curl -X POST http://localhost:5000/api/auth/login -H "Content-Type: application/json" \
+  -d '{"email":"admin@clinic.com","password":"ChangeMe123!"}'
+
+# 2. Create a Doctor account using the admin's token
+curl -X POST http://localhost:5000/api/users -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{"name":"Dr. Amina Khan","email":"amina@clinic.com","password":"Doctor123!","role":"Doctor"}'
+
+# 3. Confirm a non-admin gets 403
+curl -X POST http://localhost:5000/api/users -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <DOCTOR_TOKEN>" -d '{"name":"x","email":"x@x.com","password":"x","role":"Doctor"}'
+
+Frontend Testing Instructions Part 1 (Auth)
+# 1. Start backend and frontend, then in the browser:
+# - Go to /login, submit wrong credentials -> should show the red error banner
+# - Submit correct credentials (from the account you created last step) -> redirects to /dashboard
+# - Check DevTools > Application > Cookies -> "token" should be HttpOnly (not readable via document.cookie in console)
+# - Refresh the page on /dashboard -> should stay logged in (AuthContext calls /auth/me on mount)
+# - Manually visit /login while logged in, then go back to /dashboard -> still works
+# - Log out (once you wire a logout button to useAuth().logout()) -> redirected behavior should send you to /login on next protected route hit
+
+Backend Testing Instructions Part 2 (Staff Management)
+1. Log in as Admin -> navigate to /admin/users -> table loads with loading spinner then your seeded admin.
+2. Click "Add Staff" -> create a Receptionist -> appears in table instantly, correct role badge/color.
+3. Click edit icon on that user -> change role to Pharmacist -> save -> badge updates, no page reload.
+4. Click deactivate -> confirm dialog appears -> confirm -> status badge flips to "Inactive", deactivate icon disappears for that row.
+5. Try logging in as the now-deactivated user -> backend's isActive check should reject with 403.
+6. Log in as a non-Admin, manually visit /admin/users -> should redirect to /unauthorized (from ProtectedRoute).
+
+Backend Testing Instructions Part 3 (Patients)
+# Get an Admin or Receptionist token from /api/auth/login first, then:
+
+# 1. Create a patient
+curl -X POST http://localhost:5000/api/patients -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{"fullName":"Fatima Bibi","guardianName":"Nazir Ahmed","gender":"Female","age":34,"phone":"03001234567"}'
+# -> expect 201, patientId like "PT-000001"
+
+# 2. Search
+curl "http://localhost:5000/api/patients?search=Fatima" -H "Authorization: Bearer <TOKEN>"
+curl "http://localhost:5000/api/patients?search=0300"   -H "Authorization: Bearer <TOKEN>"
+
+# 3. Update basic info
+curl -X PUT http://localhost:5000/api/patients/<PATIENT_ID> -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" -d '{"address":"Sanghar, Sindh"}'
+
+# 4. Add a visit (needs a Doctor token, not Admin/Receptionist)
+curl -X POST http://localhost:5000/api/patients/<PATIENT_ID>/history -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <DOCTOR_TOKEN>" -d '{"visitType":"OPD","reason":"Fever and cough","notes":"Prescribed rest and fluids"}'
+# -> confirm a Receptionist token gets 403 on this same request
+
+# 5. Archive
+curl -X DELETE http://localhost:5000/api/patients/<PATIENT_ID> -H "Authorization: Bearer <TOKEN>"
+# then GET the list without ?isActive=false — the archived patient should no longer appear
+
+Frontend Testing Instructions Part 3 (Patients)
+1. Log in as Receptionist -> /patients -> click "Register Patient" -> fill form, submit -> appears in table.
+2. Try submitting with both DOB and age empty -> inline error under the date field.
+3. Type in the search box -> list narrows (try a partial phone number, e.g. "0300") -> pagination resets to page 1.
+4. Click the eye icon -> detail page loads profile card + empty "No visits recorded yet."
+5. Log in as Doctor, open the same patient -> "Add Visit" button visible -> submit a visit -> appears at top of history, badge colored by visit type.
+6. Log in as Receptionist, open a patient with visits -> confirm "Add Visit" button is NOT visible (RBAC matches backend).
+7. Edit a patient's address from the list -> table doesn't need to change (address isn't a column) but reopen edit modal -> confirm it persisted.
+8. Archive a patient -> disappears from the list immediately; total count decrements.
+
+Backend Testing Instructions Part 4 (Appointments)
+# Get Admin/Receptionist and Doctor tokens from /api/auth/login first.
+# 1. Book an appointment (tomorrow, 30 min default)
+curl -X POST http://localhost:5000/api/appointments -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{"patient":"<PATIENT_ID>","doctor":"<DOCTOR_USER_ID>","appointmentDate":"2026-08-21T10:00:00.000Z","reason":"Follow-up checkup"}'
+# -> expect 201, appointmentId like "APT-000001"
+
+# 2. Try booking the SAME doctor at an overlapping time (e.g. 10:15 same day)
+curl -X POST http://localhost:5000/api/appointments -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{"patient":"<PATIENT_ID>","doctor":"<DOCTOR_USER_ID>","appointmentDate":"2026-08-21T10:15:00.000Z","reason":"Different patient"}'
+# -> expect 409 conflict
+
+# 3. Today's appointments
+curl "http://localhost:5000/api/appointments?date=2026-08-21" -H "Authorization: Bearer <TOKEN>"
+
+# 4. Calendar range (e.g. a month view)
+curl "http://localhost:5000/api/appointments?dateFrom=2026-08-01&dateTo=2026-08-31" -H "Authorization: Bearer <TOKEN>"
+
+# 5. Doctor logs in and hits the list WITHOUT a doctor filter -> should only see their own appointments
+curl "http://localhost:5000/api/appointments" -H "Authorization: Bearer <DOCTOR_TOKEN>"
+
+# 6. Mark completed — as the assigned doctor
+curl -X PATCH http://localhost:5000/api/appointments/<APPT_ID>/status -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <DOCTOR_TOKEN>" -d '{"status":"Completed","notes":"Recovering well"}'
+# then try the same as Receptionist -> expect 403
+
+# 7. Cancel — reason required
+curl -X PATCH http://localhost:5000/api/appointments/<APPT_ID_2>/status -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" -d '{"status":"Cancelled"}'
+# -> expect 400 (missing cancelReason), then retry with {"status":"Cancelled","cancelReason":"Patient unavailable"}
+
+# 8. Confirm cancelled slot is now free — rebook the same doctor/time from step 2, should succeed (409 check ignores Cancelled)
+
+Frontend Testing Instructions Part 4 (Appointments)
+1. Log in as Admin/Receptionist -> /appointments -> "Today" tab loads (empty if nothing's booked today).
+2. Click "Book Appointment" -> search a patient by partial name/phone -> select -> pick a doctor -> pick today's date/time -> submit -> appears in Today tab.
+3. Try booking the same doctor at an overlapping time -> red banner shows the backend's 409 message.
+4. Switch to "Calendar" tab -> today's dot should be visible -> click it -> right panel shows the same appointment.
+5. Navigate to next/previous month -> dots update for that month's data.
+6. Log in as the assigned Doctor -> Today tab -> "Complete" (checkmark) button visible only for their own appointments -> mark completed with notes -> moves out of "Scheduled" state.
+7. Log in as Receptionist -> Cancel (X) button visible on a Scheduled appointment -> try submitting without a reason -> inline validation -> submit with a reason -> appears in "Cancelled" tab.
+8. Log in as Pharmacist -> manually visit /appointments -> redirected to /unauthorized (route doesn't include their role).
+9. Confirm Doctor accounts, when hitting the Today/Calendar tabs, only ever see their own appointments (server-side scoping from the backend step).
+
+
+Backend Testing Instructions Part 5 (Billing)
+# Get an Admin/Receptionist token first.
+
+# 1. Create a bill (no appointment link, walk-in consultation)
+curl -X POST http://localhost:5000/api/bills -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{"patient":"<PATIENT_ID>","items":[{"description":"Consultation - Dr. Khan","category":"Consultation","unitPrice":1500},{"description":"Paracetamol x10","category":"Medicine","quantity":10,"unitPrice":15}]}'
+# -> expect 201, billId "BIL-000001", subtotal 1650, totalAmount 1650, status "Unpaid"
+
+# 2. Record a partial payment
+curl -X POST http://localhost:5000/api/bills/<BILL_ID>/payments -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" -d '{"amount":1000,"method":"Cash"}'
+# -> expect balanceDue 650, status "Partially Paid"
+
+# 3. Try to overpay
+curl -X POST http://localhost:5000/api/bills/<BILL_ID>/payments -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" -d '{"amount":9999,"method":"Cash"}'
+# -> expect 400 "Payment exceeds balance due (Rs. 650)"
+
+# 4. Pay the remainder
+curl -X POST http://localhost:5000/api/bills/<BILL_ID>/payments -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" -d '{"amount":650,"method":"Card","reference":"TXN-4521"}'
+# -> expect status "Paid", balanceDue 0
+
+# 5. Try cancelling a paid bill
+curl -X PATCH http://localhost:5000/api/bills/<BILL_ID>/cancel -H "Authorization: Bearer <TOKEN>"
+# -> expect 400 "Cannot cancel a bill with recorded payments..."
+
+# 6. Create a second, unpaid bill and cancel it (should succeed — no payments yet)
+curl -X PATCH http://localhost:5000/api/bills/<BILL_ID_2>/cancel -H "Authorization: Bearer <TOKEN>"
+
+# 7. Search + filters
+curl "http://localhost:5000/api/bills?status=Unpaid" -H "Authorization: Bearer <TOKEN>"
+curl "http://localhost:5000/api/bills?patient=<PATIENT_ID>" -H "Authorization: Bearer <TOKEN>"
+
+# 8. Revenue dashboard (defaults to current month)
+curl "http://localhost:5000/api/bills/revenue" -H "Authorization: Bearer <TOKEN>"
+
+# 9. Confirm a Doctor token gets 403 on any /api/bills route
+curl http://localhost:5000/api/bills -H "Authorization: Bearer <DOCTOR_TOKEN>"
+
+
+Frontend Testing Instructions Part 5 (Billing)
+1. Log in as Receptionist -> /billing -> "Generate Bill" -> search a patient -> optionally link one of their appointments -> add 2-3 items -> submit -> redirects to the bill detail page.
+2. On detail page, click "Record Payment" -> amount defaults to full balance -> submit a partial amount instead -> status badge updates to "Partially Paid".
+3. Try entering a payment amount above the balance due -> inline validation blocks it before hitting the API.
+4. Pay the remainder -> status flips to "Paid" -> "Record Payment" button disappears.
+5. Log in as Admin -> create a second bill, don't pay it -> "Cancel Bill" button visible -> confirm -> status becomes "Cancelled", buttons disappear.
+6. Try cancelling the fully-paid bill from step 4 -> button shouldn't even show (amountPaid > 0), confirming the UI gate matches the backend rule.
+7. Go to /billing -> filter by status "Paid" / "Cancelled" -> list narrows correctly; search a Bill ID substring -> matches.
+8. Switch to "Revenue" tab -> KPI cards populate, bar chart shows daily collected revenue for the current month, method breakdown lists Cash/Card totals.
+9. Change the date range -> chart and KPIs refetch for the new range.
+10. Click "Print" on a bill detail page -> print preview should hide the back link, action buttons, and cancel dialog, showing just the bill itself.
+11. Log in as Doctor or Pharmacist, manually visit /billing -> redirected to /unauthorized.
+
+
+Pharmacy Backend Testing (cURL)
+Use admin/pharmacist token from previous parts.
+1. Add a supplier
+POST /api/suppliers
+→ { "name": "MedPak Distributors", "contactPerson": "Fahad Aslam", "phone": "03211234567" }
+← 201 { "success": true, "data": { "_id": "...", "name": "MedPak Distributors", "isActive": true, ... } }
+
+2. List suppliers with search
+GET /api/suppliers?search=medpak
+← 200 { "success": true, "count": 1, "data": [{ "_id": "...", "name": "MedPak Distributors", ... }] }
+
+PUT /api/suppliers/<id>
+→ { "phone": "03219999999" }
+← 200 { "success": true, "data": { "_id": "...", "phone": "03219999999", ... } }
+
+DELETE /api/suppliers/<id>
+← 200 { "success": true, "message": "Supplier deactivated", "data": { "isActive": false, ... } }
+
+POST /api/medicines
+→ { "name": "Panadol", "category": "Analgesic", "unit": "Tablet", "unitPrice": 5, "reorderLevel": 50,
+     "supplier": "<supplierId>", "batches": [{ "batchNumber": "PAN-24A", "quantity": 200,
+     "costPrice": 3, "expiryDate": "2027-06-01" }] }
+← 201 { "success": true, "data": { "medicineId": "MED-000001", "totalStock": 200, "isLowStock": false, ... } }
+
+GET /api/medicines?search=panadol
+← 200 { "success": true, "count": 1, "total": 1, "page": 1, "pages": 1, "data": [...] }
+
+GET /api/medicines/categories
+← 200 { "success": true, "data": ["Analgesic", "Antibiotic"] }
+
+GET /api/medicines/low-stock
+← 200 { "success": true, "count": 1, "data": [{ "name": "Panadol", "totalStock": 15, "reorderLevel": 50, "isLowStock": true }] }
+
+GET /api/medicines/expiring?days=30
+← 200 { "success": true, "count": 1, "data": [{ "medicineName": "Panadol", "batchNumber": "PAN-24A", "quantity": 40, "expiryDate": "2026-09-10" }] }
+
+POST /api/medicines/<id>/batches
+→ { "batchNumber": "PAN-24B", "quantity": 150, "costPrice": 3.2, "expiryDate": "2027-09-01" }
+← 201 { "success": true, "data": { "totalStock": 350, "batches": [ ...two batches... ] } }
+
+DELETE /api/medicines/<id>
+← 200 { "success": true, "message": "Medicine archived", "data": { "isActive": false, ... } }
+
+POST /api/sales
+→ { "items": [{ "medicine": "<medicineId>", "quantity": 10 }], "customerName": "Walk-in" }
+← 201 { "success": true, "data": { "saleId": "SALE-000001", "totalAmount": 50,
+         "items": [{ "medicineName": "Panadol", "quantity": 10, "deductedFrom": [{ "batchId": "...", "quantity": 10 }] }] } }
+← 409 (if insufficient stock) { "success": false, "message": "Insufficient stock for Panadol (requested 500, available 350)" }
+
+GET /api/sales?status=Completed
+← 200 { "success": true, "count": 1, "total": 1, "page": 1, "pages": 1, "data": [...] }
+
+PATCH /api/sales/<id>/void
+→ { "voidReason": "Customer returned the medicine unopened" }
+← 200 { "success": true, "message": "Sale voided and stock restored", "data": { "status": "Voided", ... } }
+
+
+Frontend Testing Instructions Part 6 (Pharmacy)
+1. Log in as Admin/Pharmacist → /pharmacy → Inventory tab loads (empty state if no medicines yet).
+2. Click "Add Medicine" → fill name/category/unit/price/reorder level → submit → appears in the table
+   with "Out of Stock" badge (zero batches yet).
+3. Click the eye icon → detail page → "Add Batch" → fill batch number/qty/cost/expiry → submit →
+   totalStock updates, badge flips to "In Stock" or "Low Stock" depending on reorderLevel.
+4. Add a second batch with an expiry within 30 days → go back to Pharmacy → the amber "expiring" alert
+   card should list it.
+5. Edit the medicine from the list page (pencil icon) → change reorder level above current stock →
+   badge flips to "Low Stock" → confirm the amber low-stock alert card picks it up too.
+6. Type a brand-new category (not in the dropdown) while adding a medicine → submit → switch to a
+   different tab and back → the new category now appears in the "All Categories" filter.
+7. Switch to Sales tab → "New Sale" → search and select a medicine → set quantity → total updates live →
+   submit → sale appears in the table, medicine's stock decreases by that quantity.
+8. Try selling more than available stock → red banner shows the backend's 409 "Insufficient stock" message.
+9. Add a second item row to the same sale, pick a different medicine → submit → both items deducted
+   correctly in one transaction.
+10. Log in as Admin → void a completed sale with a reason → status flips to "Voided" → go check the
+    medicine's batches → confirm the exact batch(es) got their quantity restored.
+11. Log in as Pharmacist → try to void a sale → no "Void" button/link should appear (Admin-only, matches
+    backend's authorize("Admin") on that route).
+12. Switch to Suppliers tab → add a supplier → go back to Inventory, add/edit a medicine → new supplier
+    appears in the dropdown.
+13. Log in as Doctor or Receptionist → manually visit /pharmacy → redirected to /unauthorized.
+
+
+
+Dashboard Testing Instructions:
+1. Log in as Admin → /dashboard → all four sections render: Clinic Overview, Revenue, Pharmacy.
+2. Log in as Doctor → only "Your Day" section shows (appointment counts), no Revenue/Pharmacy sections at all.
+3. Log in as Receptionist → Clinic Overview + Revenue sections, no Pharmacy.
+4. Log in as Pharmacist → only Pharmacy section (alerts + medicine sales chart), no Clinic Overview/Revenue.
+5. Open browser DevTools → Network tab while loading as each role → confirm no 403s fire (each role only
+   calls endpoints it's authorized for).
+6. As Admin, book a same-day appointment → refresh /dashboard → "Today's Appointments" / "Scheduled Today"
+   increments.
+7. As Admin, mark that appointment Completed → refresh → "Completed Today" increments, "Scheduled Today" drops.
+8. As Admin, record a pharmacy sale → refresh /dashboard → Medicine Sales chart's "Sales Recorded" and
+   today's bar both update.
+9. As Receptionist, create an unpaid bill → refresh → "Unpaid Bills" count increments.
+
+
+Settings Testing Instructions
+1. Log in as any role → /settings → only "Security" tab visible, no tab switcher shown (single tab).
+2. Enter wrong current password → submit → red "Current password is incorrect" banner.
+3. Enter correct current password + a new password under 6 chars → inline validation catches it.
+4. Enter mismatched confirm password → inline "Passwords do not match".
+5. Successfully change password → green success banner → log out → log back in with the NEW password → works.
+6. Log in as Admin → /settings → both "Security" and "Clinic Profile" tabs visible.
+7. Clinic Profile tab → first load shows defaults ("Smart Clinic", blank fields) → edit and save →
+   green success banner → refresh page → values persisted.
+8. Log in as Doctor/Receptionist/Pharmacist → /settings → only Security tab, Clinic Profile inaccessible
+   even by guessing the tab state (component just never renders it since `isAdmin` is false).
+9. Try PUT /api/settings/clinic directly as a non-Admin token → expect 403 (backend enforces regardless
+   of frontend hiding).
+
+How much did I work for free for my project?
+Authentication       ✅
+Users                ✅
+Patients             ✅
+Appointments         ✅
+Billing              ✅
+Pharmacy             ← NOW
+Inventory             ← NOW
+Prescriptions         ← NEXT
+Dashboard             ← NEXT
+Reports              ← NEXT
+AI                   ← LAST
