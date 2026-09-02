@@ -1,0 +1,21 @@
+const mongoose = require("mongoose");
+
+const supplierSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Supplier name is required"],
+      trim: true,
+    },
+    contactPerson: { type: String, trim: true },
+    phone: { type: String, trim: true },
+    address: { type: String, trim: true },
+    isActive: { type: Boolean, default: true }, // soft delete, consistent with User/Patient
+  },
+  { timestamps: true },
+);
+
+supplierSchema.index({ name: 1 });
+supplierSchema.index({ isActive: 1 });
+
+module.exports = mongoose.model("Supplier", supplierSchema);
