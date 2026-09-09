@@ -43,16 +43,37 @@ const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState(0);
   const [activeEcosystemIndex, setActiveEcosystemIndex] = useState(0);
 
-  // Smooth scroll to anchor hash when arriving from another page
+  // Smooth scroll to anchor hash when arriving from another page & sync tab
   useEffect(() => {
     if (location.hash) {
       const targetHash = location.hash;
+      if (targetHash === "#reception") {
+        setActivePreviewTab("reception");
+      } else if (targetHash === "#pharmacy") {
+        setActivePreviewTab("pharmacy");
+      }
       const timer = setTimeout(() => {
-        scrollTo(targetHash, { offset: -80 });
+        const destination =
+          targetHash === "#reception" || targetHash === "#pharmacy"
+            ? "#features"
+            : targetHash;
+        scrollTo(destination, { offset: -80 });
       }, 150);
       return () => clearTimeout(timer);
     }
   }, [location.hash, scrollTo]);
+
+  // Listen to navigation events from LandingNavbar dropdown shortcuts
+  useEffect(() => {
+    const handleSetTab = (e) => {
+      if (e.detail) {
+        setActivePreviewTab(e.detail);
+      }
+    };
+    window.addEventListener("smartclinic-set-preview-tab", handleSetTab);
+    return () =>
+      window.removeEventListener("smartclinic-set-preview-tab", handleSetTab);
+  }, []);
 
   const STATS = [
     { value: "15,000+", label: "Patient Records", sub: "Safely Managed" },
