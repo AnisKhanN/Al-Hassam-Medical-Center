@@ -14,7 +14,13 @@ import {
   FiChevronDown,
   FiCheck,
   FiVideo,
+  FiClock,
+  FiSend,
+  FiPlus,
+  FiRefreshCw,
+  FiAlertTriangle,
 } from "react-icons/fi";
+import { RiBarcodeLine } from "react-icons/ri";
 import LandingNavbar from "../../components/landing/LandingNavbar";
 import Hero3D from "../../components/landing/Hero3D";
 import Ecosystem3D from "../../components/landing/Ecosystem3D";
@@ -75,8 +81,8 @@ const LandingPage = () => {
     {
       ecosystemIndex: 1,
       icon: FiActivity,
-      title: "Doctor Consultation & Queue",
-      desc: "Multi-doctor appointment scheduling with smart conflict prevention, clinical vital signs entry, diagnosis logging, and digital prescriptions.",
+      title: "Reception Desk & Doctor Queue",
+      desc: "15-second patient intake, sequential token dispenser (#01, #02...), real-time doctor roster load balancing, and 1-click WhatsApp alerts.",
       badge: "Fast Queue",
       color: "from-emerald-600 to-teal-500",
     },
@@ -91,9 +97,9 @@ const LandingPage = () => {
     {
       ecosystemIndex: 3,
       icon: FiPackage,
-      title: "Smart Pharmacy & FEFO POS",
-      desc: "Hardware/camera barcode scanner, real-time stock deduction, batch expiry alert radar (30/60/90 days), and automated FEFO batch depletion.",
-      badge: "Zero Stockouts",
+      title: "Smart Pharmacy & FEFO Barcode POS",
+      desc: "High-speed USB/camera barcode scanner, cashier change calculator, real-time stock deduction, and 30/60/90-day expiry radar.",
+      badge: "Zero Waste",
       color: "from-purple-600 to-violet-500",
     },
     {
@@ -131,6 +137,29 @@ const LandingPage = () => {
         badge: "Query latency: 240ms • Heuristic Engine Verified",
       },
     },
+    reception: {
+      title: "Reception Desk & Sequential Patient Queue",
+      subtitle:
+        "15-second patient intake, sequential token generation, real-time doctor roster load balancing, and WhatsApp alerts.",
+      census: [
+        { label: "Tokens Issued Today", val: "48", color: "text-blue-600 dark:text-blue-400" },
+        { label: "Waiting in Lobby", val: "4", color: "text-amber-600 dark:text-amber-400" },
+        { label: "Completed Visits", val: "44", color: "text-emerald-600 dark:text-emerald-400" },
+        { label: "Active Doctors On-Duty", val: "3", color: "text-purple-600 dark:text-purple-400" },
+      ],
+      doctors: [
+        { name: "Dr. Amina Khan", room: "OPD Room 1", specialty: "General Medicine", queue: 2, status: "In Consultation" },
+        { name: "Dr. Tariq Mahmood", room: "OPD Room 2", specialty: "Pediatrics", queue: 1, status: "In Consultation" },
+        { name: "Dr. Zainab Raza", room: "OPD Room 3", specialty: "Cardiology", queue: 1, status: "Available" },
+      ],
+      tokens: [
+        { token: "#01", name: "Muhammad Bilal", id: "PAT-10029", doc: "Dr. Tariq", status: "Completed", phone: "0300-1234567" },
+        { token: "#02", name: "Aisha Siddiqui", id: "PAT-10045", doc: "Dr. Amina", status: "In Consultation", phone: "0321-9876543" },
+        { token: "#03", name: "Kamran Ali", id: "PAT-10088", doc: "Dr. Amina", status: "Next in Line", phone: "0333-5551234", waSent: true },
+        { token: "#04", name: "Zainab Bibi", id: "PAT-10102", doc: "Dr. Zainab", status: "Waiting in Lobby", phone: "0345-7778899" },
+      ],
+      badge: "Real-time SSE token synchronization active",
+    },
     doctor: {
       title: "Doctor Consultation & Clinical Documentation",
       subtitle:
@@ -148,32 +177,25 @@ const LandingPage = () => {
       },
     },
     pharmacy: {
-      title: "Pharmacy Dispensing & Batch Expiry Matrix",
+      title: "Smart Pharmacy POS & FEFO Expiry Radar",
       subtitle:
-        "Automated shelf inventory management, batch number tracking, and counter POS invoicing.",
-      response: {
-        medicines: [
-          {
-            name: "Augmentin 625mg",
-            stock: 120,
-            status: "In Stock",
-            exp: "2027-04",
-          },
-          {
-            name: "Panadol 500mg",
-            stock: 450,
-            status: "In Stock",
-            exp: "2026-11",
-          },
-          {
-            name: "Brufen 400mg",
-            stock: 18,
-            status: "Low Stock Alert",
-            exp: "2026-10",
-          },
-        ],
-        badge: "Live counter sync with OPD prescriptions",
-      },
+        "Instant hardware/camera barcode checkout, automated FEFO batch depletion, cashier change calculator, and real-time expiration radar.",
+      scannedBarcode: "8964000123456",
+      scannedName: "Augmentin 625mg Co-Amoxiclav Tablets",
+      scannedPrice: "PKR 340",
+      cartItems: [
+        { name: "Augmentin 625mg Tab", qty: 2, price: 340, total: 680, batch: "AUG-2601", exp: "Apr 2027", stock: 48 },
+        { name: "Panadol Extra 500mg", qty: 1, price: 80, total: 80, batch: "PAN-2604", exp: "Nov 2026", stock: 140 },
+      ],
+      subtotal: 760,
+      cashTendered: 1000,
+      changeDue: 240,
+      expiringBatches: [
+        { name: "Brufen 400mg (Batch BRU-2509)", days: 14, status: "Critical (<15d)", stock: 18, critical: true },
+        { name: "Amoxil 250mg Susp (Batch AMX-2511)", days: 28, status: "Near Expiry (<30d)", stock: 32, critical: false },
+        { name: "Ciproxin 500mg (Batch CIP-2602)", days: 54, status: "Monitored (<60d)", stock: 65, critical: false },
+      ],
+      badge: "Zero-Stockout FEFO allocation • Audio synthesizer active",
     },
     billing: {
       title: "Multi-Channel Billing & Invoicing",
@@ -377,11 +399,22 @@ const LandingPage = () => {
             {[
               { id: "ai", label: "AI Analytics Engine", icon: FiCpu },
               {
+                id: "reception",
+                label: "Reception Desk & Queue",
+                icon: FiUsers,
+                badge: "OPD Flow",
+              },
+              {
                 id: "doctor",
                 label: "Doctor EHR Consultation",
                 icon: FiActivity,
               },
-              { id: "pharmacy", label: "Smart Pharmacy POS", icon: FiPackage },
+              {
+                id: "pharmacy",
+                label: "Smart Pharmacy POS",
+                icon: FiPackage,
+                badge: "FEFO Radar",
+              },
               {
                 id: "billing",
                 label: "Multi-Gateway Invoicing",
@@ -394,7 +427,7 @@ const LandingPage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActivePreviewTab(tab.id)}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                     isActive
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 scale-[1.02]"
                       : "bg-slate-100 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
@@ -402,6 +435,17 @@ const LandingPage = () => {
                 >
                   <Icon size={16} />
                   <span>{tab.label}</span>
+                  {tab.badge && (
+                    <span
+                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase ${
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+                      }`}
+                    >
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -416,12 +460,12 @@ const LandingPage = () => {
                 <span className="w-3 h-3 rounded-full bg-amber-500/80" />
                 <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
                 <span className="ml-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                  SmartClinic Application • {PREVIEWS[activePreviewTab].title}
+                  SmartClinic Application • {PREVIEWS[activePreviewTab]?.title}
                 </span>
               </div>
               <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                API Connected
+                Live Hub Sync
               </span>
             </div>
 
@@ -480,6 +524,167 @@ const LandingPage = () => {
                 </div>
               )}
 
+              {activePreviewTab === "reception" && (
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <FiUsers className="text-emerald-500" />
+                        <span>{PREVIEWS.reception.title}</span>
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                        {PREVIEWS.reception.subtitle}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-3 py-1 text-xs font-bold font-mono">
+                        Queue Active • OPD Open
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Queue Census KPI Bar */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {PREVIEWS.reception.census.map((c, i) => (
+                      <div
+                        key={i}
+                        className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-950 p-3.5"
+                      >
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">
+                          {c.label}
+                        </span>
+                        <span className={`text-xl font-black font-mono mt-0.5 block ${c.color}`}>
+                          {c.val}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Quick Action Bar Simulation */}
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-emerald-50/50 dark:bg-emerald-950/20 p-3">
+                    <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                      <FiZap size={14} className="text-emerald-600" />
+                      1-Click Front-Desk Quick Actions:
+                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="rounded-xl bg-emerald-600 text-white px-3 py-1.5 text-xs font-bold shadow-xs">
+                        + Register Patient (15s)
+                      </span>
+                      <span className="rounded-xl bg-blue-600 text-white px-3 py-1.5 text-xs font-bold shadow-xs">
+                        Issue Queue Token
+                      </span>
+                      <span className="rounded-xl bg-purple-600 text-white px-3 py-1.5 text-xs font-bold shadow-xs">
+                        Collect Consultation Fee
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Doctors On-Duty & Live Sequential Token Queue Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    {/* Left: Doctors on Duty */}
+                    <div className="lg:col-span-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Doctors On-Duty
+                        </span>
+                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                      </div>
+                      <div className="space-y-2.5">
+                        {PREVIEWS.reception.doctors.map((d, i) => (
+                          <div
+                            key={i}
+                            className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-2.5 flex items-center justify-between"
+                          >
+                            <div>
+                              <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                {d.name}
+                              </p>
+                              <p className="text-[10px] text-slate-400">
+                                {d.room} • {d.specialty}
+                              </p>
+                            </div>
+                            <span className="rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 text-[10px] font-bold font-mono">
+                              {d.queue} in queue
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right: Live Token Queue Table */}
+                    <div className="lg:col-span-8 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Today's Sequential Patient Queue
+                        </span>
+                        <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                          Automated Token Dispatch
+                        </span>
+                      </div>
+                      <table className="w-full text-left text-xs">
+                        <thead className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900/40 text-slate-500 uppercase text-[10px] font-bold">
+                          <tr>
+                            <th className="p-3">Token</th>
+                            <th className="p-3">Patient</th>
+                            <th className="p-3">Doctor</th>
+                            <th className="p-3">Status</th>
+                            <th className="p-3 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+                          {PREVIEWS.reception.tokens.map((t, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-900/40 transition">
+                              <td className="p-3">
+                                <span className="inline-flex items-center justify-center font-mono text-xs font-black px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+                                  {t.token}
+                                </span>
+                              </td>
+                              <td className="p-3">
+                                <p className="font-bold text-slate-900 dark:text-white">
+                                  {t.name}
+                                </p>
+                                <p className="text-[10px] text-slate-400 font-mono">
+                                  {t.id} • {t.phone}
+                                </p>
+                              </td>
+                              <td className="p-3 text-slate-600 dark:text-slate-300 font-medium">
+                                {t.doc}
+                              </td>
+                              <td className="p-3">
+                                <span
+                                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    t.status === "Completed"
+                                      ? "bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800"
+                                      : t.status === "In Consultation"
+                                      ? "bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-400 border border-blue-300 dark:border-blue-800 animate-pulse"
+                                      : t.status === "Next in Line"
+                                      ? "bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800"
+                                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                                  }`}
+                                >
+                                  {t.status}
+                                </span>
+                              </td>
+                              <td className="p-3 text-right">
+                                {t.waSent ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                                    <FiCheck size={12} /> WA Sent
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[10px] text-slate-400 hover:text-emerald-600 transition cursor-pointer">
+                                    <FiSend size={12} /> WhatsApp
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {activePreviewTab === "doctor" && (
                 <div className="space-y-6">
                   <div>
@@ -522,48 +727,179 @@ const LandingPage = () => {
 
               {activePreviewTab === "pharmacy" && (
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                      {PREVIEWS.pharmacy.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                      {PREVIEWS.pharmacy.subtitle}
-                    </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <FiPackage className="text-amber-500" />
+                        <span>{PREVIEWS.pharmacy.title}</span>
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                        {PREVIEWS.pharmacy.subtitle}
+                      </p>
+                    </div>
+                    <span className="rounded-xl bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 px-3 py-1 text-xs font-bold font-mono">
+                      FEFO Allocation Active
+                    </span>
                   </div>
 
-                  <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-                    <table className="w-full text-left text-xs">
-                      <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 uppercase">
-                        <tr>
-                          <th className="p-3">Medicine Name</th>
-                          <th className="p-3">Units in Stock</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3">Batch Expiry</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
-                        {PREVIEWS.pharmacy.response.medicines.map((m, idx) => (
-                          <tr key={idx} className="font-medium">
-                            <td className="p-3 text-slate-900 dark:text-white font-semibold">
-                              {m.name}
-                            </td>
-                            <td className="p-3">{m.stock}</td>
-                            <td className="p-3">
+                  {/* Hardware / Camera Barcode Scanner Wedge Bar */}
+                  <div className="rounded-2xl border border-indigo-100 dark:border-indigo-900/50 bg-gradient-to-r from-blue-50/70 dark:from-blue-950/40 to-indigo-50/50 dark:to-indigo-950/30 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md">
+                        <RiBarcodeLine size={22} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">
+                            Barcode Gun Input: {PREVIEWS.pharmacy.scannedBarcode}
+                          </span>
+                          <span className="rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
+                            Beep 880Hz ✓
+                          </span>
+                        </div>
+                        <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">
+                          Scanned Item: {PREVIEWS.pharmacy.scannedName} ({PREVIEWS.pharmacy.scannedPrice})
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider rounded-lg bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 px-2.5 py-1">
+                        Camera &amp; USB Gun Active
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* POS Line Items & Cashier Change Calculator Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    {/* Left: Cart Line Items */}
+                    <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Active Counter Sale Items
+                        </span>
+                        <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                          Auto-depleting nearest expiry
+                        </span>
+                      </div>
+                      <div className="space-y-2.5">
+                        {PREVIEWS.pharmacy.cartItems.map((item, i) => (
+                          <div
+                            key={i}
+                            className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3 flex items-center justify-between gap-3"
+                          >
+                            <div>
+                              <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                {item.name}
+                              </p>
+                              <p className="text-[10px] text-slate-400">
+                                Batch: <span className="font-mono font-semibold">{item.batch}</span> • Exp: {item.exp} • {item.stock} in stock
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-1">
+                                <span className="h-6 w-5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                  -
+                                </span>
+                                <span className="w-6 text-center text-xs font-bold font-mono">
+                                  {item.qty}
+                                </span>
+                                <span className="h-6 w-5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                  +
+                                </span>
+                              </div>
+                              <span className="text-xs font-bold font-mono text-slate-900 dark:text-white">
+                                PKR {item.total}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span className="text-xs text-slate-400">Total Prescription Bill</span>
+                        <span className="text-base font-black font-mono text-blue-600 dark:text-blue-400">
+                          PKR {PREVIEWS.pharmacy.subtotal}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right: Cashier Change Calculator & Expiry Radar */}
+                    <div className="lg:col-span-5 space-y-4">
+                      {/* Cashier Change Calculator */}
+                      <div className="rounded-2xl border border-emerald-200/80 dark:border-emerald-900/60 bg-emerald-50/50 dark:bg-emerald-950/20 p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                            💵 Cashier Change Calculator
+                          </span>
+                          <span className="rounded-md bg-emerald-200/70 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 px-1.5 py-0.5 text-[10px] font-bold">
+                            Zero Error
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <span className="rounded-lg bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                            Exact (PKR 760)
+                          </span>
+                          <span className="rounded-lg bg-emerald-600 text-white px-2 py-0.5 text-[11px] font-bold shadow-xs">
+                            PKR 1,000
+                          </span>
+                          <span className="rounded-lg bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                            PKR 5,000
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-emerald-200/60 dark:border-emerald-900/50">
+                          <div>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
+                              Cash Received
+                            </span>
+                            <span className="text-sm font-bold font-mono text-slate-900 dark:text-white">
+                              PKR {PREVIEWS.pharmacy.cashTendered}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block">
+                              Change Due to Patient
+                            </span>
+                            <span className="text-base font-black font-mono text-emerald-600 dark:text-emerald-300">
+                              PKR {PREVIEWS.pharmacy.changeDue}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Expiry Alert Radar Table */}
+                      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-3.5 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                            <FiAlertTriangle className="text-amber-500" />
+                            FEFO Expiry Radar
+                          </span>
+                          <span className="text-[10px] text-slate-400">Next 60 Days</span>
+                        </div>
+                        <div className="space-y-1.5">
+                          {PREVIEWS.pharmacy.expiringBatches.map((b, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center justify-between text-xs p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800"
+                            >
+                              <span className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[170px]">
+                                {b.name}
+                              </span>
                               <span
-                                className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                  m.status.includes("Low")
-                                    ? "bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800"
-                                    : "bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800"
+                                className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-md ${
+                                  b.critical
+                                    ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400 border border-red-300 dark:border-red-800 animate-pulse"
+                                    : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400 border border-amber-300 dark:border-amber-800"
                                 }`}
                               >
-                                {m.status}
+                                {b.status}
                               </span>
-                            </td>
-                            <td className="p-3 font-mono">{m.exp}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -732,6 +1068,228 @@ const LandingPage = () => {
                     administrative intelligence.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 3.5 DEDICATED RECEPTION DESK & PHARMACY STORE SHOWCASE */}
+      {/* ========================================================================= */}
+      <section
+        id="operations"
+        className="py-16 sm:py-24 bg-gradient-to-b from-slate-100/80 via-white to-slate-50 dark:from-slate-900/60 dark:via-slate-950 dark:to-slate-900/80 border-t border-slate-200/80 dark:border-slate-800/80"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+              Operational Speed &amp; Accuracy
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+              High-Velocity Reception &amp; Precision Pharmacy
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+              Transform front-desk bottlenecks into lightning-fast intake, and replace inventory loss with automated FEFO barcode precision.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Card 1: Reception Desk Operations */}
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xl flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20">
+                      <FiUsers size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                        Front Desk &amp; Patient Queue Hub
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        15-Second Intake • Sequential Tokens • WhatsApp Alerts
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 px-3 py-1 text-xs font-bold font-mono">
+                    Zero Chaos
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  Front-desk staff coordinate high patient volumes without friction. Intake patients in under 15 seconds, dispatch sequential tokens, monitor doctor consultation loads, and notify patients via WhatsApp.
+                </p>
+
+                {/* Feature List */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-emerald-500" size={14} /> 15s Patient Intake
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Instant MRN allocation with automatic deduplication.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-emerald-500" size={14} /> Live Token Dispenser
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Conflict-free sequential badges (#01, #02, #03).
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-emerald-500" size={14} /> Doctor Queue Depth
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Real-time roster visibility preventing doctor overload.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-emerald-500" size={14} /> 1-Click WhatsApp
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Automated arrival confirmation &amp; token alerts.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Interactive Mockup Strip */}
+                <div className="rounded-2xl bg-gradient-to-br from-emerald-50/60 to-teal-50/40 dark:from-emerald-950/30 dark:to-teal-950/20 border border-emerald-200/80 dark:border-emerald-800/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-emerald-900 dark:text-emerald-200">
+                      Live Front-Desk Snapshot:
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400">
+                      Avg Wait: 8 Mins
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                    <span className="shrink-0 font-mono font-bold bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded-lg text-emerald-700 dark:text-emerald-300">
+                      #01 Done
+                    </span>
+                    <span className="shrink-0 font-mono font-bold bg-emerald-600 text-white px-2 py-1 rounded-lg animate-pulse">
+                      #02 In Room
+                    </span>
+                    <span className="shrink-0 font-mono font-bold bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded-lg text-amber-600 dark:text-amber-400">
+                      #03 Next
+                    </span>
+                    <span className="shrink-0 font-mono font-bold bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded-lg text-slate-500">
+                      #04 Waiting
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span className="text-xs text-slate-400">Role: Receptionist</span>
+                <button
+                  onClick={() => {
+                    setActivePreviewTab("reception");
+                    scrollTo("#features", { offset: -80 });
+                  }}
+                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Interactive Reception Demo</span>
+                  <FiArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+
+            {/* Card 2: Smart Pharmacy Store Operations */}
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xl flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/20">
+                      <FiPackage size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                        Smart Pharmacy &amp; Barcode POS
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        Hardware Scanner • Change Calculator • FEFO Radar
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-amber-100 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 px-3 py-1 text-xs font-bold font-mono">
+                    Zero Waste
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  High-speed dispensary management engineered for fast-paced hospital and clinic pharmacies. Built-in barcode wedge listener, automated batch FEFO depletion, and interactive cashier change calculation.
+                </p>
+
+                {/* Feature List */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-amber-500" size={14} /> Barcode Gun &amp; Camera
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Fast 880Hz audio beeps with instant stock lookup.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-amber-500" size={14} /> Cashier Change Calculator
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Eliminates mental arithmetic errors at checkout.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-amber-500" size={14} /> Automated FEFO Depletion
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      First-expired-first-out guarantees zero dead stock.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <FiCheckCircle className="text-amber-500" size={14} /> 30/60/90d Expiry Radar
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Ranked countdown badges for batches nearing expiry.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Interactive Mockup Strip */}
+                <div className="rounded-2xl bg-gradient-to-br from-amber-50/60 to-orange-50/40 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200/80 dark:border-amber-800/50 p-4 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-amber-900 dark:text-amber-200">
+                      Live POS Checkout Simulation:
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                      Change Due: PKR 240
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs font-mono bg-white dark:bg-slate-900 p-2 rounded-xl border border-amber-200 dark:border-amber-800">
+                    <span>Augmentin 625mg x 2</span>
+                    <span className="font-bold text-slate-900 dark:text-white">PKR 680</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span className="text-xs text-slate-400">Role: Pharmacist</span>
+                <button
+                  onClick={() => {
+                    setActivePreviewTab("pharmacy");
+                    scrollTo("#features", { offset: -80 });
+                  }}
+                  className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Interactive Pharmacy Demo</span>
+                  <FiArrowRight size={13} />
+                </button>
               </div>
             </div>
           </div>

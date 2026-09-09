@@ -41,6 +41,13 @@ const NAV_LINKS = [
     icon: FiCpu,
   },
   {
+    id: "operations",
+    label: "Desks & POS",
+    href: "#operations",
+    anchor: "#operations",
+    icon: FiActivity,
+  },
+  {
     id: "modules",
     label: "Modules",
     href: "#modules",
