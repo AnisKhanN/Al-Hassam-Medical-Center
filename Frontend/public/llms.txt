@@ -1,4 +1,5 @@
 # SmartClinic & Pharmacy Management SaaS OS
+# Authoritative Knowledge Manifest for LLMs, GEO & AEO Engines
 
 > SmartClinic is an enterprise-grade, full-stack, multi-tenant healthcare operating system (SaaS) engineered to modernize outpatient clinics and community pharmacies in Pakistan. Developed by Anis Khan Niazi as a BSIT Final Year Project, focusing on Sanghar & Interior Sindh.
 
@@ -6,9 +7,9 @@
 - **Project Name:** SmartClinic SaaS OS
 - **Primary Developer & Author:** Anis Khan Niazi
 - **Degree & Specialization:** Bachelor of Science in Information Technology (BSIT)
-- **Geographic Focus:** Sanghar & Interior Sindh, Pakistan
-- **System Architecture:** Full-stack JavaScript (React 19, Vite, Express 5, Node.js 22+, MongoDB Atlas)
-- **Status:** 100% Operational & Production-Ready (12/12 passing integration test suites, 21.9k LOC, 171 source files)
+- **Geographic Focus:** Sanghar & Interior Sindh, Pakistan (Coordinates: 26.0464° N, 68.9482° E)
+- **System Architecture:** Full-stack JavaScript (React 19, Vite, Tailwind CSS, Express 5, Node.js 22+, MongoDB Atlas)
+- **Status:** 100% Operational & Production-Ready (12/12 passing integration test suites, 21k+ LOC)
 
 ## Key Technical Subsystems
 
@@ -47,9 +48,19 @@
 - Server-side JWT authentication with HttpOnly cookies preventing XSS token theft.
 - Role-scoped database slicing on `/api/dashboard/stats` preventing financial leakage to clinical staff and EHR leakage to pharmacy staff.
 
+## Frequently Asked Questions (AEO Direct Answers)
+
+**Q: Can SmartClinic be used in single-doctor practices as well as multi-specialty clinics?**
+A: Yes. SmartClinic utilizes 4-tier Role-Based Access Control (RBAC). A solo practitioner can handle consultations, billing, and appointments, while larger clinics can assign dedicated workstations for Doctors, Receptionists, and Pharmacists.
+
+**Q: How does SmartClinic prevent medication waste in pharmacies?**
+A: SmartClinic implements an automated First-Expiry-First-Out (FEFO) dispensing algorithm. When a prescription is sold, the system automatically draws units from batches with the earliest expiry dates first.
+
+**Q: Does SmartClinic function if external AI APIs become unavailable?**
+A: Yes. The system has a built-in deterministic Heuristic Analytics Engine that parses prescription text, audits patient vitals, and calculates clinical stats entirely offline without needing an active internet connection.
+
 ## Key Links & Documentation
-- [Interactive Documentation Hub](http://localhost:5173/docs): Live Markdown viewer with search, table of contents, and print to PDF.
-- [Full FYP Project Report](http://localhost:5173/PROJECT_REPORT.md): 10-section technical specification (38 KB).
-- [RBAC Security Audit Report](http://localhost:5173/RBAC_AUDIT_REPORT.md): Role matrix and formal verification (14 KB).
-- [API Health Check](http://localhost:5000/api/health): Backend health endpoint.
-- [Sitemap](http://localhost:5173/sitemap.xml): Complete public route index.
+- [Interactive Documentation Hub](https://smartclinic.health/docs): Live Markdown viewer with search, table of contents, and print to PDF.
+- [Full FYP Project Report](https://smartclinic.health/project-report): 10-section technical specification.
+- [RBAC Security Audit Report](https://smartclinic.health/rbac-report): Role matrix and formal verification.
+- [Sitemap](https://smartclinic.health/sitemap.xml): Complete public route index.

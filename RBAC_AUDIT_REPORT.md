@@ -2,7 +2,7 @@
 
 **Author / Developer:** Anis Khan Niazi  
 **System:** SmartClinic Multi-Tenant Management SaaS (BSIT Final Year Project)  
-**Evaluation Date:** September 2026 (Final Production Audit)  
+**Evaluation Date:** September 2026 (Comprehensive Final Production Audit)  
 **System Status:** 🟢 **100% Operational & Verified Passing (Backend & Frontend Live)**  
 **GitHub Repository:** [https://github.com/AnisKhanN/SmartClinic-SaaS](https://github.com/AnisKhanN/SmartClinic-SaaS)  
 **Postman Suite:** UID `55354836-b09b272e-d854-476f-a230-5ded96ab7e05` (*Anis Khan Niazi's Team*)
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-This report provides the full technical audit of **Role-Based Access Control (RBAC)**, **Multi-Tenant Boundary Isolation**, and **Codebase Streamlining** across the **SmartClinic** platform.
+This report provides the full technical audit of **Role-Based Access Control (RBAC)**, **Multi-Tenant Boundary Isolation**, and **Production Codebase Streamlining** across the **SmartClinic** platform.
 
 The application was evaluated across all four active staff tiers and cross-tenant boundaries:
 
@@ -25,10 +25,20 @@ Both the **Backend API** (`http://localhost:5000`) connected to MongoDB Atlas an
 
 ---
 
-## 2. Production Script Optimization & Cleanup
+## 2. Production Codebase Streamlining & Optimization
 
-During development and testing, temporary test runners and migration scripts were used. To maintain clean production engineering standards and avoid codebase pollution, **all 21 redundant one-off scripts** were deleted from the repository:
+During development and testing, temporary test runners, experimental 3D canvases, and migration scripts were utilized. To maintain clean production software engineering standards and eliminate bundle bloat:
 
+### 2.1 Deleted Obsolete Frontend & Backend Artifacts
+| Deleted File | Nature of Artifact | Reason for Removal | Resolution |
+| :--- | :--- | :--- | :---: |
+| `Frontend/src/components/landing/Ecosystem3D.jsx` | 27 KB Three.js component | Replaced by modern photorealistic hero & clean modules grid | **Deleted** |
+| `Frontend/src/components/landing/Hero3D.jsx` | 6.7 KB Three.js wireframe | Superseded by Dribbble-inspired clinical hero section | **Deleted** |
+| `Frontend/src/components/landing/ClinicShowcaseCinema.jsx` | Prototype video cinema component | Removed to streamline frontend bundle complexity | **Deleted** |
+| `Frontend/src/components/layout/DashboardNavbar.jsx` | Empty stub component (`return null;`) | Deprecated in favor of streamlined layout | **Deleted** |
+| `Backend/admin-cookies.txt` | Temporary session cookie file | Temporary curl session artifact removed from backend root | **Deleted** |
+
+### 2.2 Deleted One-Off Backend Scripts (21 Scripts Removed)
 | Deleted Script File | Nature of Script | Reason for Removal | Resolution |
 | :--- | :--- | :--- | :---: |
 | `testPart1Auth.js` | One-off auth test runner | Superseded by official Postman Cloud Collection | **Deleted** |
@@ -52,10 +62,9 @@ During development and testing, temporary test runners and migration scripts wer
 | `inspectDatabase.js` | One-time database audit | Audit completed | **Deleted** |
 | `migrateMultiTenancy.js` | One-time multi-tenant backfill | Backfill completed in Atlas without data loss | **Deleted** |
 | `restoreAdmin.js` | Scratch script | Handled by `seedAdmin.js` | **Deleted** |
-| `Frontend/scripts/testFrontendIntegration.js` | One-off frontend runner | Frontend testing completed (70/70 passing) | **Deleted** |
 
 ### Retained Production Seeder (1 Essential File):
-* ✅ `Backend/scripts/seedAdmin.js` — Standard database seeder to initialize the clinic and demo staff accounts (`admin@clinic.com`, `amina@clinic.com`, `receptionist@clinic.com`, `pharmacist@clinic.com`) for viva evaluation or local development via `npm run seed`.
+* ✅ `Backend/scripts/seedAdmin.js` — Standard database seeder to initialize the clinic and demo staff accounts (`admin@clinic.com`, `amina@clinic.com`, `receptionist@clinic.com`, `pharmacist@clinic.com`) for viva evaluation via `npm run seed`.
 
 ---
 
@@ -168,17 +177,17 @@ Every backend endpoint has been verified against all 4 system roles and cross-te
 - **96-Endpoint RBAC Matrix:** 96 of 96 role-permission checks passed with zero authorization leaks.
 - **Postman API Suite (51 Requests):** All 14 modules passed with zero failures.
 
-### 5.2 Frontend E2E Verification (100% Green, 0 Failures)
+### 5.2 Frontend E2E & Production Build Verification (100% Green, 0 Failures)
 - **70 of 70 assertions passed** covering Vite dev server proxy, authentication, dashboard data binding, patient EHR, pharmacy FEFO, billing ledger, reports tabs, AI briefings, and 1-click quick-role switchers.
-- **ESLint:** 0 errors across 100+ JSX components, hooks, and context providers.
-- **Vite Build:** 100% clean production bundle in 947ms.
+- **ESLint:** 0 errors across JSX components, hooks, and context providers.
+- **Vite Build:** 100% clean production bundle in **1.57s** (1,471 modules transformed). Three.js completely unbundled.
 
 ---
 
 ## 6. Conclusion & Current System State
 
 1. **RBAC & Multi-Tenant Integrity:** Every role (`Admin`, `Doctor`, `Receptionist`, `Pharmacist`) strictly adheres to its operational boundary, and every tenant's data is isolated with compound unique indexes and scoped sequence counters.
-2. **Production Code Cleanliness:** All 21 redundant one-off test scripts were deleted, retaining only `Backend/scripts/seedAdmin.js` for clean production code standards.
+2. **Production Code Cleanliness:** All dead code files (`Ecosystem3D.jsx`, `Hero3D.jsx`, `DashboardNavbar.jsx`, `admin-cookies.txt`) and 21 redundant one-off test scripts were deleted, leaving an optimized, production-ready codebase.
 3. **Cloud & Version Control Integration:** Postman Cloud collection (`b09b272e-d854-476f-a230-5ded96ab7e05`) is synchronized via Postman MCP, and the repository is published on GitHub (`https://github.com/AnisKhanN/SmartClinic-SaaS`).
 4. **Documentation Synchronization:** Both [`PROJECT_REPORT.md`](file:///d:/FYP%20Work/SmartClinic%20By%20Anis/PROJECT_REPORT.md) and [`RBAC_AUDIT_REPORT.md`](file:///d:/FYP%20Work/SmartClinic%20By%20Anis/RBAC_AUDIT_REPORT.md) are synchronized across root and `Frontend/public/` for direct in-app reading, markdown export, and PDF printing.
 

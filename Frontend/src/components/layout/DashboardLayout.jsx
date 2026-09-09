@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import Sidebar from "./Sidebar";
 import ThemeToggle from "../common/ThemeToggle";
@@ -9,8 +9,8 @@ const DashboardLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* Desktop sidebar — always visible at md+ */}
-      <div className="hidden md:block">
+      {/* Desktop sidebar — visible at md+ */}
+      <div className="hidden md:block shrink-0">
         <Sidebar />
       </div>
 
@@ -27,27 +27,17 @@ const DashboardLayout = () => {
         </div>
       )}
 
+      {/* Main Content Area */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Mobile top bar */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 px-4 py-3 backdrop-blur md:hidden">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="rounded-lg p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-              aria-label="Open Navigation"
-            >
-              <FiMenu size={20} />
-            </button>
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-2 group hover:opacity-90 transition-opacity"
-              title="Back to Dashboard"
-            >
-              <p className="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                Smart Clinic
-              </p>
-            </Link>
-          </div>
+        {/* Mobile topbar */}
+        <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-800 md:hidden">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <FiMenu className="h-6 w-6" />
+          </button>
+          <span className="font-semibold text-slate-800 dark:text-white">SmartClinic</span>
           <ThemeToggle />
         </div>
 
@@ -60,3 +50,4 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+

@@ -33,7 +33,8 @@ const ProjectDocs = lazy(() => import("./pages/docs/ProjectDocs.jsx"));
 const Unauthorized = () => {
   useSEO({
     title: "Unauthorized Access",
-    description: "You do not have the required permissions to access this page.",
+    description:
+      "You do not have the required permissions to access this page.",
   });
 
   return (

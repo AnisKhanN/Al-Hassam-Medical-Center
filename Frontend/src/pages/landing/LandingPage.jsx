@@ -16,8 +16,6 @@ import {
   FiVideo,
 } from "react-icons/fi";
 import LandingNavbar from "../../components/landing/LandingNavbar";
-import Hero3D from "../../components/landing/Hero3D";
-import Ecosystem3D from "../../components/landing/Ecosystem3D";
 import Footer from "../../components/common/Footer";
 import useSEO from "../../hooks/useSEO";
 import { useSmoothScroll } from "../../hooks/useSmoothScroll";
@@ -26,9 +24,11 @@ const LandingPage = () => {
   useSEO({
     title: "The Intelligent Operating System for Modern Clinics",
     description:
-      "Streamline Electronic Health Records, automated FEFO pharmacy inventory, multi-channel billing, and real-time clinical AI intelligence.",
+      "Enterprise healthcare SaaS engineered for outpatient clinics and pharmacies. Features EHR records, FEFO inventory POS, WebRTC telemedicine, and Google Gemini AI trilingual discharge slips.",
     keywords:
-      "SmartClinic, clinic management software, pharmacy management SaaS, electronic health records, EHR Pakistan, FEFO inventory, telemedicine WebRTC",
+      "SmartClinic, clinic management software, pharmacy management SaaS, electronic health records, EHR Pakistan, FEFO inventory, telemedicine WebRTC, Sanghar healthcare, Anis Khan Niazi",
+    canonical: "https://smartclinic.health/",
+    ogImage: "/images/hero_doctor_patient.jpg",
   });
 
   const location = useLocation();
@@ -217,123 +217,306 @@ const LandingPage = () => {
       <LandingNavbar />
 
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION WITH 3D WEBGL CENTERPIECE */}
+      {/* 1. HERO SECTION: PERSONALIZED HEALTHCARE FOR SMARTER WELLNESS (DRIBBBLE CONCEPT) */}
       {/* ========================================================================= */}
       <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
-        {/* Background glow orbs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-tr from-blue-600/20 via-cyan-500/15 to-purple-600/10 dark:from-blue-600/15 dark:via-cyan-400/10 dark:to-purple-900/15 rounded-full blur-3xl -z-10 pointer-events-none" />
-        <div className="absolute top-1/3 left-10 w-72 h-72 bg-cyan-400/15 dark:bg-cyan-500/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+        {/* Soft Organic Ambient Glowing Backgrounds */}
+        <div className="absolute -top-12 -right-12 w-[600px] h-[600px] bg-gradient-to-bl from-orange-400/15 via-rose-300/10 to-transparent dark:from-orange-500/10 dark:via-rose-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />
+        <div className="absolute -bottom-16 -left-12 w-[650px] h-[650px] bg-gradient-to-tr from-purple-600/15 via-indigo-400/10 to-transparent dark:from-purple-900/20 dark:via-indigo-900/15 rounded-full blur-3xl -z-10 pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-500/10 dark:bg-indigo-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Headlines & Call to Actions */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              {/* Pill badge */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800/80 px-3.5 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm">
-                <FiZap className="text-blue-500 animate-pulse" />
-                <span>Next-Generation Healthcare SaaS</span>
-                <span className="hidden sm:inline text-blue-400">•</span>
-                <span className="hidden sm:inline font-normal text-blue-600 dark:text-blue-300">
-                  AI Analytics & POS
-                </span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.12]">
-                The Intelligent Operating System for{" "}
-                <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent">
-                  Modern Clinics
-                </span>{" "}
-                & Pharmacies.
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Streamline electronic health records, predictive pharmacy
-                inventory, multi-channel billing, and real-time clinical AI
-                intelligence in one fast, reliable, and secure platform.
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
-                <Link
-                  to="/login"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold text-sm px-6 py-3.5 shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <FiActivity size={18} />
-                  <span>Launch Live Demo</span>
-                  <FiArrowRight size={16} />
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => scrollTo("#ai-engine", { offset: -80 })}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 font-semibold text-sm px-5 py-3.5 shadow-sm transition-all cursor-pointer"
-                >
-                  <FiCpu size={17} className="text-cyan-500" />
-                  <span>Explore AI Assistant</span>
-                </button>
-              </div>
-
-              {/* Demo Credentials Note */}
-              <div className="pt-2 flex items-center justify-center lg:justify-start gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <FiCheckCircle className="text-emerald-500 shrink-0" />
-                <span>
-                  Demo Admin:{" "}
-                  <strong className="font-semibold text-slate-700 dark:text-slate-200">
-                    admin@clinic.com
-                  </strong>{" "}
-                  /{" "}
-                  <code className="bg-slate-200/60 dark:bg-slate-800/80 px-1 py-0.5 rounded text-[11px]">
-                    ChangeMe123
-                  </code>
-                </span>
+          {/* Centered Typography & Floating 3D Organ Badges */}
+          <div className="max-w-4xl mx-auto text-center relative">
+            {/* Left 3D Organ Floater: Heart */}
+            <div className="hidden md:flex absolute -left-12 lg:-left-20 top-2 items-center justify-center animate-bounce duration-1000">
+              <div className="relative group cursor-pointer">
+                <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-full bg-white/95 dark:bg-slate-900/95 ring-8 ring-rose-500/10 dark:ring-rose-500/20 shadow-xl p-2.5 backdrop-blur-md border border-rose-100 dark:border-rose-900/40 transition-transform duration-300 group-hover:scale-105">
+                  <img
+                    src="/images/badge_heart_3d.jpg"
+                    alt="Cardiovascular Care"
+                    className="h-full w-full object-contain rounded-full"
+                  />
+                </div>
+                <span className="absolute -bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-rose-500 border-2 border-white dark:border-slate-950 animate-pulse" />
               </div>
             </div>
 
-            {/* Right Column: 3D Holographic Canvas with Floating Glass Badges */}
-            <div className="lg:col-span-5 relative flex items-center justify-center">
-              {/* Three.js 3D WebGL Canvas */}
-              <Hero3D />
+            {/* Right 3D Organ Floater: Lungs */}
+            <div className="hidden md:flex absolute -right-12 lg:-right-20 top-2 items-center justify-center animate-bounce duration-1000 delay-300">
+              <div className="relative group cursor-pointer">
+                <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-full bg-white/95 dark:bg-slate-900/95 ring-8 ring-purple-500/10 dark:ring-purple-500/20 shadow-xl p-2.5 backdrop-blur-md border border-purple-100 dark:border-purple-900/40 transition-transform duration-300 group-hover:scale-105">
+                  <img
+                    src="/images/badge_lungs_3d.jpg"
+                    alt="Respiratory Diagnostics"
+                    className="h-full w-full object-contain rounded-full"
+                  />
+                </div>
+                <span className="absolute -bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-purple-500 border-2 border-white dark:border-slate-950 animate-pulse" />
+              </div>
+            </div>
 
-              {/* Floating Glassmorphic Badge 1 (Top Right) */}
-              <div className="absolute -top-3 sm:top-4 right-0 sm:-right-4 bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/80 backdrop-blur-md rounded-2xl p-3.5 shadow-xl max-w-[210px] animate-bounce duration-1000 hidden sm:block">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-100 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400">
-                    <FiCpu size={17} />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-bold text-slate-900 dark:text-white">
-                      AI OCR Digitizer
-                    </p>
-                    <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
-                      0.4s response time
-                    </p>
-                  </div>
+            {/* Micro Pill Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800/80 px-4 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 shadow-xs mb-4">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Personalized Healthcare</span>
+              <span className="text-blue-400">•</span>
+              <span className="font-normal text-slate-600 dark:text-slate-300">
+                Smarter Wellness &amp; Outpatient OS
+              </span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+              Personalized{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Healthcare
+              </span>{" "}
+              for
+              <br className="hidden sm:block" /> Smarter Modern Clinics
+            </h1>
+
+            {/* Subtitle */}
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+              We combine clinical medical expertise with intelligent technology
+              to deliver patient care that&apos;s personalized, preventive, and
+              efficient across OPD, Pharmacy, and Telemedicine.
+            </p>
+
+            {/* Action Row with Flanking Real Doctor Avatars */}
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              {/* Doctor Avatar Left */}
+              <div className="relative group cursor-pointer hidden sm:block">
+                <div className="h-12 w-12 rounded-full ring-2 ring-emerald-500/30 p-0.5 overflow-hidden shadow-md bg-white dark:bg-slate-800">
+                  <img
+                    src="/images/doctor_avatar_female.jpg"
+                    alt="Dr. Amina - Senior Consultant"
+                    className="h-full w-full object-cover rounded-full group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-950 animate-pulse" />
+              </div>
+
+              {/* Primary Call to Action */}
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-xs sm:text-sm px-6 py-3.5 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                <FiActivity size={17} />
+                <span>Book Appointment / Launch Demo</span>
+                <FiArrowRight size={15} />
+              </Link>
+
+              {/* Secondary Call to Action */}
+              <button
+                type="button"
+                onClick={() => scrollTo("#ai-engine", { offset: -80 })}
+                className="inline-flex items-center gap-2 rounded-full bg-white/90 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/90 dark:border-slate-800 font-bold text-xs sm:text-sm px-5 py-3.5 shadow-xs backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-black">
+                  ▶
+                </span>
+                <span>Explore AI Engine</span>
+                <FiArrowRight size={13} className="text-slate-400" />
+              </button>
+
+              {/* Doctor Avatar Right */}
+              <div className="relative group cursor-pointer hidden sm:block">
+                <div className="h-12 w-12 rounded-full ring-2 ring-blue-500/30 p-0.5 overflow-hidden shadow-md bg-white dark:bg-slate-800">
+                  <img
+                    src="/images/doctor_avatar_male.jpg"
+                    alt="Dr. Thorne - Clinical Lead"
+                    className="h-full w-full object-cover rounded-full group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-950 animate-pulse" />
+              </div>
+            </div>
+
+            {/* Demo Credentials Note */}
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <FiCheckCircle className="text-emerald-500 shrink-0" />
+              <span>
+                Demo Admin:{" "}
+                <strong className="font-semibold text-slate-700 dark:text-slate-200">
+                  admin@clinic.com
+                </strong>{" "}
+                /{" "}
+                <code className="bg-slate-200/60 dark:bg-slate-800/80 px-1.5 py-0.5 rounded text-[11px] font-mono">
+                  ChangeMe123
+                </code>
+              </span>
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* REAL HUMAN HEALTHCARE PHOTOGRAPHY SHOWCASE WITH FLOATING GLASS CARDS */}
+          {/* ========================================================================= */}
+          <div className="max-w-4xl mx-auto mt-10 sm:mt-14 relative">
+            {/* Central Photography Frame */}
+            <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm relative group">
+              <img
+                src="/images/hero_doctor_patient.jpg"
+                alt="Doctor compassionately consulting and smiling with patient"
+                className="w-full h-auto max-h-[460px] object-cover object-center transform group-hover:scale-[1.01] transition-transform duration-700"
+              />
+              {/* Subtle gradient vignette at bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
+            </div>
+
+            {/* Overlaid Floating Glass Card: Health Score (Bottom Left) */}
+            <div className="absolute -bottom-6 -left-3 sm:left-6 sm:bottom-8 bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-2xl backdrop-blur-xl max-w-[190px] sm:max-w-[220px] z-20 animate-in fade-in slide-in-from-left duration-300">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400">
+                  <FiActivity size={15} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Health Score
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-baseline gap-1.5 mb-1.5">
+                <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  98.4%
+                </span>
+                <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
+                  Optimal
+                </span>
+              </div>
+              {/* Mini vertical rounded bar chart */}
+              <div className="flex items-end gap-1.5 h-10 pt-1">
+                <div className="w-3 rounded-full bg-indigo-200 dark:bg-indigo-900/50 h-[45%]" />
+                <div className="w-3 rounded-full bg-indigo-300 dark:bg-indigo-800/60 h-[65%]" />
+                <div className="w-3 rounded-full bg-indigo-400 dark:bg-indigo-700/70 h-[50%]" />
+                <div className="w-3 rounded-full bg-indigo-500 dark:bg-indigo-600/80 h-[80%]" />
+                <div className="w-3 rounded-full bg-indigo-400 dark:bg-indigo-700/70 h-[60%]" />
+                <div className="w-3 rounded-full bg-indigo-600 dark:bg-indigo-500 h-[95%]" />
+                <div className="w-3 rounded-full bg-purple-600 dark:bg-purple-500 h-[85%]" />
+              </div>
+            </div>
+
+            {/* Overlaid Floating Glass Card: Improvement (Top Right) */}
+            <div className="absolute -top-6 -right-3 sm:right-6 sm:top-8 bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-2xl backdrop-blur-xl max-w-[190px] sm:max-w-[220px] z-20 animate-in fade-in slide-in-from-right duration-300">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-950/80 text-orange-600 dark:text-orange-400">
+                  <FiZap size={15} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Clinic Efficiency
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-baseline gap-1.5 mb-1.5">
+                <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  +42%
+                </span>
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                  vs Manual OPD
+                </span>
+              </div>
+              {/* Mini smooth trend curve */}
+              <div className="w-full h-10 pt-1">
+                <svg
+                  className="w-full h-full overflow-visible"
+                  viewBox="0 0 100 36"
+                >
+                  <defs>
+                    <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f97316" stopOpacity="0.4" />
+                      <stop
+                        offset="100%"
+                        stopColor="#f97316"
+                        stopOpacity="0.0"
+                      />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M0,32 Q25,28 40,20 T75,12 T100,4 L100,36 L0,36 Z"
+                    fill="url(#curveGrad)"
+                  />
+                  <path
+                    d="M0,32 Q25,28 40,20 T75,12 T100,4"
+                    fill="none"
+                    stroke="#f97316"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* BOTTOM FLOATING FEATURE CAPSULE ISLAND (4 PILLARS) */}
+          {/* ========================================================================= */}
+          <div className="mt-12 sm:mt-16 max-w-5xl mx-auto">
+            <div className="bg-white/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-full p-3 sm:py-3.5 sm:px-6 shadow-xl backdrop-blur-xl grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/60 dark:divide-slate-800/60">
+              {/* Feature 1 */}
+              <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 shrink-0">
+                  <FiUsers size={18} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    Personalized Care Plans
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    EHR &amp; longitudinal notes
+                  </p>
                 </div>
               </div>
 
-              {/* Floating Glassmorphic Badge 2 (Bottom Left) */}
-              <div className="absolute -bottom-4 sm:bottom-6 left-0 sm:-left-6 bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/80 backdrop-blur-md rounded-2xl p-3.5 shadow-xl max-w-[220px] hidden sm:block">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400">
-                    <FiShield size={17} />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-bold text-slate-900 dark:text-white">
-                      Full RBAC Governance
-                    </p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                      Admin • Doctor • Recep • Pharm
-                    </p>
-                  </div>
+              {/* Feature 2 */}
+              <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0">
+                  <FiShield size={18} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    Secure &amp; Private Data
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    HIPAA &amp; RBAC encrypted
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 shrink-0">
+                  <FiCpu size={18} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    Real-time Health AI
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    0.4s OCR &amp; query briefs
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
+                  <FiVideo size={18} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    24/7 Expert Telemedicine
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    WebRTC video &amp; WhatsApp
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Stats Ticker */}
-          <div className="mt-14 pt-8 border-t border-slate-200/80 dark:border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="mt-12 pt-8 border-t border-slate-200/80 dark:border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((stat, i) => (
               <div key={i} className="text-center sm:text-left">
                 <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -759,13 +942,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          {/* Interactive 3D WebGL Ecosystem Simulation */}
-          <Ecosystem3D
-            activeExternalIndex={activeEcosystemIndex}
-            onSelectModule={(idx) => setActiveEcosystemIndex(idx)}
-          />
-
-          {/* Core Modules Grid with Live 3D Synchronization */}
+          {/* Core Modules Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {MODULES.map((m, i) => {
               const Icon = m.icon;
@@ -791,7 +968,8 @@ const LandingPage = () => {
                       <div className="flex items-center gap-1.5">
                         {isSelected && (
                           <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 animate-pulse">
-                            Step 0{m.ecosystemIndex + 1} Active in 3D
+                            Step 0{m.ecosystemIndex + 1} Active Operational
+                            Module
                           </span>
                         )}
                         <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">

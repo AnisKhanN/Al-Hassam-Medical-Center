@@ -14,19 +14,20 @@ import {
   FiZap,
   FiHelpCircle,
   FiChevronDown,
-  FiUser,
   FiUsers,
   FiCreditCard,
   FiLogOut,
   FiSettings,
   FiExternalLink,
-  FiCheckCircle,
+  FiClock,
+  FiGrid,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "../common/ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 import { useSmoothScroll } from "../../hooks/useSmoothScroll";
 
+// 8 Clean Core Landing Page Links
 const NAV_LINKS = [
   {
     id: "features",
@@ -88,15 +89,185 @@ const NAV_LINKS = [
   },
 ];
 
-const ROLE_BADGE_COLORS = {
-  Admin:
-    "bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
-  Doctor:
-    "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-  Receptionist:
-    "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
-  Pharmacist:
-    "bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+// Rich Role Configurations for Admin, Doctor, Pharmacist, Receptionist
+const ROLE_CONFIGS = {
+  Admin: {
+    stationTitle: "Admin Center",
+    badgeLabel: "Admin",
+    badgeClass:
+      "bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
+    avatarGradient: "from-purple-600 via-indigo-600 to-purple-700",
+    ringClass: "ring-purple-500/30",
+    statusText: "System Admin • Full Access",
+    quickLinks: [
+      {
+        label: "Admin Center",
+        path: "/dashboard",
+        icon: FiActivity,
+        color: "text-purple-500",
+      },
+      {
+        label: "Patient Directory",
+        path: "/patients",
+        icon: FiUsers,
+        color: "text-blue-500",
+      },
+      {
+        label: "Appointment Desk",
+        path: "/appointments",
+        icon: FiClock,
+        color: "text-emerald-500",
+      },
+      {
+        label: "Billing & Revenue",
+        path: "/billing",
+        icon: FiCreditCard,
+        color: "text-amber-500",
+      },
+      {
+        label: "Pharmacy Inventory",
+        path: "/pharmacy",
+        icon: FiPackage,
+        color: "text-rose-500",
+      },
+    ],
+  },
+  Doctor: {
+    stationTitle: "Doctor OPD",
+    badgeLabel: "Doctor",
+    badgeClass:
+      "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+    avatarGradient: "from-emerald-600 via-teal-600 to-blue-600",
+    ringClass: "ring-emerald-500/30",
+    statusText: "OPD Consultation • Ready",
+    quickLinks: [
+      {
+        label: "OPD Dashboard",
+        path: "/dashboard",
+        icon: FiActivity,
+        color: "text-emerald-500",
+      },
+      {
+        label: "Patient Queue",
+        path: "/appointments",
+        icon: FiClock,
+        color: "text-blue-500",
+      },
+      {
+        label: "Electronic Records",
+        path: "/patients",
+        icon: FiUsers,
+        color: "text-teal-500",
+      },
+      {
+        label: "Telemedicine Suite",
+        path: "#workflows",
+        isAnchor: true,
+        icon: FiVideo,
+        color: "text-purple-500",
+      },
+    ],
+  },
+  Receptionist: {
+    stationTitle: "Reception Desk",
+    badgeLabel: "Receptionist",
+    badgeClass:
+      "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
+    avatarGradient: "from-cyan-600 via-blue-600 to-teal-600",
+    ringClass: "ring-cyan-500/30",
+    statusText: "Front Desk • Check-in Active",
+    quickLinks: [
+      {
+        label: "Reception Desk",
+        path: "/dashboard",
+        icon: FiActivity,
+        color: "text-cyan-500",
+      },
+      {
+        label: "Appointments & Queue",
+        path: "/appointments",
+        icon: FiClock,
+        color: "text-blue-500",
+      },
+      {
+        label: "Register New Patient",
+        path: "/patients",
+        icon: FiUsers,
+        color: "text-emerald-500",
+      },
+      {
+        label: "Cashier & Billing",
+        path: "/billing",
+        icon: FiCreditCard,
+        color: "text-amber-500",
+      },
+    ],
+  },
+  Pharmacist: {
+    stationTitle: "Pharmacy POS",
+    badgeLabel: "Pharmacist",
+    badgeClass:
+      "bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+    avatarGradient: "from-amber-500 via-orange-500 to-amber-600",
+    ringClass: "ring-amber-500/30",
+    statusText: "Dispensary POS • Stock Active",
+    quickLinks: [
+      {
+        label: "Pharmacy Dashboard",
+        path: "/dashboard",
+        icon: FiActivity,
+        color: "text-amber-500",
+      },
+      {
+        label: "POS & Dispensing",
+        path: "/pharmacy",
+        icon: FiPackage,
+        color: "text-orange-500",
+      },
+      {
+        label: "Medicine Inventory",
+        path: "/pharmacy",
+        icon: FiGrid,
+        color: "text-blue-500",
+      },
+      {
+        label: "Pharmacy Invoicing",
+        path: "/billing",
+        icon: FiCreditCard,
+        color: "text-emerald-500",
+      },
+    ],
+  },
+};
+
+const DEFAULT_ROLE_CONFIG = {
+  stationTitle: "Clinic Station",
+  badgeLabel: "Staff",
+  badgeClass:
+    "bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+  avatarGradient: "from-blue-600 via-indigo-600 to-cyan-600",
+  ringClass: "ring-blue-500/30",
+  statusText: "Clinic Staff • Active",
+  quickLinks: [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: FiActivity,
+      color: "text-blue-500",
+    },
+    {
+      label: "Patients",
+      path: "/patients",
+      icon: FiUsers,
+      color: "text-emerald-500",
+    },
+    {
+      label: "Appointments",
+      path: "/appointments",
+      icon: FiClock,
+      color: "text-amber-500",
+    },
+  ],
 };
 
 const LandingNavbar = () => {
@@ -116,6 +287,10 @@ const LandingNavbar = () => {
   const { scrollTo } = useSmoothScroll();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const roleConfig = user
+    ? ROLE_CONFIGS[user.role] || DEFAULT_ROLE_CONFIG
+    : null;
 
   // Handle scroll detection and active section spy
   const handleScroll = useCallback(() => {
@@ -278,7 +453,7 @@ const LandingNavbar = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl shadow-xs border-b border-slate-200/70 dark:border-slate-800/70 py-2.5 sm:py-3"
+          ? "bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl shadow-xs border-b border-slate-200/80 dark:border-slate-800/80 py-2.5 sm:py-3"
           : "bg-white/40 dark:bg-slate-950/40 backdrop-blur-xs py-4 sm:py-5"
       }`}
     >
@@ -549,22 +724,24 @@ const LandingNavbar = () => {
           })}
         </nav>
 
-        {/* Desktop Right Actions: Unified Design System (Theme, Sign In, Launch Demo / User) */}
+        {/* Desktop Right Actions: Polished Design System */}
         <div className="hidden sm:flex items-center gap-2.5">
           <ThemeToggle />
 
-          <div className="h-5 w-px bg-slate-200/80 dark:border-slate-800/80" />
+          <div className="h-5 w-px bg-slate-200/80 dark:bg-slate-800/80" />
 
           {user ? (
             <div className="flex items-center gap-2">
+              {/* Dashboard Action Button with Subtle Gradient Shine */}
               <Link
                 to="/dashboard"
-                className="hidden md:inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 shadow-sm shadow-blue-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="hidden md:inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold px-3.5 py-2 shadow-sm shadow-blue-500/25 hover:shadow-blue-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
                 <span>Dashboard</span>
                 <FiArrowRight size={13} />
               </Link>
 
+              {/* Elevated User Profile Capsule for Admin, Doctor, Pharmacist, Receptionist */}
               <div
                 className="relative"
                 ref={userDropdownRef}
@@ -575,121 +752,179 @@ const LandingNavbar = () => {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 hover:border-blue-300 dark:hover:border-blue-700 transition-all shadow-2xs cursor-pointer"
+                  className={`flex items-center gap-2 pl-1.5 pr-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 hover:border-blue-400/60 dark:hover:border-blue-600/60 transition-all shadow-2xs cursor-pointer ${
+                    userDropdownOpen
+                      ? "ring-2 ring-blue-500/20 border-blue-400"
+                      : ""
+                  }`}
                   aria-expanded={userDropdownOpen}
                   aria-haspopup="true"
                 >
-                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white text-[11px] font-black shadow-2xs">
-                    {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                  {/* Role Avatar with Gradient and Pulse Indicator */}
+                  <div className="relative">
+                    <div
+                      className={`flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr ${
+                        roleConfig?.avatarGradient ||
+                        "from-blue-600 to-indigo-600"
+                      } text-white text-[11px] font-black shadow-2xs`}
+                    >
+                      {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                    </div>
+                    <span className="absolute -bottom-0.5 -right-0.5 flex h-2 w-2">
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 border border-white dark:border-slate-900" />
+                    </span>
                   </div>
+
+                  {/* User Name */}
                   <div className="text-left hidden md:block">
-                    <p className="text-[11px] font-bold leading-tight truncate max-w-[90px] text-slate-900 dark:text-white">
+                    <p className="text-[11px] font-bold leading-tight truncate max-w-[100px] text-slate-900 dark:text-white">
                       {user.name}
                     </p>
                   </div>
+
+                  {/* Role Badge Chip */}
                   <span
                     className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border ${
-                      ROLE_BADGE_COLORS[user.role] ||
+                      roleConfig?.badgeClass ||
                       "bg-blue-50 text-blue-700 border-blue-200"
                     }`}
                   >
                     {user.role}
                   </span>
+
                   <FiChevronDown
                     size={12}
                     className={`text-slate-400 transition-transform duration-200 ${
-                      userDropdownOpen ? "rotate-180" : ""
+                      userDropdownOpen ? "rotate-180 text-blue-500" : ""
                     }`}
                   />
                 </button>
 
-                {/* User Dropdown Menu */}
+                {/* Role-Enhanced Executive Dropdown Card */}
                 {userDropdownOpen && (
                   <div
-                    className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 p-2 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                    className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 p-2.5 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                     onMouseEnter={handleUserMouseEnter}
                     onMouseLeave={handleUserMouseLeave}
                   >
-                    {/* User Profile Card */}
-                    <div className="px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 mb-1">
-                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                        {user.name}
-                      </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                        {user.email}
-                      </p>
-                      <div className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                        <FiCheckCircle size={12} />
-                        <span>Active Session • {user.role}</span>
+                    {/* User Profile Header with Role Station */}
+                    <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 mb-2">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr ${
+                            roleConfig?.avatarGradient ||
+                            "from-blue-600 to-indigo-600"
+                          } text-white text-xs font-black shadow-sm`}
+                        >
+                          {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                              {user.name}
+                            </p>
+                            <span
+                              className={`text-[9px] font-black uppercase px-1.5 py-0.2 rounded border ${
+                                roleConfig?.badgeClass || ""
+                              }`}
+                            >
+                              {user.role}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[10px]">
+                        <span className="font-semibold text-slate-500 dark:text-slate-400">
+                          {roleConfig?.statusText || "Active Session"}
+                        </span>
+                        <span className="flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Online
+                        </span>
                       </div>
                     </div>
 
-                    {/* Navigation Links */}
-                    <div className="space-y-0.5">
-                      <Link
-                        to="/dashboard"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
-                      >
-                        <div className="flex items-center gap-2">
-                          <FiActivity className="text-blue-500" size={14} />
-                          <span>Clinic Dashboard</span>
-                        </div>
-                        <FiArrowRight size={12} className="text-slate-400" />
-                      </Link>
+                    {/* Role-Tailored Quick Launch Grid */}
+                    <div className="space-y-1 mb-2">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2.5 py-0.5">
+                        {roleConfig?.stationTitle || "Quick Access"}
+                      </p>
+                      {roleConfig?.quickLinks?.map((qLink) => {
+                        const Icon = qLink.icon;
+                        if (qLink.isAnchor) {
+                          return (
+                            <a
+                              key={qLink.label}
+                              href={qLink.path}
+                              onClick={(e) => {
+                                handleNavClick(e, {
+                                  anchor: qLink.path,
+                                  href: qLink.path,
+                                });
+                                setUserDropdownOpen(false);
+                              }}
+                              className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon className={qLink.color} size={14} />
+                                <span>{qLink.label}</span>
+                              </div>
+                              <FiArrowRight
+                                size={11}
+                                className="text-slate-400"
+                              />
+                            </a>
+                          );
+                        }
+                        return (
+                          <Link
+                            key={qLink.label}
+                            to={qLink.path}
+                            onClick={() => setUserDropdownOpen(false)}
+                            className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon className={qLink.color} size={14} />
+                              <span>{qLink.label}</span>
+                            </div>
+                            <FiArrowRight
+                              size={11}
+                              className="text-slate-400"
+                            />
+                          </Link>
+                        );
+                      })}
+                    </div>
 
-                      {["Admin", "Receptionist", "Doctor"].includes(
-                        user.role
-                      )}
-
-                      <Link
-                        to="/appointments"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
-                      >
-                        <div className="flex items-center gap-2">
-                          <FiUsers className="text-emerald-500" size={14} />
-                          <span>Appointments &amp; Queue</span>
-                        </div>
-                        <FiArrowRight size={12} className="text-slate-400" />
-                      </Link>
-
-                      {["Admin", "Pharmacist"].includes(user.role) && (
-                        <Link
-                          to="/pharmacy"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
-                        >
-                          <div className="flex items-center gap-2">
-                            <FiPackage className="text-amber-500" size={14} />
-                            <span>Pharmacy &amp; POS</span>
-                          </div>
-                          <FiArrowRight size={12} className="text-slate-400" />
-                        </Link>
-                      )}
-
+                    {/* System Links */}
+                    <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800 space-y-0.5">
                       <Link
                         to="/settings"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
+                        className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       >
                         <div className="flex items-center gap-2">
-                          <FiSettings className="text-slate-500" size={14} />
+                          <FiSettings
+                            className="text-slate-400 dark:text-slate-500"
+                            size={14}
+                          />
                           <span>Settings</span>
                         </div>
-                        <FiArrowRight size={12} className="text-slate-400" />
+                        <FiArrowRight size={11} className="text-slate-400" />
                       </Link>
-
                       <Link
                         to="/docs"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors"
+                        className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       >
                         <div className="flex items-center gap-2">
                           <FiFileText className="text-emerald-500" size={14} />
                           <span>Docs &amp; Reports</span>
                         </div>
-                        <FiExternalLink size={12} className="text-slate-400" />
+                        <FiExternalLink size={11} className="text-slate-400" />
                       </Link>
                     </div>
 
@@ -698,7 +933,7 @@ const LandingNavbar = () => {
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                        className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                       >
                         <FiLogOut size={14} />
                         <span>Sign Out</span>
@@ -769,9 +1004,13 @@ const LandingNavbar = () => {
             >
               {/* Authenticated User Banner (Mobile) */}
               {user && (
-                <div className="p-3 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 flex items-center justify-between">
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-xs">
+                    <div
+                      className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr ${
+                        roleConfig?.avatarGradient || "from-blue-600 to-indigo-600"
+                      } text-white font-bold text-xs shadow-sm`}
+                    >
                       {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                     </div>
                     <div>
@@ -785,7 +1024,7 @@ const LandingNavbar = () => {
                   </div>
                   <span
                     className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
-                      ROLE_BADGE_COLORS[user.role] ||
+                      roleConfig?.badgeClass ||
                       "bg-blue-100 text-blue-700 border-blue-200"
                     }`}
                   >
@@ -794,7 +1033,7 @@ const LandingNavbar = () => {
                 </div>
               )}
 
-              {/* Navigation Items Grid */}
+              {/* Navigation Items */}
               <div className="space-y-1">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 pb-1">
                   On-Page Navigation
@@ -907,9 +1146,9 @@ const LandingNavbar = () => {
                     <Link
                       to="/dashboard"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25"
                     >
-                      <span>Enter {user.role} Dashboard</span>
+                      <span>Enter {roleConfig?.stationTitle || "Dashboard"}</span>
                       <FiArrowRight size={14} />
                     </Link>
                     <button
@@ -933,7 +1172,7 @@ const LandingNavbar = () => {
                     <Link
                       to="/login"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/25"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white shadow-md shadow-blue-500/25"
                     >
                       <span>Launch Live Demo</span>
                       <FiArrowRight size={14} />

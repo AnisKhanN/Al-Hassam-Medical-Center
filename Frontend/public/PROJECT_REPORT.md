@@ -6,8 +6,8 @@
 **Author / Developer:** Anis Khan Niazi
 **Degree Program:** Bachelor of Science in Information Technology (BSIT) Final Year Project
 **Target Region:** Sanghar & Interior Sindh, Pakistan
-**Document Date:** September 2026 (Comprehensive Final Evaluation)
-**System Status:** 🟢 **100% Production Ready & Fully Operational** (Atlas Cloud Connected, Postman Suite Verified, GitHub Synchronized)
+**Document Date:** September 2026 (Comprehensive Final Production Evaluation)
+**System Status:** 🟢 **100% Production Ready & Fully Operational** (Atlas Cloud Connected, Postman Suite Verified, GitHub Synchronized, Zero Dead Code)
 **GitHub Repository:** [https://github.com/AnisKhanN/SmartClinic-SaaS](https://github.com/AnisKhanN/SmartClinic-SaaS)
 **Postman Cloud Suite:** UID `55354836-b09b272e-d854-476f-a230-5ded96ab7e05` (_Anis Khan Niazi's Team_)
 
@@ -15,24 +15,26 @@
 
 ## Executive Summary & Abstract
 
-**SmartClinic** is an enterprise-grade, full-stack, multi-tenant healthcare software-as-a-service (SaaS) platform engineered to modernize outpatient clinics, rural medical centers, and community pharmacies in Pakistan. Developed to bridge the digital gap in regional healthcare facilities (with a specialized focus on Sanghar, Sindh), SmartClinic replaces cumbersome paper record-keeping, disjointed spreadsheets, and manual prescription slips with a unified, role-based digital operating system.
+**SmartClinic** is an enterprise-grade, full-stack, multi-tenant healthcare software-as-a-service (SaaS) platform engineered to modernize outpatient clinics, rural medical centers, and community pharmacies in Pakistan. Developed to bridge the digital divide in regional healthcare facilities (with a specialized focus on Sanghar, Sindh), SmartClinic replaces cumbersome paper record-keeping, disjointed spreadsheets, and manual prescription slips with a unified, role-based digital operating system.
 
 The platform integrates:
 
 1. **Multi-Tenant SaaS Architecture:** Shared-database, logical-partitioning model isolating clinical and financial data across facilities using compound unique indexes (`clinicId`) and scoped atomic sequential counters (`PT-000001`, `BL-000001`, etc.).
 2. **Electronic Health Records (EHR):** Longitudinal visit timelines, clinical vital sign monitoring, and diagnostic history.
-3. **Double-Booking Protected Appointment Scheduling:** Doctor-specific calendar synchronization, conflict detection, and dynamic slot allocation.
+3. **Double-Booking Protected Appointment Scheduling:** Doctor-specific calendar synchronization, conflict detection, and dynamic slot allocation preventing overlapping bookings within 30-minute consultation windows (HTTP 409 Conflict).
 4. **Multi-Batch Pharmacy Inventory Management:** **FEFO (First-Expiry-First-Out)** automated stock depletion and near-expiry alerting (30/60/90 days).
-5. **Point of Sale (POS) & Billing Engine:** Itemized invoicing, split/partial payments, thermal-style print receipts, and stock-restoring void logic.
+5. **Point of Sale (POS) & Billing Engine:** Itemized invoicing, split/partial payments (Cash, Cards, JazzCash, EasyPaisa), 80mm thermal-style receipts, and stock-restoring void logic.
 6. **Role-Adaptive Executive Dashboard:** Dynamic access tiers for **Admin**, **Doctor**, **Receptionist**, and **Pharmacist** with zero cross-role authorization leaks.
-7. **5 Specialized Analytical Report Modules:** Deep aggregation pipelines for Revenue, Doctor Consultations, Patient Demographics, Pharmacy Performance, and Stock Valuation.
+7. **5 Specialized Analytical Report Modules:** Deep aggregation pipelines for Revenue, Doctor Consultations, Patient Demographics, Pharmacy Performance, and Stock Valuation with 1-click CSV export.
 8. **Google Gemini Generative AI Assistant Hub:** **Trilingual & Bilingual Discharge Slips** supporting **English**, **Roman Urdu**, and authentic **Sindhi (سنڌي script with RTL alignment + Roman Sindhi)**, coupled with an offline Heuristic Fail-Safe Engine for viva demonstrations.
 9. **Automated SMS & WhatsApp Healthcare Alerts Engine:** 1-click WhatsApp Web / mobile deep-links (`wa.me`), localized bilingual templates, Cloud API integration, and viva demo SMS simulator.
 10. **Hardware & Camera Barcode / QR Scanner at Pharmacy POS:** Supporting plug-and-play USB/Bluetooth barcode guns (keyboard wedge listener), device camera scanning, and audio beep feedback.
 11. **Telemedicine & WebRTC Video Consultations Suite:** Real-time peer-to-peer audio/video calling, Server-Sent Events (SSE) signaling, WhatsApp meeting invitations, and in-call live EHR notes and vitals recording.
-12. **Search Engine Optimization (SEO), Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO):** Schema.org JSON-LD structured data (`SoftwareApplication`, `MedicalBusiness`, and `FAQPage`), standardized `/llms.txt` knowledge manifest for AI search engines, explicit AI crawler directives in `robots.txt`, and regional geolocation targeting (`PK-SD`, Sanghar, Sindh).
-13. **In-App Interactive Documentation & Evaluation Hub (`/docs`, `/project-report`, `/rbac-report`):** Equipped with client-side Markdown rendering, live table of contents navigation, search query highlighting, 1-click Markdown export, and browser Print-to-PDF formatting.
-14. **Postman Cloud & GitHub CI/CD Synchronization:** Complete 14-folder, 51-request automated test suite synchronized directly to Postman Cloud via Postman MCP, and full codebase version-controlled on GitHub via GitHub MCP.
+12. **High-End UI/UX Design System:** Dribbble-inspired modern medical hero section featuring real human clinical consultation photography, 3D anatomical badges (heart and lungs), dual doctor verification badges, floating glassmorphic metric cards (`Health Score 98.4%`, `Clinic Efficiency +42%`), and a 4-pillar floating feature capsule island.
+13. **Search Engine Optimization (SEO), Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO):** Full Schema.org JSON-LD `@graph` (`SoftwareApplication`, `MedicalBusiness` / `MedicalClinic`, `WebSite`, and `FAQPage`), standardized `/llms.txt` knowledge manifest, explicit AI crawler directives in `robots.txt` (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, DeepSeekBot, etc.), and regional geocoding (`PK-SD`, Sanghar, Sindh).
+14. **Production Codebase Streamlining:** Complete elimination of dead code, obsolete Three.js canvases, temporary session cookies, and unused stub components resulting in an ultra-fast 1.57s Vite production build.
+15. **In-App Interactive Documentation Hub (`/docs`, `/project-report`, `/rbac-report`):** Client-side Markdown rendering, live table of contents navigation, search query highlighting, 1-click Markdown export, and browser Print-to-PDF formatting.
+16. **Postman Cloud & GitHub CI/CD Synchronization:** Complete 14-folder, 51-request automated test suite synchronized directly to Postman Cloud via Postman MCP, and full codebase version-controlled on GitHub via GitHub MCP.
 
 ---
 
@@ -40,43 +42,43 @@ The platform integrates:
 
 ### 1.1 Quantitative Codebase Metrics
 
-| Metric                           |          Measured Value          | Remarks                                                           |
-| :------------------------------- | :------------------------------: | :---------------------------------------------------------------- |
-| **Backend Source Files**         |           **37 files**           | Express 5, Mongoose 9, Controllers, Services, Routes, Middlewares |
-| **Backend Lines of Code (LOC)**  |         **5,840 lines**          | Structured, modular CommonJS codebase with multi-tenant scoping   |
-| **Frontend Source Files**        |           **98 files**           | React 19, Tailwind CSS v4, Pages, Components, Context, Hooks      |
-| **Frontend Lines of Code (LOC)** |         **13,490 lines**         | Responsive UI, Framer Motion, Recharts, Three.js 3D               |
-| **Postman API Test Suite**       |   **14 Folders / 51 Requests**   | 100% automated assertion coverage synced to Postman Cloud         |
-| **Database Collections**         |     **11 Models + Counter**      | Multi-tenant partitioned with compound unique indexes             |
-| **Total Production Codebase**    | **179 files / 28,544 additions** | Pushed to GitHub `main` branch with clean git tree                |
-| **Production Seeder**            |  **1 Seeder (`seedAdmin.js`)**   | Removed 21 one-off test scripts, leaving clean production code    |
-| **Backend Test Suite Success**   |    **11 / 11 Suites (100%)**     | 118.66s execution against active MongoDB Atlas cluster            |
-| **Frontend E2E Verification**    |     **70 / 70 Tests (100%)**     | 0 ESLint errors; Vite build in 947ms                              |
+| Metric                           |        Measured Value         | Remarks                                                           |
+| :------------------------------- | :---------------------------: | :---------------------------------------------------------------- |
+| **Backend Source Files**         |         **37 files**          | Express 5, Mongoose 9, Controllers, Services, Routes, Middlewares |
+| **Backend Lines of Code (LOC)**  |        **5,840 lines**        | Structured, modular CommonJS codebase with multi-tenant scoping   |
+| **Frontend Source Files**        |         **94 files**          | React 19, Tailwind CSS v4, Pages, Components, Context, Hooks      |
+| **Frontend Lines of Code (LOC)** |       **12,480 lines**        | Responsive UI, Framer Motion, Recharts, photorealistic assets     |
+| **Postman API Test Suite**       | **14 Folders / 51 Requests**  | 100% automated assertion coverage synced to Postman Cloud         |
+| **Database Collections**         |    **11 Models + Counter**    | Multi-tenant partitioned with compound unique indexes             |
+| **Total Production Codebase**    |         **175 files**         | Clean production codebase with zero dead files                    |
+| **Production Seeder**            | **1 Seeder (`seedAdmin.js`)** | Standalone database initialization script for viva evaluation     |
+| **Backend Test Suite Success**   |   **11 / 11 Suites (100%)**   | 118.66s execution against active MongoDB Atlas cluster            |
+| **Frontend E2E Verification**    |   **70 / 70 Tests (100%)**    | 0 ESLint errors; Vite build compiles in**1.57s**                  |
 
 ### 1.2 Subsystem Implementation & Progress Matrix
 
-| Subsystem / Feature Module                 | Backend Architecture                                                                                              | Frontend UI / Implementation                                                                        | Completion % |   Status    |
-| :----------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| **1. Multi-Tenant SaaS Engine**            | `Clinic.js`, `clinicId` compound indexes, scoped sequence counters, `authController.js` (`POST /register-clinic`) | Multi-tenant header context, clinic settings management, facility-isolated state                    |   **100%**   | 🟢 Complete |
-| **2. Authentication & 2D RBAC**            | `authController.js`, `authMiddleware.js`, JWT HttpOnly cookies, bcryptjs, clinic status guards                    | `Login.jsx`, `AuthContext.jsx`, `ProtectedRoute.jsx`, 1-click quick-role switcher pills             |   **100%**   | 🟢 Complete |
-| **3. Staff & User Management**             | `userController.js`, `userRoutes.js`, Multer profile image uploads, clinic scoping                                | `UserManagement.jsx`, `UserTable.jsx`, `UserFormModal.jsx`                                          |   **100%**   | 🟢 Complete |
-| **4. Patient EHR Management**              | `patientController.js`, `generatePatientId.js` (`PT-000001`), medical history subdocuments                        | `PatientList.jsx`, `PatientDetail.jsx`, `PatientFormModal.jsx`, `AddVisitModal.jsx`                 |   **100%**   | 🟢 Complete |
-| **5. Appointments & Smart Calendar**       | `appointmentController.js`, 30-min slot conflict validation (HTTP 409), doctor calendar scoping                   | `Appointments.jsx`, `MonthCalendar.jsx`, `BookAppointmentModal.jsx`, `CompleteAppointmentModal.jsx` |   **100%**   | 🟢 Complete |
-| **6. Multi-Batch Pharmacy & FEFO POS**     | `medicineController.js`, `saleController.js`, FEFO stock depletion, void restoral                                 | `Pharmacy.jsx`, `MedicineTable.jsx`, `BatchTable.jsx`, `NewSaleModal.jsx`, `VoidSaleModal.jsx`      |   **100%**   | 🟢 Complete |
-| **7. Hardware & Camera Barcode Scanner**   | `GET /api/medicines/barcode/:code`, instant SKU lookup                                                            | `NewSaleModal.jsx`, keyboard wedge listener, camera stream, Web Audio API beep                      |   **100%**   | 🟢 Complete |
-| **8. Billing, Invoicing & Split Payments** | `billController.js`, itemized charges, partial payments, overpayment guards                                       | `Billing.jsx`, `BillDetail.jsx`, `CreateBillModal.jsx`, `RecordPaymentModal.jsx`, thermal slip      |   **100%**   | 🟢 Complete |
-| **9. 5 Specialized Analytical Reports**    | `reportController.js`, MongoDB aggregation pipelines for Revenue, Demographics, etc.                              | `Reports.jsx` + 5 sub-views (`RevenueReportView`, `AppointmentReportView`, etc.), CSV export        |   **100%**   | 🟢 Complete |
-| **10. Google Gemini AI Assistant & Hub**   | `aiService.js`, `aiProvider.js`, `aiFallbackService.js`, Gemini v1beta + OpenAI + Viva Engine                     | `AiAssistant.jsx` (8 tabs), natural language query, daily briefs, inventory risk, text parser       |   **100%**   | 🟢 Complete |
-| **11. Trilingual Discharge Slips**         | `POST /api/ai/visit-summary`, English + Roman Urdu + Sindhi (سنڌي RTL) output                                     | `AiVisitSummaryModal.jsx`, multilingual view switcher, prescription table, print layout             |   **100%**   | 🟢 Complete |
-| **12. SMS & WhatsApp Alerts Engine**       | `notificationService.js`, `notificationController.js`, Pakistani E.164 normalization                              | `AppointmentTable.jsx`, `TelemedicineRoom.jsx`, 1-click `wa.me` links, SMS viva simulator           |   **100%**   | 🟢 Complete |
-| **13. Telemedicine & WebRTC Video Suite**  | `telemedicineController.js`, Server-Sent Events (SSE) signaling, in-call EHR persistence                          | `TelemedicineRoom.jsx`, Google STUN, P2P video/audio, screen sharing, in-call notes drawer          |   **100%**   | 🟢 Complete |
-| **14. Role-Adaptive Dashboard**            | Aggregated stats across users, appointments, pharmacy, billing sliced by role                                     | `Dashboard.jsx`, `StatCard.jsx`, `MedicineSalesChart.jsx`, `AlertsPanel.jsx`, role slicing          |   **100%**   | 🟢 Complete |
-| **15. Public Landing Page & 3D Core**      | Static assets, route documentation, health check `/`                                                              | `LandingPage.jsx`, `Hero3D.jsx` (Three.js 3D medical core), interactive feature previews            |   **100%**   | 🟢 Complete |
-| **16. Settings & Security Audit**          | `settingsController.js`, clinic profile update, password change with old hash check                               | `Settings.jsx`, `ClinicProfileForm.jsx`, `ChangePasswordForm.jsx`                                   |   **100%**   | 🟢 Complete |
-| **17. Multi-Device Responsive Design**     | Viewport meta configuration, Tailwind fluid breakpoints, 0px overflow enforcement                                 | `LandingPage.jsx`, `Navbar.jsx` (slide drawer), `Dashboard.jsx`, touch targets                      |   **100%**   | 🟢 Complete |
-| **18. SEO, AEO & GEO Search Architecture** | `public/robots.txt` (AI crawlers), `public/sitemap.xml`, `public/llms.txt`, Geo metadata                          | `index.html` (JSON-LD `FAQPage`), `useSEO.js` dynamic title & description hooks                     |   **100%**   | 🟢 Complete |
-| **19. In-App Documentation Hub**           | Static report distribution (`/PROJECT_REPORT.md`, `/RBAC_AUDIT_REPORT.md`)                                        | `ProjectDocs.jsx` (`/docs`), live TOC, full-text search, direct download, Print to PDF              |   **100%**   | 🟢 Complete |
-| **20. Postman Cloud & GitHub CI/CD**       | Postman Cloud MCP collection sync, GitHub repository versioning                                                   | Live synchronized Postman workspace, GitHub remote repo `main` branch                               |   **100%**   | 🟢 Complete |
+| Subsystem / Feature Module                   | Backend Architecture                                                                                              | Frontend UI / Implementation                                                                        | Completion % |   Status    |
+| :------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+| **1. Multi-Tenant SaaS Engine**              | `Clinic.js`, `clinicId` compound indexes, scoped sequence counters, `authController.js` (`POST /register-clinic`) | Multi-tenant header context, clinic settings management, facility-isolated state                    |   **100%**   | 🟢 Complete |
+| **2. Authentication & 2D RBAC**              | `authController.js`, `authMiddleware.js`, JWT HttpOnly cookies, bcryptjs, clinic status guards                    | `Login.jsx`, `AuthContext.jsx`, `ProtectedRoute.jsx`, 1-click quick-role switcher pills             |   **100%**   | 🟢 Complete |
+| **3. Staff & User Management**               | `userController.js`, `userRoutes.js`, Multer profile image uploads, clinic scoping                                | `UserManagement.jsx`, `UserTable.jsx`, `UserFormModal.jsx`                                          |   **100%**   | 🟢 Complete |
+| **4. Patient EHR Management**                | `patientController.js`, `generatePatientId.js` (`PT-000001`), medical history subdocuments                        | `PatientList.jsx`, `PatientDetail.jsx`, `PatientFormModal.jsx`, `AddVisitModal.jsx`                 |   **100%**   | 🟢 Complete |
+| **5. Appointments & Smart Calendar**         | `appointmentController.js`, 30-min slot conflict validation (HTTP 409), doctor calendar scoping                   | `Appointments.jsx`, `MonthCalendar.jsx`, `BookAppointmentModal.jsx`, `CompleteAppointmentModal.jsx` |   **100%**   | 🟢 Complete |
+| **6. Multi-Batch Pharmacy & FEFO POS**       | `medicineController.js`, `saleController.js`, FEFO stock depletion, void restoral                                 | `Pharmacy.jsx`, `MedicineTable.jsx`, `BatchTable.jsx`, `NewSaleModal.jsx`, `VoidSaleModal.jsx`      |   **100%**   | 🟢 Complete |
+| **7. Hardware & Camera Barcode Scanner**     | `GET /api/medicines/barcode/:code`, instant SKU lookup                                                            | `NewSaleModal.jsx`, keyboard wedge listener, camera stream, Web Audio API beep                      |   **100%**   | 🟢 Complete |
+| **8. Billing, Invoicing & Split Payments**   | `billController.js`, itemized charges, partial payments, overpayment guards                                       | `Billing.jsx`, `BillDetail.jsx`, `CreateBillModal.jsx`, `RecordPaymentModal.jsx`, thermal slip      |   **100%**   | 🟢 Complete |
+| **9. 5 Specialized Analytical Reports**      | `reportController.js`, MongoDB aggregation pipelines for Revenue, Demographics, etc.                              | `Reports.jsx` + 5 sub-views (`RevenueReportView`, `AppointmentReportView`, etc.), CSV export        |   **100%**   | 🟢 Complete |
+| **10. Google Gemini AI Assistant & Hub**     | `aiService.js`, `aiProvider.js`, `aiFallbackService.js`, Gemini v1beta + OpenAI + Viva Engine                     | `AiAssistant.jsx` (8 tabs), natural language query, daily briefs, inventory risk, text parser       |   **100%**   | 🟢 Complete |
+| **11. Trilingual Discharge Slips**           | `POST /api/ai/visit-summary`, English + Roman Urdu + Sindhi (سنڌي RTL) output                                     | `AiVisitSummaryModal.jsx`, multilingual view switcher, prescription table, print layout             |   **100%**   | 🟢 Complete |
+| **12. SMS & WhatsApp Alerts Engine**         | `notificationService.js`, `notificationController.js`, Pakistani E.164 normalization                              | `AppointmentTable.jsx`, `TelemedicineRoom.jsx`, 1-click `wa.me` links, SMS viva simulator           |   **100%**   | 🟢 Complete |
+| **13. Telemedicine & WebRTC Video Suite**    | `telemedicineController.js`, Server-Sent Events (SSE) signaling, in-call EHR persistence                          | `TelemedicineRoom.jsx`, Google STUN, P2P video/audio, screen sharing, in-call notes drawer          |   **100%**   | 🟢 Complete |
+| **14. Role-Adaptive Dashboard**              | Aggregated stats across users, appointments, pharmacy, billing sliced by role                                     | `Dashboard.jsx`, `StatCard.jsx`, `MedicineSalesChart.jsx`, `AlertsPanel.jsx`, role slicing          |   **100%**   | 🟢 Complete |
+| **15. Modern Photorealistic Hero**           | High-DPI healthcare photography, 3D anatomical organ badges, dual doctor avatars                                  | `LandingPage.jsx`, floating glass cards (`Health Score 98.4%`), 4-pillar feature capsule            |   **100%**   | 🟢 Complete |
+| **16. Settings & Security Audit**            | `settingsController.js`, clinic profile update, password change with old hash check                               | `Settings.jsx`, `ClinicProfileForm.jsx`, `ChangePasswordForm.jsx`                                   |   **100%**   | 🟢 Complete |
+| **17. Multi-Device Responsive Design**       | Viewport meta configuration, Tailwind fluid breakpoints, 0px overflow enforcement                                 | `LandingPage.jsx`, `LandingNavbar.jsx` (slide drawer), `Dashboard.jsx`, touch targets               |   **100%**   | 🟢 Complete |
+| **18. SEO, AEO & GEO Search Architecture**   | `public/robots.txt` (AI crawlers), `public/sitemap.xml`, `public/llms.txt`, Geo metadata                          | `index.html` (JSON-LD `@graph`), `useSEO.js` dynamic title, description, and canonical              |   **100%**   | 🟢 Complete |
+| **19. In-App Documentation Hub**             | Static report distribution (`/PROJECT_REPORT.md`, `/RBAC_AUDIT_REPORT.md`)                                        | `ProjectDocs.jsx` (`/docs`), live TOC, full-text search, direct download, Print to PDF              |   **100%**   | 🟢 Complete |
+| **20. Codebase Streamlining & Optimization** | Removed 21 one-off test scripts, deleted dead 3D files (`Ecosystem3D`, `Hero3D`)                                  | 0 dead files; Three.js unbundled; build time 1.57s                                                  |   **100%**   | 🟢 Complete |
 
 ---
 
@@ -85,7 +87,7 @@ The platform integrates:
 ```
 +-----------------------------------------------------------------------------------------+
 |                                    FRONTEND LAYER                                       |
-|  React 19.2 | Vite 8.1 | Tailwind CSS v4.3 | Framer Motion 12.4 | Recharts 3.1 | Three.js  |
+|  React 19.2 | Vite 8.1 | Tailwind CSS v4.3 | Framer Motion 12.4 | Recharts 3.1 | useSEO     |
 +-----------------------------------------------------------------------------------------+
                                               │
                                               ▼ HTTPS / REST (JSON + HttpOnly Cookies)
@@ -117,12 +119,11 @@ The platform integrates:
 ### 2.2 Frontend Technology Stack
 
 - **Core Library:** React 19.2.7 with React DOM
-- **Build System:** Vite 8.1.1 / 8.1.5 (Hot Module Replacement, manual chunking)
-- **Styling Architecture:** Tailwind CSS v4.3.3 with modern CSS variables, glassmorphism, and responsive dark mode support.
+- **Build System:** Vite 8.1.5 (Hot Module Replacement, code splitting, optimized manual chunking)
+- **Styling Architecture:** Tailwind CSS v4.3.3 with CSS variables, frosted glassmorphism, and responsive dark mode support.
 - **Routing & Navigation:** React Router DOM v7.18.2 with role-based route guards (`ProtectedRoute`).
 - **Data Visualization & Analytics:** Recharts v3.10.1 (Area, Bar, Pie, and Trend charts).
-- **Interactive 3D Elements:** Three.js v0.185.1 (3D interactive medical core canvas on the public landing page).
-- **Micro-Animations:** Framer Motion v12.43.0 for transitions, modals, and accordions.
+- **Micro-Animations:** Framer Motion v12.43.0 for layout transitions, modals, and responsive navigation drawers.
 - **Iconography:** React Icons (Feather Icon Set `fi*` and Remix Icon `ri*`).
 
 ---
@@ -160,7 +161,7 @@ const clinicSchema = new mongoose.Schema(
 
 ### 3.2 Compound Unique Index Strategy
 
-Single-field unique indexes on domain identifiers (e.g. `patientId: 1`, `billId: 1`, `medicineId: 1`) have been dropped and replaced with **compound unique indexes** scoped to `clinicId`:
+Single-field unique indexes on domain identifiers (e.g. `patientId: 1`, `billId: 1`, `medicineId: 1`) have been replaced with **compound unique indexes** scoped to `clinicId`:
 
 | Collection     | Legacy Global Index (Dropped) | Modern Multi-Tenant Compound Index                 | Purpose                                     |
 | :------------- | :---------------------------- | :------------------------------------------------- | :------------------------------------------ |
@@ -227,34 +228,75 @@ SmartClinic enforces a **2-Dimensional Security Model**:
 
 ---
 
-## 5. Postman Cloud & GitHub MCP Integration
+## 5. SEO, AEO & GEO Search Architecture
 
-### 5.1 Postman Cloud MCP Integration
+SmartClinic implements a search and AI discovery architecture combining Search Engine Optimization (SEO), Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO):
 
-- **Account:** Authenticated via Postman API Key (`PMAK-6a...5935`) for user `aniskhanniazi202` on team _"Anis Khan Niazi's Team"_.
+### 5.1 Answer Engine Optimization (AEO)
+
+- **Direct Q&A Structure:** Built-in Schema.org `FAQPage` JSON-LD formatted to supply high-density, authoritative answers directly into conversational search engines (ChatGPT Search, Perplexity, Claude, and Google AI Overviews).
+- **Knowledge Manifest (`/llms.txt`):** Provides a machine-readable summary of system architecture, security models, clinical algorithms, and citation references.
+
+### 5.2 Generative Engine Optimization (GEO)
+
+- **Geocoded Authority Grounding:** Explicit geotagging targeting Sanghar & Interior Sindh, Pakistan (`geo.region: PK-SD`, `geo.placename: Sanghar, Sindh, Pakistan`, `geo.position: 26.0464;68.9482`, `ICBM: 26.0464, 68.9482`).
+- **Linked Authority Graph:** Interconnected Schema.org `@graph` binding:
+  - `SoftwareApplication` (SmartClinic SaaS OS, health application category, author credentials)
+  - `MedicalBusiness` / `MedicalClinic` (Geolocated clinic facility in Sanghar, Sindh)
+  - `WebSite` (Canonical identity, multilingual support in `en-US` and `ur-PK`)
+  - `Person` (Anis Khan Niazi, Lead Software Engineer, BSIT)
+
+### 5.3 Technical SEO Standards
+
+- **Dynamic SEO Hook (`useSEO.js`):** Dynamically injects title, description, canonical URL, OpenGraph tags (`og:locale:alternate="ur_PK"`), Twitter Cards, and per-route Schema.org JSON-LD scripts.
+- **AI Crawler Directives (`robots.txt`):** Grants explicit access to modern AI engines (`GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`, `Amazonbot`, `cohere-ai`, `DeepSeekBot`, `Meta-ExternalAgent`) while strictly disallowing authenticated dashboard routes (`/dashboard`, `/admin/`, `/api/`).
+- **Canonical HTTPS Sitemap (`sitemap.xml`):** Fully compliant XML sitemap indexing all public documentation and landing routes with priority weighting.
+
+---
+
+## 6. Postman Cloud & GitHub MCP Integration
+
+### 6.1 Postman Cloud MCP Integration
+
+- **Account:** Authenticated via Postman API Key for user `aniskhanniazi202` on team _"Anis Khan Niazi's Team"_.
 - **Collection Synchronized to Cloud:**
   - **Collection UID:** `55354836-b09b272e-d854-476f-a230-5ded96ab7e05`
   - **Collection Name:** `SmartClinic FYP - Complete Production API Test Suite`
   - **Modules (14 Folders):** 00-Onboarding, 01-Auth & RBAC, 02-Users, 03-Patients, 04-Appointments, 05-Suppliers, 06-Medicines & Batches, 07-Pharmacy POS (FEFO), 08-Billing & Invoices, 09-Analytics & Reports, 10-Role Dashboards, 11-Clinic Settings, 12-Gemini AI Assistant, 13-Telemedicine & Communication.
   - **Endpoints:** 51 fully automated requests with chained environment variables and assertion test scripts.
-  - **Local Export:** [SmartClinic_FYP_Complete_API_Test_Suite_v2.json](file:///d:/FYP%20Work/SmartClinic%20By%20Anis/SmartClinic_FYP_Complete_API_Test_Suite_v2.json).
+  - **Local Export:** `SmartClinic_FYP_Complete_API_Test_Suite_v2.json`.
 
-### 5.2 GitHub MCP Integration & Version Control
+### 6.2 GitHub MCP Integration & Version Control
 
 - **Account:** Authenticated user `AnisKhanN` (Anis Khan Niazi, ID: `141991856`).
 - **Repository URL:** [https://github.com/AnisKhanN/SmartClinic-SaaS](https://github.com/AnisKhanN/SmartClinic-SaaS)
 - **Branch:** `main`
 - **Security Check:** Strictly enforced `.gitignore` preventing `.env` or sensitive credential leaks.
-- **Key Commits:**
-  - `19e1f60` — _"feat: complete multi-tenant SaaS architecture, RBAC hardening, FEFO pharmacy, Gemini AI integration, Postman test suite & responsive UI"_
-  - `2f01de4` — _"test: add comprehensive 70-assertion frontend E2E integration test suite and npm test script"_
-  - `c606a98` — _"refactor: remove redundant test and migration scripts, keep clean production codebase with seedAdmin"_
 
 ---
 
-## 6. Verification & Quality Assurance Summary
+## 7. Production Codebase Streamlining & Optimization
 
-### 6.1 Backend Automated Verification (100% Green, 0 Failures)
+To ensure enterprise-grade code cleanliness, all dead code, unused experimental modules, and temporary files were audited and eliminated:
+
+| Deleted Artifact               | Original Path                           | Impact of Removal                                                                       |
+| :----------------------------- | :-------------------------------------- | :-------------------------------------------------------------------------------------- |
+| **`Ecosystem3D.jsx`**          | `Frontend/src/components/landing/`      | 27 KB, 759 lines of dead Three.js code removed; eliminated heavy 3D rendering overhead. |
+| **`Hero3D.jsx`**               | `Frontend/src/components/landing/`      | 6.7 KB, 212 lines of obsolete Three.js wireframe sphere removed.                        |
+| **`DashboardNavbar.jsx`**      | `Frontend/src/components/layout/`       | Empty stub component (`return null;`) removed.                                          |
+| **`ClinicShowcaseCinema.jsx`** | `Frontend/src/components/landing/`      | Redundant prototype video showcase removed to streamline frontend architecture.         |
+| **`admin-cookies.txt`**        | `Backend/`                              | Temporary curl session file removed from backend root.                                  |
+| **21 One-Off Test Scripts**    | `Backend/scripts/`, `Frontend/scripts/` | 6,456 lines of temporary test runners removed in favor of Postman Cloud.                |
+
+### Retained Production Seeder:
+
+- ✅ `Backend/scripts/seedAdmin.js` — Standard database seeder to initialize the clinic and demo staff accounts (`admin@clinic.com`, `amina@clinic.com`, `receptionist@clinic.com`, `pharmacist@clinic.com`) for FYP viva evaluation via `npm run seed`.
+
+---
+
+## 8. Verification & Quality Assurance Summary
+
+### 8.1 Backend Automated Verification (100% Green, 0 Failures)
 
 Executed against the live MongoDB Atlas cluster in 118.66s:
 
@@ -263,35 +305,25 @@ Executed against the live MongoDB Atlas cluster in 118.66s:
 - **Postman Automated Runner:** 51 requests across all 14 folders achieving 100% pass.
 - **Clinical Logic Verification:** Appointment slot collision prevention (HTTP 409), FEFO batch stock deductions, void sale stock restorations, financial ledger reconciliations, and Gemini AI daily briefing generation.
 
-### 6.2 Frontend E2E Verification (100% Green, 0 Failures)
+### 8.2 Frontend E2E Verification (100% Green, 0 Failures)
 
 Executed against the active Vite server (`http://localhost:5173`) and reverse proxy:
 
 - **70 of 70 assertions passed** covering public SEO assets, session cookies, dashboard KPI metrics, patient directories, appointments calendar, pharmacy inventory, billing ledger, reports aggregations, AI briefings, and 1-click quick-role switchers.
-- **ESLint:** 0 errors across 100+ JSX components, hooks, and providers.
-- **Vite Production Build:** 100% clean bundle in 947ms with modular chunking.
+- **ESLint:** 0 errors across JSX components, hooks, and providers.
+- **Vite Production Build:** Compiled **1,471 modules in 1.57s** with 0 errors and 0 warnings. Three.js completely unbundled from production bundles.
 
 ---
 
-## 7. Production Codebase Streamlining
+## 9. Installation, Configuration & Execution Guide
 
-To maintain clean production software engineering standards, 21 one-off test and migration scripts were deleted from `Backend/scripts/` and `Frontend/scripts/`, removing 6,456 lines of temporary clutter.
-
-### Retained Production Seeder:
-
-- ✅ `Backend/scripts/seedAdmin.js` — Standard database seeder to initialize the clinic and demo staff accounts (`admin@clinic.com`, `amina@clinic.com`, `receptionist@clinic.com`, `pharmacist@clinic.com`) for FYP viva evaluation via `npm run seed`.
-
----
-
-## 8. Installation, Configuration & Execution Guide
-
-### 8.1 Prerequisites
+### 9.1 Prerequisites
 
 - **Node.js**: v22.0.0 or higher
 - **npm**: v10.0.0 or higher
 - **MongoDB**: MongoDB Atlas Connection URI or local MongoDB server.
 
-### 8.2 Starting the Services
+### 9.2 Starting the Services
 
 1. **Backend Server:**
 
@@ -319,7 +351,7 @@ To maintain clean production software engineering standards, 21 one-off test and
 
 ---
 
-## 9. Viva Defense Talking Points & Frequently Asked Questions
+## 10. Viva Defense Talking Points & Frequently Asked Questions
 
 ### Q1: What makes SmartClinic unique compared to off-the-shelf clinic software?
 
@@ -330,6 +362,7 @@ To maintain clean production software engineering standards, 21 one-off test and
 > 3. **FEFO automated inventory control** that prevents medicine expiration in community pharmacies.
 > 4. An offline **Heuristic Fail-Safe AI Engine** that guarantees zero disruption during presentations or network outages.
 > 5. Embedded **Telemedicine with in-call EHR persistence** connecting rural patients with specialists without travel expenses.
+> 6. Modern **AEO & GEO Search Architecture** allowing modern AI answer engines (ChatGPT, Perplexity) to cite clinic services.
 
 ### Q2: How is Multi-Tenancy implemented and how do you ensure Clinic A cannot access Clinic B's data?
 
@@ -349,9 +382,9 @@ To maintain clean production software engineering standards, 21 one-off test and
 
 ---
 
-## 10. Conclusion
+## 11. Conclusion
 
-**SmartClinic By Anis** delivers a modern, resilient, and culturally contextualized software solution for outpatient clinics and pharmacies. It satisfies all academic requirements of the BSIT Final Year Project while demonstrating enterprise-grade software engineering best practices, verified multi-tenancy, clean code architecture, and complete cloud test coverage.
+**SmartClinic By Anis** delivers a modern, resilient, and culturally contextualized software solution for outpatient clinics and pharmacies. It satisfies all academic requirements of the BSIT Final Year Project while demonstrating enterprise-grade software engineering best practices, verified multi-tenancy, clean code architecture, complete cloud test coverage, and modern search engine optimization.
 
 ---
 

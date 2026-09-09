@@ -11,7 +11,6 @@ Allow: /login
 Allow: /PROJECT_REPORT.md
 Allow: /RBAC_AUDIT_REPORT.md
 Allow: /llms.txt
-Allow: /llms-full.txt
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin/
@@ -39,6 +38,7 @@ Disallow: /api/
 User-agent: ChatGPT-User
 Allow: /
 Allow: /docs
+Allow: /about
 Allow: /llms.txt
 
 User-agent: ClaudeBot
@@ -69,4 +69,35 @@ Allow: /llms.txt
 Disallow: /dashboard
 Disallow: /api/
 
-Sitemap: http://localhost:5173/sitemap.xml
+User-agent: Applebot-Extended
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+
+User-agent: Amazonbot
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+
+User-agent: cohere-ai
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+
+User-agent: DeepSeekBot
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+
+# Sitemap Reference
+Sitemap: https://smartclinic.health/sitemap.xml

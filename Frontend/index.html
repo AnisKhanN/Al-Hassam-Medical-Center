@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartClinic — Integrated Clinic & Pharmacy Management SaaS</title>
+    <title>SmartClinic — Integrated Clinic &amp; Pharmacy Management SaaS</title>
     
     <!-- Primary SEO Meta Tags -->
     <meta
       name="description"
-      content="SmartClinic is an enterprise-grade, multi-tenant healthcare SaaS engineered for clinics and community pharmacies. Features Electronic Health Records (EHR), FEFO inventory POS, double-booking prevention, WebRTC telemedicine, and Google Gemini AI trilingual discharge slips."
+      content="SmartClinic is an enterprise-grade, multi-tenant healthcare SaaS engineered for outpatient clinics and community pharmacies. Features Electronic Health Records (EHR), FEFO inventory POS, double-booking prevention, WebRTC telemedicine, and Google Gemini AI trilingual discharge slips."
     />
     <meta
       name="keywords"
@@ -16,66 +16,82 @@
     />
     <meta name="author" content="Anis Khan Niazi" />
     <meta name="application-name" content="SmartClinic" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="http://localhost:5173/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://smartclinic.health/" />
     
-    <!-- Theme and Display -->
+    <!-- Theme and Display Configuration -->
     <meta name="theme-color" content="#2563eb" />
     <meta name="color-scheme" content="light dark" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
 
-    <!-- Open Graph / Facebook / WhatsApp -->
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://localhost:5173/" />
+    <meta property="og:url" content="https://smartclinic.health/" />
     <meta
       property="og:title"
-      content="SmartClinic — Integrated Clinic & Pharmacy Management SaaS"
+      content="SmartClinic — Integrated Clinic &amp; Pharmacy Management SaaS"
     />
     <meta
       property="og:description"
       content="Modern Electronic Health Records, automated FEFO pharmacy inventory, split billing POS, WebRTC video consultations, and AI-driven trilingual care slips."
     />
-    <meta property="og:image" content="/favicon.svg" />
+    <meta property="og:image" content="/images/hero_doctor_patient.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="675" />
+    <meta property="og:image:alt" content="Doctor consulting with patient in modern clinic using SmartClinic OS" />
     <meta property="og:site_name" content="SmartClinic SaaS" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ur_PK" />
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="http://localhost:5173/" />
+    <meta name="twitter:url" content="https://smartclinic.health/" />
     <meta
       name="twitter:title"
-      content="SmartClinic — Integrated Clinic & Pharmacy Management SaaS"
+      content="SmartClinic — Integrated Clinic &amp; Pharmacy Management SaaS"
     />
     <meta
       name="twitter:description"
       content="Modern Electronic Health Records, automated FEFO pharmacy inventory, split billing POS, WebRTC video consultations, and AI-driven trilingual care slips."
     />
-    <meta name="twitter:image" content="/favicon.svg" />
+    <meta name="twitter:image" content="/images/hero_doctor_patient.jpg" />
 
-    <!-- Geolocation Meta Tags for Local & Regional Search (Sanghar, Sindh, Pakistan) -->
+    <!-- Geolocation & GEO Search Engine Optimization (Sanghar, Sindh, Pakistan) -->
     <meta name="geo.region" content="PK-SD" />
     <meta name="geo.placename" content="Sanghar, Sindh, Pakistan" />
     <meta name="geo.position" content="26.0464;68.9482" />
     <meta name="ICBM" content="26.0464, 68.9482" />
 
-    <!-- AEO & GEO: LLM / AI Search Engine Manifest Reference -->
+    <!-- AEO & GEO Discovery Links for AI Answer Engines -->
     <link rel="help" href="/llms.txt" type="text/markdown" title="LLM Knowledge Documentation" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" title="Sitemap" />
 
-    <!-- Performance: DNS Prefetch and Preconnect -->
+    <!-- Preconnect Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="http://localhost:5000" />
 
-    <!-- JSON-LD Structured Data: SoftwareApplication + MedicalBusiness + FAQPage (AEO & GEO Optimized) -->
+    <!-- JSON-LD Structured Data: SoftwareApplication + MedicalBusiness + WebSite + FAQPage (AEO & GEO Optimized) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
           {
+            "@type": "WebSite",
+            "@id": "https://smartclinic.health/#website",
+            "url": "https://smartclinic.health/",
+            "name": "SmartClinic SaaS",
+            "description": "The Intelligent Operating System for Modern Clinics and Community Pharmacies",
+            "inLanguage": ["en-US", "ur-PK"]
+          },
+          {
             "@type": "SoftwareApplication",
+            "@id": "https://smartclinic.health/#software",
             "name": "SmartClinic SaaS",
             "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS",
             "applicationCategory": "HealthApplication",
+            "applicationSubCategory": "Clinic and Pharmacy Management System",
             "description": "Full-stack healthcare operating system for outpatient clinics and pharmacies featuring EHR, conflict-free scheduling, FEFO inventory, split billing, and AI discharge slips.",
             "author": {
               "@type": "Person",
@@ -86,11 +102,22 @@
             "offers": {
               "@type": "Offer",
               "price": "0",
-              "priceCurrency": "PKR"
-            }
+              "priceCurrency": "PKR",
+              "availability": "https://schema.org/InStock"
+            },
+            "featureList": [
+              "Electronic Health Records (EHR)",
+              "Multi-Doctor Conflict-Free Appointment Scheduling",
+              "First-Expiry-First-Out (FEFO) Pharmacy Inventory POS",
+              "Split Billing (Cash, Card, JazzCash, EasyPaisa)",
+              "Google Gemini Trilingual AI Discharge Slips (English, Roman Urdu, Sindhi)",
+              "Peer-to-Peer WebRTC Telemedicine Consultations",
+              "Strict 4-Tier Institutional RBAC (Admin, Doctor, Receptionist, Pharmacist)"
+            ]
           },
           {
             "@type": "MedicalBusiness",
+            "@id": "https://smartclinic.health/#medicalbusiness",
             "name": "SmartClinic Healthcare Facility",
             "description": "Outpatient clinic and modern community pharmacy facility providing clinical consultations, electronic prescriptions, and diagnostic records.",
             "address": {
@@ -98,10 +125,17 @@
               "addressLocality": "Sanghar",
               "addressRegion": "Sindh",
               "addressCountry": "PK"
-            }
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 26.0464,
+              "longitude": 68.9482
+            },
+            "priceRange": "$$"
           },
           {
             "@type": "FAQPage",
+            "@id": "https://smartclinic.health/#faq",
             "mainEntity": [
               {
                 "@type": "Question",
@@ -153,7 +187,7 @@
     <noscript>
       <div style="padding: 20px; text-align: center; font-family: sans-serif;">
         <h2>JavaScript Required</h2>
-        <p>SmartClinic requires JavaScript to provide real-time clinical workflows, electronic health records, and 3D visualization. Please enable JavaScript to proceed.</p>
+        <p>SmartClinic requires JavaScript to provide real-time clinical workflows, electronic health records, and pharmacy management. Please enable JavaScript to proceed.</p>
       </div>
     </noscript>
     <div id="root"></div>
