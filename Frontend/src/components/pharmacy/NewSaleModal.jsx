@@ -35,6 +35,7 @@ const NewSaleModal = ({ isOpen, onClose, onSubmit }) => {
   const [scanFeedback, setScanFeedback] = useState(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState(null);
+  const [cashTendered, setCashTendered] = useState("");
 
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -63,6 +64,7 @@ const NewSaleModal = ({ isOpen, onClose, onSubmit }) => {
     setRows([emptyRow()]);
     setBarcodeQuery("");
     setScanFeedback(null);
+    setCashTendered("");
     reset();
     onClose();
   };
@@ -452,13 +454,40 @@ const NewSaleModal = ({ isOpen, onClose, onSubmit }) => {
                       key={index}
                       className="grid grid-cols-12 items-center gap-2 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-2.5"
                     >
-                      <div className="col-span-6">
+                      <div className="col-span-5">
                         <MedicineSearchSelect
                           value={row.medicine}
                           onChange={(m) => selectMedicine(index, m)}
                         />
+                        {row.medicine?.totalStock !== undefined && (
+                          <div className="mt-1 flex items-center gap-1.5">
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono font-semibold ${
+                                row.medicine.totalStock <= 10
+                                  ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                                  : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                              }`}
+                            >
+                              {row.medicine.totalStock} in stock
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <div className="col-span-2">
+                      <div className="col-span-3 flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateRow(index, {
+                              quantity: Math.max(
+                                1,
+                                (Number(row.quantity) || 1) - 1,
+                              ),
+                            })
+                          }
+                          className="h-8 w-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center text-xs"
+                        >
+                          -
+                        </button>
                         <input
                           type="number"
                           min="1"
@@ -468,8 +497,19 @@ const NewSaleModal = ({ isOpen, onClose, onSubmit }) => {
                           onChange={(e) =>
                             updateRow(index, { quantity: e.target.value })
                           }
-                          className={inputClass}
+                          className="w-12 text-center rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 py-1.5 text-xs font-bold text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                         />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateRow(index, {
+                              quantity: (Number(row.quantity) || 0) + 1,
+                            })
+                          }
+                          className="h-8 w-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center text-xs"
+                        >
+                          +
+                        </button>
                       </div>
                       <div className="col-span-3">
                         <input
@@ -503,9 +543,70 @@ const NewSaleModal = ({ isOpen, onClose, onSubmit }) => {
                   </span>
                   <div className="text-right text-sm font-semibold text-slate-800 dark:text-slate-200">
                     Total Amount:{" "}
-                    <span className="text-lg font-black text-blue-600 dark:text-blue-400 ml-1">
+                    <span className="text-lg font-black text-blue-600 dark:text-blue-400 ml-1 font-mono">
                       Rs. {subtotal.toLocaleString()}
                     </span>
+                  </div>
+                </div>
+
+                {/* Cash Tendered & Change Due Calculator */}
+                <div className="mt-3 rounded-2xl border border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                      💵 Cash Tendered &amp; Change Calculator
+                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setCashTendered(String(subtotal))}
+                        className="rounded-lg bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition"
+                      >
+                        Exact
+                      </button>
+                      {[500, 1000, 5000].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setCashTendered(String(preset))}
+                          className="rounded-lg bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition"
+                        >
+                          Rs. {preset.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 items-center">
+                    <div>
+                      <label className="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">
+                        Cash Received
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                          Rs.
+                        </span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={cashTendered}
+                          onChange={(e) => setCashTendered(e.target.value)}
+                          placeholder="0"
+                          className="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 py-1.5 pl-9 pr-3 text-sm font-bold font-mono text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/30 p-2 text-right">
+                      <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 block">
+                        Change Due to Customer
+                      </span>
+                      <span className="text-base font-black font-mono text-emerald-600 dark:text-emerald-300">
+                        Rs.{" "}
+                        {Number(cashTendered) >= subtotal && Number(cashTendered) > 0
+                          ? (Number(cashTendered) - subtotal).toLocaleString()
+                          : "0"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

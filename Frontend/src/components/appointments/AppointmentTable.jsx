@@ -50,6 +50,7 @@ const AppointmentTable = ({ appointments, onComplete, onCancel, onOpenSlip }) =>
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-left text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
+            <th className="px-4 py-3.5">Token</th>
             <th className="px-5 py-3.5">Scheduled Time</th>
             <th className="px-5 py-3.5">Patient Details</th>
             <th className="px-5 py-3.5">Assigned Doctor</th>
@@ -60,7 +61,7 @@ const AppointmentTable = ({ appointments, onComplete, onCancel, onOpenSlip }) =>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-          {appointments.map((a) => {
+          {appointments.map((a, idx) => {
             // Mirrors backend rules exactly: only the assigned doctor completes,
             // only front-desk roles cancel — real enforcement stays server-side.
             const canComplete =
@@ -75,6 +76,11 @@ const AppointmentTable = ({ appointments, onComplete, onCancel, onOpenSlip }) =>
                 key={a._id}
                 className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors"
               >
+                <td className="px-4 py-4">
+                  <span className="inline-flex items-center justify-center font-mono text-xs font-black px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800">
+                    #{String(idx + 1).padStart(2, "0")}
+                  </span>
+                </td>
                 <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
                   {format(new Date(a.appointmentDate), "dd MMM, h:mm a")}
                 </td>
@@ -86,7 +92,7 @@ const AppointmentTable = ({ appointments, onComplete, onCancel, onOpenSlip }) =>
                     {a.patient?.fullName}
                   </Link>
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono mt-0.5">
-                    {a.patient?.patientId}
+                    {a.patient?.patientId || "ID-Pending"}{a.patient?.phone ? ` • ${a.patient.phone}` : ""}
                   </p>
                 </td>
                 <td className="px-5 py-4 font-medium text-slate-700 dark:text-slate-300">

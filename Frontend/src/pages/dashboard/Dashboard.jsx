@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
@@ -5,6 +6,8 @@ import StatCard from "../../components/dashboard/StatCard";
 import MedicineSalesChart from "../../components/dashboard/MedicineSalesChart";
 import AlertsPanel from "../../components/pharmacy/AlertsPanel";
 import RevenueDashboard from "../../components/billing/RevenueDashboard";
+import ReceptionDeskHub from "../../components/dashboard/ReceptionDeskHub";
+import PharmacistStoreHub from "../../components/dashboard/PharmacistStoreHub";
 import RupeeIcon from "../../components/common/RupeeIcon";
 import useSEO from "../../hooks/useSEO";
 import {
@@ -36,6 +39,7 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { stats, loading } = useDashboardStats();
+  const [adminActiveTab, setAdminActiveTab] = useState("overview"); // "overview" | "reception" | "pharmacy"
   const role = user?.role || "Staff";
 
   useSEO({
@@ -271,6 +275,47 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Admin Multi-Desk Control Switcher */}
+      {role === "Admin" && (
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-2.5 shadow-xs backdrop-blur-md">
+          <div className="flex items-center gap-1.5 overflow-x-auto">
+            <button
+              onClick={() => setAdminActiveTab("overview")}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${
+                adminActiveTab === "overview"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
+            >
+              <FiActivity size={15} /> Executive Overview
+            </button>
+            <button
+              onClick={() => setAdminActiveTab("reception")}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${
+                adminActiveTab === "reception"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
+            >
+              <FiUsers size={15} /> Reception Desk Hub
+            </button>
+            <button
+              onClick={() => setAdminActiveTab("pharmacy")}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${
+                adminActiveTab === "pharmacy"
+                  ? "bg-amber-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
+            >
+              <FiPackage size={15} /> Pharmacist Store Hub
+            </button>
+          </div>
+          <span className="hidden sm:inline text-xs font-semibold text-purple-600 dark:text-purple-400 px-3">
+            Admin Command Switcher
+          </span>
+        </div>
+      )}
+
       {/* Main Content Dashboard Stream */}
       {loading ? (
         <div className="flex h-56 flex-col items-center justify-center gap-3 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80">
@@ -281,87 +326,126 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="space-y-10">
-          {/* Clinic Stats: Admin, Doctor, Receptionist */}
-          {showClinicStats && (
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  {role === "Doctor"
-                    ? "Your Clinical Overview"
-                    : "Clinic Key Metrics"}
-                </h2>
-                <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                  Live Database Aggregations
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                <StatCard
-                  label="Total Patients"
-                  value={stats?.totalPatients ?? 0}
-                  icon={FiUsers}
-                  subtitle="Registered Profiles"
-                />
-                <StatCard
-                  label="Today's Appointments"
-                  value={stats?.todayAppointments ?? 0}
-                  icon={FiCalendar}
-                  subtitle="Scheduled on Calendar"
-                />
-                <StatCard
-                  label="In Progress / Scheduled"
-                  value={stats?.todayScheduled ?? 0}
-                  accent="text-blue-600 dark:text-blue-400"
-                  icon={FiClock}
-                  subtitle="Awaiting Consultation"
-                />
-                <StatCard
-                  label="Completed Consultations"
-                  value={stats?.todayCompleted ?? 0}
-                  accent="text-emerald-600 dark:text-emerald-400"
-                  icon={FiCheckCircle}
-                  subtitle="Concluded Today"
-                />
+          {/* Reception Desk View: For Receptionist or Admin switching to Reception Desk */}
+          {(role === "Receptionist" || (role === "Admin" && adminActiveTab === "reception")) && (
+            <div className="space-y-8">
+              <ReceptionDeskHub />
+              <div className="border-t border-slate-200/80 dark:border-slate-800 pt-8">
+                <div className="mb-4">
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                    Front Desk Billing &amp; Fee Receipts
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Patient invoices, co-pays, and settlements collected at reception.
+                  </p>
+                </div>
+                <RevenueDashboard />
               </div>
             </div>
           )}
 
-          {/* Billing & Financial Section: Admin, Receptionist */}
-          {showBilling && (
-            <div>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <div>
+          {/* Pharmacist Store View: For Pharmacist or Admin switching to Pharmacy */}
+          {(role === "Pharmacist" || (role === "Admin" && adminActiveTab === "pharmacy")) && (
+            <div className="space-y-8">
+              <PharmacistStoreHub />
+              <div className="border-t border-slate-200/80 dark:border-slate-800 pt-8">
+                <div className="mb-4">
                   <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    Billing & Revenue Analytics
+                    Dispensary Sales Velocity &amp; Analytics
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Real-time payment tracking, balances, and multi-channel
-                    settlements.
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Dispensing volume, top sold formulations, and sales patterns.
                   </p>
                 </div>
+                <MedicineSalesChart />
               </div>
-              <RevenueDashboard />
             </div>
           )}
 
-          {/* Pharmacy & Inventory Section: Admin, Pharmacist */}
-          {showPharmacy && (
-            <div>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          {/* Executive & Doctor Overview */}
+          {(role === "Doctor" || (role === "Admin" && adminActiveTab === "overview")) && (
+            <div className="space-y-10">
+              {/* Clinic Stats */}
+              {showClinicStats && (
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    Pharmacy & Expiry Radar
-                  </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Automated FEFO inventory alerts, low-stock notifications,
-                    and counter POS sales.
-                  </p>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                      {role === "Doctor"
+                        ? "Your Clinical Overview"
+                        : "Clinic Key Metrics"}
+                    </h2>
+                    <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                      Live Database Aggregations
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <StatCard
+                      label="Total Patients"
+                      value={stats?.totalPatients ?? 0}
+                      icon={FiUsers}
+                      subtitle="Registered Profiles"
+                    />
+                    <StatCard
+                      label="Today's Appointments"
+                      value={stats?.todayAppointments ?? 0}
+                      icon={FiCalendar}
+                      subtitle="Scheduled on Calendar"
+                    />
+                    <StatCard
+                      label="In Progress / Scheduled"
+                      value={stats?.todayScheduled ?? 0}
+                      accent="text-blue-600 dark:text-blue-400"
+                      icon={FiClock}
+                      subtitle="Awaiting Consultation"
+                    />
+                    <StatCard
+                      label="Completed Consultations"
+                      value={stats?.todayCompleted ?? 0}
+                      accent="text-emerald-600 dark:text-emerald-400"
+                      icon={FiCheckCircle}
+                      subtitle="Concluded Today"
+                    />
+                  </div>
                 </div>
-              </div>
-              <AlertsPanel
-                lowStock={stats?.lowStock || []}
-                expiring={stats?.expiring || []}
-              />
-              <MedicineSalesChart />
+              )}
+
+              {/* Billing & Financial Section */}
+              {showBilling && (
+                <div>
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                        Billing &amp; Revenue Analytics
+                      </h2>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Real-time payment tracking, balances, and multi-channel settlements.
+                      </p>
+                    </div>
+                  </div>
+                  <RevenueDashboard />
+                </div>
+              )}
+
+              {/* Pharmacy & Inventory Section */}
+              {showPharmacy && (
+                <div>
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                        Pharmacy &amp; Expiry Radar
+                      </h2>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Automated FEFO inventory alerts, low-stock notifications, and counter POS sales.
+                      </p>
+                    </div>
+                  </div>
+                  <AlertsPanel
+                    lowStock={stats?.lowStock || []}
+                    expiring={stats?.expiring || []}
+                  />
+                  <MedicineSalesChart />
+                </div>
+              )}
             </div>
           )}
         </div>

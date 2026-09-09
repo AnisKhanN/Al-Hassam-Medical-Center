@@ -18,8 +18,8 @@ const MedicineFormModal = ({
   onClose,
   onSubmit,
   editingMedicine,
-  categories,
-  suppliers,
+  categories = [],
+  suppliers = [],
 }) => {
   const {
     register,
