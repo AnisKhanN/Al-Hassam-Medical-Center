@@ -14,7 +14,7 @@ const testSettings = async () => {
   const adminLoginRes = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123!" }),
+    body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123" }),
   });
   const adminData = await adminLoginRes.json();
   if (!adminData.token) {
@@ -28,7 +28,7 @@ const testSettings = async () => {
   let docLoginRes = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
+    body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123" }),
   });
   let docData = await docLoginRes.json();
 
@@ -43,7 +43,7 @@ const testSettings = async () => {
       body: JSON.stringify({
         name: "Dr. Amina Khan",
         email: "amina@clinic.com",
-        password: "Doctor123!",
+        password: "Doctor123",
         role: "Doctor",
       }),
     });
@@ -51,7 +51,7 @@ const testSettings = async () => {
     docLoginRes = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
+      body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123" }),
     });
     docData = await docLoginRes.json();
   }
@@ -163,7 +163,7 @@ const testSettings = async () => {
       Authorization: `Bearer ${doctorToken}`,
     },
     body: JSON.stringify({
-      currentPassword: "Doctor123!",
+      currentPassword: "Doctor123",
       newPassword: "123",
     }),
   });
@@ -178,7 +178,7 @@ const testSettings = async () => {
   // 9. Successful password change & login verification lifecycle
   console.log("[9/9] Full Password Change Lifecycle (Change -> Old login fails -> New login works -> Reset back)...");
   
-  // 9a. Change password to NewDoctor123!
+  // 9a. Change password to NewDoctor123
   const changeRes = await fetch(`${BASE_URL}/settings/change-password`, {
     method: "PUT",
     headers: {
@@ -186,8 +186,8 @@ const testSettings = async () => {
       Authorization: `Bearer ${doctorToken}`,
     },
     body: JSON.stringify({
-      currentPassword: "Doctor123!",
-      newPassword: "NewDoctor123!",
+      currentPassword: "Doctor123",
+      newPassword: "NewDoctor123",
     }),
   });
   const changeData = await changeRes.json();
@@ -200,7 +200,7 @@ const testSettings = async () => {
   const oldLoginRes = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
+    body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123" }),
   });
   console.log(`Old password login status: ${oldLoginRes.status} (Expected 401)`);
   if (oldLoginRes.status !== 401) {
@@ -211,7 +211,7 @@ const testSettings = async () => {
   const newLoginRes = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "amina@clinic.com", password: "NewDoctor123!" }),
+    body: JSON.stringify({ email: "amina@clinic.com", password: "NewDoctor123" }),
   });
   const newLoginData = await newLoginRes.json();
   console.log(`New password login status: ${newLoginRes.status} (Expected 200)`);
@@ -220,7 +220,7 @@ const testSettings = async () => {
   }
   console.log("✔ New password verified and authenticated successfully.");
 
-  // 9d. Reset password back to Doctor123! so future tests remain idempotent
+  // 9d. Reset password back to Doctor123 so future tests remain idempotent
   const resetRes = await fetch(`${BASE_URL}/settings/change-password`, {
     method: "PUT",
     headers: {
@@ -228,12 +228,12 @@ const testSettings = async () => {
       Authorization: `Bearer ${newLoginData.token}`,
     },
     body: JSON.stringify({
-      currentPassword: "NewDoctor123!",
-      newPassword: "Doctor123!",
+      currentPassword: "NewDoctor123",
+      newPassword: "Doctor123",
     }),
   });
   if (resetRes.status === 200) {
-    console.log("✔ Password restored back to Doctor123! for test idempotency.");
+    console.log("✔ Password restored back to Doctor123 for test idempotency.");
   }
 
   console.log("\n==================================================");

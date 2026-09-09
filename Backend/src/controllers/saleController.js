@@ -51,6 +51,7 @@ exports.createSale = catchAsync(async (req, res, next) => {
       for (const item of items) {
         const medicine = await Medicine.findOne({
           _id: item.medicine,
+          clinicId: req.user.clinicId,
           isActive: true,
         }).session(session);
         if (!medicine)
@@ -78,8 +79,9 @@ exports.createSale = catchAsync(async (req, res, next) => {
         });
       }
 
-      const saleId = await generateSaleId();
+      const saleId = await generateSaleId(req.user.clinicId);
       const sale = new Sale({
+        clinicId: req.user.clinicId,
         saleId,
         items: saleItems,
         customerName,
@@ -100,7 +102,7 @@ exports.createSale = catchAsync(async (req, res, next) => {
     session.endSession();
   }
 
-  const populated = await Sale.findById(saleDoc._id)
+  const populated = await Sale.findOne({ _id: saleDoc._id, clinicId: req.user.clinicId })
     .populate("items.medicine", "medicineId name")
     .populate("soldBy", "name");
   res.status(201).json({ success: true, data: populated });
@@ -112,7 +114,7 @@ exports.getSales = catchAsync(async (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const skip = (page - 1) * limit;
 
-  const filter = {};
+  const filter = { clinicId: req.user.clinicId };
   if (status) filter.status = status;
   if (dateFrom || dateTo) {
     filter.createdAt = {};
@@ -140,7 +142,7 @@ exports.getSales = catchAsync(async (req, res) => {
 });
 
 exports.getSaleById = catchAsync(async (req, res, next) => {
-  const sale = await Sale.findById(req.params.id)
+  const sale = await Sale.findOne({ _id: req.params.id, clinicId: req.user.clinicId })
     .populate("items.medicine", "medicineId name")
     .populate("soldBy", "name");
   if (!sale) return next(new AppError("Sale not found", 404));
@@ -151,7 +153,7 @@ exports.voidSale = catchAsync(async (req, res, next) => {
   const { voidReason } = req.body;
   if (!voidReason) return next(new AppError("A void reason is required", 400));
 
-  const sale = await Sale.findById(req.params.id);
+  const sale = await Sale.findOne({ _id: req.params.id, clinicId: req.user.clinicId });
   if (!sale) return next(new AppError("Sale not found", 404));
   if (sale.status === "Voided")
     return next(new AppError("Sale is already voided", 400));
@@ -160,9 +162,10 @@ exports.voidSale = catchAsync(async (req, res, next) => {
   try {
     await session.withTransaction(async () => {
       for (const item of sale.items) {
-        const medicine = await Medicine.findById(item.medicine).session(
-          session,
-        );
+        const medicine = await Medicine.findOne({
+          _id: item.medicine,
+          clinicId: req.user.clinicId,
+        }).session(session);
         if (!medicine) continue;
 
         item.deductedFrom.forEach(({ batchId, quantity }) => {
@@ -186,7 +189,7 @@ exports.voidSale = catchAsync(async (req, res, next) => {
     session.endSession();
   }
 
-  const populated = await Sale.findById(sale._id)
+  const populated = await Sale.findOne({ _id: sale._id, clinicId: req.user.clinicId })
     .populate("items.medicine", "medicineId name")
     .populate("soldBy", "name");
   res.status(200).json({
@@ -209,6 +212,7 @@ exports.getSalesSummary = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
+          clinicId: req.user.clinicId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },
@@ -224,6 +228,7 @@ exports.getSalesSummary = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
+          clinicId: req.user.clinicId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },
@@ -244,6 +249,7 @@ exports.getSalesSummary = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
+          clinicId: req.user.clinicId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },

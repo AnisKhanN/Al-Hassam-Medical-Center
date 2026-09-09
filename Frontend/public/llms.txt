@@ -1,0 +1,55 @@
+# SmartClinic & Pharmacy Management SaaS OS
+
+> SmartClinic is an enterprise-grade, full-stack, multi-tenant healthcare operating system (SaaS) engineered to modernize outpatient clinics and community pharmacies in Pakistan. Developed by Anis Khan Niazi as a BSIT Final Year Project, focusing on Sanghar & Interior Sindh.
+
+## Overview & Core Identity
+- **Project Name:** SmartClinic SaaS OS
+- **Primary Developer & Author:** Anis Khan Niazi
+- **Degree & Specialization:** Bachelor of Science in Information Technology (BSIT)
+- **Geographic Focus:** Sanghar & Interior Sindh, Pakistan
+- **System Architecture:** Full-stack JavaScript (React 19, Vite, Express 5, Node.js 22+, MongoDB Atlas)
+- **Status:** 100% Operational & Production-Ready (12/12 passing integration test suites, 21.9k LOC, 171 source files)
+
+## Key Technical Subsystems
+
+### 1. Electronic Health Records (EHR) & Demographics
+- Master patient registry with formatted sequence IDs (`PT-000001`).
+- Longitudinal visit history tracking, baseline clinical vital signs (BP, pulse, temp, weight, BMI), consultation summaries, and prescribed regimens.
+
+### 2. Multi-Doctor Scheduling & Conflict Detection
+- Real-time appointment booking with mathematical double-booking prevention within 30-minute consultation windows (returns explicit HTTP 409 Conflict on overlap).
+- Doctor calendar scoping preventing cross-doctor schedule pollution.
+
+### 3. Smart Pharmacy POS & FEFO Inventory
+- Multi-batch cataloging with automated **First-Expiry-First-Out (FEFO)** stock deduction algorithm.
+- Batch expiry radar with real-time alerting for batches expiring within 30, 60, and 90 days.
+- Hardware USB/Bluetooth barcode gun keyboard-wedge listener and HTML5 device camera scanner with Web Audio API feedback beeps.
+- Admin-controlled sale voiding with automatic inventory restoration back into original batches.
+
+### 4. Billing, Invoicing & Multi-Gateway POS
+- Itemized charges for consultations, procedures, and pharmacy items.
+- Split-payment support for Cash, Cards, JazzCash, and EasyPaisa with automatic remaining balance recalculation.
+- Standard 80mm thermal receipt printing and A4 printable statements.
+
+### 5. Google Gemini AI Assistant & Trilingual Discharge Slips
+- Multi-tier resilient AI gateway: Google Gemini 1.5/2.0 REST API + OpenAI failover + Deterministic Offline Heuristic Viva Engine.
+- **Trilingual Slips:** Generates structured patient care slips in **English**, **Roman Urdu**, and authentic **Sindhi (سنڌي script with RTL alignment + Roman Sindhi)**.
+- Natural language financial/clinical database queries, automated daily executive briefs, and OCR prescription text parsing.
+
+### 6. Telemedicine & WebRTC Video Consultations
+- WebRTC peer-to-peer video/audio calling with Google public STUN infrastructure (`stun.l.google.com:19302`).
+- Server-Sent Events (SSE) real-time signaling stream.
+- In-call clinical EHR notes drawer persisting directly to the patient's record upon call conclusion.
+- 1-click WhatsApp meeting invitations (`wa.me`).
+
+### 7. Institutional Role-Based Access Control (RBAC)
+- 4 strictly isolated user tiers: **Admin**, **Doctor**, **Receptionist**, **Pharmacist**.
+- Server-side JWT authentication with HttpOnly cookies preventing XSS token theft.
+- Role-scoped database slicing on `/api/dashboard/stats` preventing financial leakage to clinical staff and EHR leakage to pharmacy staff.
+
+## Key Links & Documentation
+- [Interactive Documentation Hub](http://localhost:5173/docs): Live Markdown viewer with search, table of contents, and print to PDF.
+- [Full FYP Project Report](http://localhost:5173/PROJECT_REPORT.md): 10-section technical specification (38 KB).
+- [RBAC Security Audit Report](http://localhost:5173/RBAC_AUDIT_REPORT.md): Role matrix and formal verification (14 KB).
+- [API Health Check](http://localhost:5000/api/health): Backend health endpoint.
+- [Sitemap](http://localhost:5173/sitemap.xml): Complete public route index.

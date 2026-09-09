@@ -35,12 +35,12 @@ exports.createBill = catchAsync(async (req, res, next) => {
     }
   }
 
-  const patientDoc = await Patient.findOne({ _id: patient, isActive: true });
+  const patientDoc = await Patient.findOne({ _id: patient, clinicId: req.user.clinicId, isActive: true });
   if (!patientDoc)
     return next(new AppError("Patient not found or inactive", 404));
 
   if (appointment) {
-    const apptDoc = await Appointment.findById(appointment);
+    const apptDoc = await Appointment.findOne({ _id: appointment, clinicId: req.user.clinicId });
     if (!apptDoc) return next(new AppError("Appointment not found", 404));
     if (String(apptDoc.patient) !== patient) {
       return next(
@@ -49,8 +49,9 @@ exports.createBill = catchAsync(async (req, res, next) => {
     }
   }
 
-  const billId = await generateBillId();
+  const billId = await generateBillId(req.user.clinicId);
   const bill = new Bill({
+    clinicId: req.user.clinicId,
     billId,
     patient,
     appointment: appointment || undefined,
@@ -62,7 +63,7 @@ exports.createBill = catchAsync(async (req, res, next) => {
   bill.recalculate();
   await bill.save();
 
-  const populated = await withRefs(Bill.findById(bill._id));
+  const populated = await withRefs(Bill.findOne({ _id: bill._id, clinicId: req.user.clinicId }));
   res.status(201).json({ success: true, data: populated });
 });
 
@@ -75,7 +76,7 @@ exports.getBills = catchAsync(async (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const skip = (page - 1) * limit;
 
-  const filter = {};
+  const filter = { clinicId: req.user.clinicId };
   if (patient) filter.patient = patient;
   if (status) filter.status = status;
   if (search) filter.billId = new RegExp(search.trim(), "i");
@@ -104,7 +105,7 @@ exports.getBills = catchAsync(async (req, res) => {
 // @route   GET /api/bills/:id
 // @access  Private/Admin,Receptionist
 exports.getBillById = catchAsync(async (req, res, next) => {
-  const bill = await Bill.findById(req.params.id)
+  const bill = await Bill.findOne({ _id: req.params.id, clinicId: req.user.clinicId })
     .populate("patient", "fullName patientId phone address")
     .populate("appointment", "appointmentId appointmentDate reason")
     .populate("createdBy", "name")
@@ -122,7 +123,7 @@ exports.recordPayment = catchAsync(async (req, res, next) => {
   if (!amount || amount <= 0)
     return next(new AppError("A valid payment amount is required", 400));
 
-  const bill = await Bill.findById(req.params.id);
+  const bill = await Bill.findOne({ _id: req.params.id, clinicId: req.user.clinicId });
   if (!bill) return next(new AppError("Bill not found", 404));
   if (bill.status === "Cancelled")
     return next(new AppError("Cannot record payment on a cancelled bill", 400));
@@ -143,7 +144,7 @@ exports.recordPayment = catchAsync(async (req, res, next) => {
   bill.recalculate();
   await bill.save();
 
-  const populated = await Bill.findById(bill._id)
+  const populated = await Bill.findOne({ _id: bill._id, clinicId: req.user.clinicId })
     .populate("patient", "fullName patientId")
     .populate("payments.receivedBy", "name");
   res.status(201).json({ success: true, data: populated });
@@ -153,7 +154,7 @@ exports.recordPayment = catchAsync(async (req, res, next) => {
 // @route   PATCH /api/bills/:id/cancel
 // @access  Private/Admin
 exports.cancelBill = catchAsync(async (req, res, next) => {
-  const bill = await Bill.findById(req.params.id);
+  const bill = await Bill.findOne({ _id: req.params.id, clinicId: req.user.clinicId });
   if (!bill) return next(new AppError("Bill not found", 404));
   if (bill.status === "Cancelled")
     return next(new AppError("Bill is already cancelled", 400));
@@ -186,7 +187,7 @@ exports.getRevenueSummary = catchAsync(async (req, res) => {
     // Revenue is what was actually collected (payments), not what was billed —
     // billed-but-unpaid isn't revenue yet.
     Bill.aggregate([
-      { $match: { status: { $ne: "Cancelled" } } },
+      { $match: { clinicId: req.user.clinicId, status: { $ne: "Cancelled" } } },
       { $unwind: "$payments" },
       { $match: { "payments.date": { $gte: dateFrom, $lte: dateTo } } },
       {
@@ -200,7 +201,7 @@ exports.getRevenueSummary = catchAsync(async (req, res) => {
       { $sort: { _id: 1 } },
     ]),
     Bill.aggregate([
-      { $match: { status: { $ne: "Cancelled" } } },
+      { $match: { clinicId: req.user.clinicId, status: { $ne: "Cancelled" } } },
       { $unwind: "$payments" },
       { $match: { "payments.date": { $gte: dateFrom, $lte: dateTo } } },
       {
@@ -211,7 +212,7 @@ exports.getRevenueSummary = catchAsync(async (req, res) => {
       },
     ]),
     Bill.aggregate([
-      { $match: { status: { $in: ["Unpaid", "Partially Paid"] } } },
+      { $match: { clinicId: req.user.clinicId, status: { $in: ["Unpaid", "Partially Paid"] } } },
       {
         $group: {
           _id: null,

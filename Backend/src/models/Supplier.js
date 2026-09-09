@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const supplierSchema = new mongoose.Schema(
   {
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      index: true,
+    },
     name: {
       type: String,
       required: [true, "Supplier name is required"],
@@ -15,7 +21,7 @@ const supplierSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-supplierSchema.index({ name: 1 });
-supplierSchema.index({ isActive: 1 });
+supplierSchema.index({ clinicId: 1, name: 1 });
+supplierSchema.index({ clinicId: 1, isActive: 1 });
 
 module.exports = mongoose.model("Supplier", supplierSchema);

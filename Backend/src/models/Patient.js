@@ -9,7 +9,15 @@ const medicalHistorySchema = new mongoose.Schema(
       default: "OPD",
     },
     reason: { type: String, required: [true, "Visit reason is required"] },
+    diagnosis: { type: String, trim: true },
     notes: { type: String, trim: true }, // clinical notes entered by the doctor — not AI-generated
+    vitals: {
+      bp: { type: String, trim: true },
+      pulse: { type: String, trim: true },
+      temp: { type: String, trim: true },
+      weight: { type: String, trim: true },
+      spO2: { type: String, trim: true },
+    },
     recordedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -21,7 +29,13 @@ const medicalHistorySchema = new mongoose.Schema(
 
 const patientSchema = new mongoose.Schema(
   {
-    patientId: { type: String, unique: true, index: true },
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      index: true,
+    },
+    patientId: { type: String, required: true, index: true },
     fullName: {
       type: String,
       required: [true, "Full name is required"],
@@ -31,8 +45,6 @@ const patientSchema = new mongoose.Schema(
     cnic: {
       type: String,
       trim: true,
-      sparse: true, // many patients won't have one on file yet — still unique when present
-      unique: true,
       match: [/^\d{5}-\d{7}-\d{1}$/, "CNIC must be in format 12345-1234567-1"],
     },
     dateOfBirth: { type: Date },
@@ -77,7 +89,17 @@ patientSchema.virtual("computedAge").get(function () {
 patientSchema.set("toJSON", { virtuals: true });
 patientSchema.set("toObject", { virtuals: true });
 
-patientSchema.index({ phone: 1 });
-patientSchema.index({ isActive: 1 });
+patientSchema.index({ clinicId: 1, patientId: 1 }, { unique: true });
+patientSchema.index(
+  { clinicId: 1, cnic: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { cnic: { $type: "string" } },
+  },
+);
+patientSchema.index({ clinicId: 1, phone: 1 });
+patientSchema.index({ clinicId: 1, isActive: 1 });
+patientSchema.index({ clinicId: 1, fullName: 1, phone: 1 });
+patientSchema.index({ clinicId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Patient", patientSchema);

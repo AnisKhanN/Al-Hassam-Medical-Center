@@ -10,6 +10,7 @@ exports.createSupplier = catchAsync(async (req, res, next) => {
   if (!name) return next(new AppError("Supplier name is required", 400));
 
   const supplier = await Supplier.create({
+    clinicId: req.user.clinicId,
     name,
     contactPerson,
     phone,
@@ -22,7 +23,10 @@ exports.createSupplier = catchAsync(async (req, res, next) => {
 // @route   GET /api/suppliers?search=&isActive=
 // @access  Private/Admin,Pharmacist
 exports.getSuppliers = catchAsync(async (req, res) => {
-  const filter = { isActive: req.query.isActive === "false" ? false : true };
+  const filter = {
+    clinicId: req.user.clinicId,
+    isActive: req.query.isActive === "false" ? false : true,
+  };
   if (req.query.search) {
     filter.name = new RegExp(req.query.search.trim(), "i");
   }
@@ -36,7 +40,10 @@ exports.getSuppliers = catchAsync(async (req, res) => {
 // @route   GET /api/suppliers/:id
 // @access  Private/Admin,Pharmacist
 exports.getSupplierById = catchAsync(async (req, res, next) => {
-  const supplier = await Supplier.findById(req.params.id);
+  const supplier = await Supplier.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+  });
   if (!supplier) return next(new AppError("Supplier not found", 404));
   res.status(200).json({ success: true, data: supplier });
 });
@@ -47,8 +54,8 @@ exports.getSupplierById = catchAsync(async (req, res, next) => {
 exports.updateSupplier = catchAsync(async (req, res, next) => {
   const { name, contactPerson, phone, address } = req.body;
 
-  const supplier = await Supplier.findByIdAndUpdate(
-    req.params.id,
+  const supplier = await Supplier.findOneAndUpdate(
+    { _id: req.params.id, clinicId: req.user.clinicId },
     { name, contactPerson, phone, address },
     { returnDocument: "after", runValidators: true, omitUndefined: true },
   );
@@ -60,8 +67,8 @@ exports.updateSupplier = catchAsync(async (req, res, next) => {
 // @route   DELETE /api/suppliers/:id
 // @access  Private/Admin
 exports.deactivateSupplier = catchAsync(async (req, res, next) => {
-  const supplier = await Supplier.findByIdAndUpdate(
-    req.params.id,
+  const supplier = await Supplier.findOneAndUpdate(
+    { _id: req.params.id, clinicId: req.user.clinicId },
     { isActive: false },
     { returnDocument: "after" },
   );
@@ -70,4 +77,3 @@ exports.deactivateSupplier = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: "Supplier deactivated", data: supplier });
 });
-

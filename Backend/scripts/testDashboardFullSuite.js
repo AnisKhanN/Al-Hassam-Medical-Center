@@ -59,10 +59,10 @@ const runDashboardFullSuite = async () => {
 
   // 1. Log in all roles
   console.log("[SETUP] Authenticating all 4 roles...");
-  const adminToken = await login("admin@clinic.com", "ChangeMe123!");
-  const doctorToken = await login("amina@clinic.com", "Doctor123!");
-  const recepToken = await login("receptionist@clinic.com", "Recep123!");
-  const pharmToken = await login("pharmacist@clinic.com", "Pharmacist123!");
+  const adminToken = await login("admin@clinic.com", "ChangeMe123");
+  const doctorToken = await login("amina@clinic.com", "Doctor123");
+  const recepToken = await login("receptionist@clinic.com", "Recep123");
+  const pharmToken = await login("pharmacist@clinic.com", "Pharmacist123");
 
   console.log("✔ Admin Token:", !!adminToken);
   console.log("✔ Doctor Token:", !!doctorToken);
@@ -147,9 +147,11 @@ const runDashboardFullSuite = async () => {
   const beforeTodayAll = (await get(`/appointments?date=${todayDateStr}&limit=1`, adminToken)).data?.total || 0;
   const beforeTodaySched = (await get(`/appointments?date=${todayDateStr}&status=Scheduled&limit=1`, adminToken)).data?.total || 0;
 
-  // Get a doctor ID and patient ID
+  // Get a doctor ID (Dr. Amina) and patient ID
   const doctorsList = await get("/users/doctors", adminToken);
-  const doctorObj = doctorsList.data?.data?.[0];
+  const doctorObj =
+    doctorsList.data?.data?.find((d) => d.email === "amina@clinic.com") ||
+    doctorsList.data?.data?.[0];
   const patientsList = await get("/patients?limit=1", adminToken);
   const patientObj = patientsList.data?.data?.[0];
 

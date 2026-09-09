@@ -30,6 +30,7 @@ exports.createMedicine = catchAsync(async (req, res, next) => {
     unitPrice,
     reorderLevel,
     batches,
+    barcode,
   } = req.body;
 
   if (!name || !category || unitPrice === undefined) {
@@ -43,6 +44,7 @@ exports.createMedicine = catchAsync(async (req, res, next) => {
   if (supplier) {
     const supplierDoc = await Supplier.findOne({
       _id: supplier,
+      clinicId: req.user.clinicId,
       isActive: true,
     });
     if (!supplierDoc)
@@ -58,9 +60,11 @@ exports.createMedicine = catchAsync(async (req, res, next) => {
     initialBatches = batches;
   }
 
-  const medicineId = await generateMedicineId();
+  const medicineId = await generateMedicineId(req.user.clinicId);
   const medicine = await Medicine.create({
+    clinicId: req.user.clinicId,
     medicineId,
+    barcode: barcode ? barcode.trim() : undefined,
     name,
     genericName,
     category,
@@ -72,7 +76,7 @@ exports.createMedicine = catchAsync(async (req, res, next) => {
     createdBy: req.user.id,
   });
 
-  const populated = await Medicine.findById(medicine._id).populate(
+  const populated = await Medicine.findOne({ _id: medicine._id, clinicId: req.user.clinicId }).populate(
     "supplier",
     "name phone",
   );
@@ -84,14 +88,24 @@ exports.getMedicines = catchAsync(async (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const skip = (page - 1) * limit;
 
-  const filter = { isActive: req.query.isActive === "false" ? false : true };
+  const filter = {
+    clinicId: req.user.clinicId,
+    isActive: req.query.isActive === "false" ? false : true,
+  };
   if (req.query.category) filter.category = req.query.category;
-  if (req.query.search) {
+  if (req.query.barcode) {
+    filter.$or = [
+      { barcode: req.query.barcode.trim() },
+      { "batches.batchBarcode": req.query.barcode.trim() },
+      { medicineId: req.query.barcode.trim() },
+    ];
+  } else if (req.query.search) {
     const regex = new RegExp(req.query.search.trim(), "i");
     filter.$or = [
       { name: regex },
       { genericName: regex },
       { medicineId: regex },
+      { barcode: regex },
     ];
   }
 
@@ -114,11 +128,37 @@ exports.getMedicines = catchAsync(async (req, res) => {
   });
 });
 
+exports.getMedicineByBarcode = catchAsync(async (req, res, next) => {
+  const { barcode } = req.params;
+  if (!barcode) {
+    return next(new AppError("Barcode is required", 400));
+  }
+
+  const cleanBarcode = barcode.trim();
+  const medicine = await Medicine.findOne({
+    clinicId: req.user.clinicId,
+    isActive: true,
+    $or: [
+      { barcode: cleanBarcode },
+      { "batches.batchBarcode": cleanBarcode },
+      { medicineId: cleanBarcode },
+    ],
+  }).populate("supplier", "name phone");
+
+  if (!medicine) {
+    return next(
+      new AppError(`No active medicine found with barcode or ID "${cleanBarcode}"`, 404),
+    );
+  }
+
+  res.status(200).json({ success: true, data: medicine });
+});
+
 exports.getMedicineById = catchAsync(async (req, res, next) => {
-  const medicine = await Medicine.findById(req.params.id).populate(
-    "supplier",
-    "name phone address",
-  );
+  const medicine = await Medicine.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+  }).populate("supplier", "name phone address");
   if (!medicine) return next(new AppError("Medicine not found", 404));
   res.status(200).json({ success: true, data: medicine });
 });
@@ -132,20 +172,22 @@ exports.updateMedicine = catchAsync(async (req, res, next) => {
     supplier,
     unitPrice,
     reorderLevel,
+    barcode,
   } = req.body;
 
   if (supplier) {
     const supplierDoc = await Supplier.findOne({
       _id: supplier,
+      clinicId: req.user.clinicId,
       isActive: true,
     });
     if (!supplierDoc)
       return next(new AppError("Supplier not found or inactive", 404));
   }
 
-  const medicine = await Medicine.findByIdAndUpdate(
-    req.params.id,
-    { name, genericName, category, unit, supplier, unitPrice, reorderLevel },
+  const medicine = await Medicine.findOneAndUpdate(
+    { _id: req.params.id, clinicId: req.user.clinicId },
+    { name, genericName, category, unit, supplier, unitPrice, reorderLevel, barcode },
     { returnDocument: "after", runValidators: true, omitUndefined: true },
   ).populate("supplier", "name phone");
 
@@ -154,8 +196,8 @@ exports.updateMedicine = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMedicine = catchAsync(async (req, res, next) => {
-  const medicine = await Medicine.findByIdAndUpdate(
-    req.params.id,
+  const medicine = await Medicine.findOneAndUpdate(
+    { _id: req.params.id, clinicId: req.user.clinicId },
     { isActive: false },
     { returnDocument: "after" },
   );
@@ -169,7 +211,10 @@ exports.addBatch = catchAsync(async (req, res, next) => {
   const err = validateBatchInput(req.body);
   if (err) return next(new AppError(err, 400));
 
-  const medicine = await Medicine.findById(req.params.id);
+  const medicine = await Medicine.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+  });
   if (!medicine) return next(new AppError("Medicine not found", 404));
   if (!medicine.isActive)
     return next(new AppError("Cannot restock an archived medicine", 400));
@@ -185,23 +230,26 @@ exports.addBatch = catchAsync(async (req, res, next) => {
   });
   await medicine.save();
 
-  const populated = await Medicine.findById(medicine._id).populate(
-    "supplier",
-    "name phone",
-  );
+  const populated = await Medicine.findOne({
+    _id: medicine._id,
+    clinicId: req.user.clinicId,
+  }).populate("supplier", "name phone");
   res.status(201).json({ success: true, data: populated });
 });
 
 exports.getCategories = catchAsync(async (req, res) => {
-  const categories = await Medicine.distinct("category", { isActive: true });
+  const categories = await Medicine.distinct("category", {
+    clinicId: req.user.clinicId,
+    isActive: true,
+  });
   res.status(200).json({ success: true, data: categories.sort() });
 });
 
 exports.getLowStock = catchAsync(async (req, res) => {
-  const medicines = await Medicine.find({ isActive: true }).populate(
-    "supplier",
-    "name phone",
-  );
+  const medicines = await Medicine.find({
+    clinicId: req.user.clinicId,
+    isActive: true,
+  }).populate("supplier", "name phone");
   const lowStock = medicines.filter((m) => m.isLowStock);
   res
     .status(200)
@@ -214,10 +262,11 @@ exports.getExpiringSoon = catchAsync(async (req, res) => {
   cutoff.setDate(cutoff.getDate() + days);
 
   const medicines = await Medicine.find({
+    clinicId: req.user.clinicId,
     isActive: true,
     "batches.quantity": { $gt: 0 },
     "batches.expiryDate": { $lte: cutoff },
-  });
+  }).lean();
 
   const expiringBatches = [];
   medicines.forEach((m) => {

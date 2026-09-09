@@ -20,12 +20,20 @@ const runPharmacyTests = async () => {
 
   // 1. Admin Login
   try {
-    const adminRes = await fetch(`${BASE_URL}/auth/login`, {
+    let adminRes = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123!" }),
+      body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123" }),
     });
-    const adminData = await adminRes.json();
+    let adminData = await adminRes.json();
+    if (!adminData.token) {
+      adminRes = await fetch(`${BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123!" }),
+      });
+      adminData = await adminRes.json();
+    }
     if (!adminData.token) throw new Error("Admin login failed!");
     adminToken = adminData.token;
     console.log("✔ Admin logged in successfully.");
@@ -36,37 +44,23 @@ const runPharmacyTests = async () => {
 
   // 2. Pharmacist Login
   try {
-    const pharmRes = await fetch(`${BASE_URL}/auth/login`, {
+    let pharmRes = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "pharmacist@clinic.com", password: "Pharmacist123!" }),
+      body: JSON.stringify({ email: "pharmacist@clinic.com", password: "Pharmacist123" }),
     });
-    const pharmData = await pharmRes.json();
-    if (pharmData.token) {
-      pharmacistToken = pharmData.token;
-      console.log("✔ Pharmacist logged in successfully.");
-    } else {
-      await fetch(`${BASE_URL}/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${adminToken}`,
-        },
-        body: JSON.stringify({
-          name: "Farhan Pharmacist",
-          email: "pharmacist@clinic.com",
-          password: "Pharmacist123!",
-          role: "Pharmacist",
-        }),
-      });
-      const pharmReLogin = await fetch(`${BASE_URL}/auth/login`, {
+    let pharmData = await pharmRes.json();
+    if (!pharmData.token) {
+      pharmRes = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: "pharmacist@clinic.com", password: "Pharmacist123!" }),
       });
-      const pharmReLoginData = await pharmReLogin.json();
-      pharmacistToken = pharmReLoginData.token;
-      console.log("✔ Pharmacist created and logged in.");
+      pharmData = await pharmRes.json();
+    }
+    if (pharmData.token) {
+      pharmacistToken = pharmData.token;
+      console.log("✔ Pharmacist logged in successfully.");
     }
   } catch (err) {
     console.error("❌ Pharmacist setup error:", err.message);
@@ -74,12 +68,20 @@ const runPharmacyTests = async () => {
 
   // 3. Doctor Login
   try {
-    const docRes = await fetch(`${BASE_URL}/auth/login`, {
+    let docRes = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
+      body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123" }),
     });
-    const docData = await docRes.json();
+    let docData = await docRes.json();
+    if (!docData.token) {
+      docRes = await fetch(`${BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
+      });
+      docData = await docRes.json();
+    }
     doctorToken = docData.token;
     console.log("✔ Doctor logged in successfully.");
   } catch (err) {

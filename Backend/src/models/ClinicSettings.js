@@ -5,6 +5,13 @@ const mongoose = require("mongoose");
 // per instructions), and a clinic name/address/contact form doesn't need it.
 const clinicSettingsSchema = new mongoose.Schema(
   {
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      unique: true,
+      index: true,
+    },
     clinicName: {
       type: String,
       required: [true, "Clinic name is required"],
@@ -15,6 +22,60 @@ const clinicSettingsSchema = new mongoose.Schema(
     phone: { type: String, trim: true },
     email: { type: String, trim: true, lowercase: true },
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    clinicLogo: {
+      type: String,
+      trim: true,
+    },
+    coverPhoto: {
+      type: String,
+      trim: true,
+    },
+    tagline: {
+      type: String,
+      trim: true,
+    },
+    about: {
+      type: String,
+      trim: true,
+    },
+    timezone: {
+      type: String,
+      default: "UTC",
+    },
+    defaultConsultationFee: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    paymentMethods: {
+      type: [String],
+      default: [],
+    },
+    operatingHours: {
+      type: Array,
+      default: [],
+    },
+    emergencyContact: {
+      type: String,
+      trim: true,
+    },
+    website: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    socialLinks: {
+      type: Object,
+      default: {},
+    },
+    logoUpdatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    coverPhotoUpdatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true },
 );

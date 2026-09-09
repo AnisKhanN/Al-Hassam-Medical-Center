@@ -6,20 +6,87 @@ const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const AppError = require("./utils/AppError");
 
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("./middlewares/mongoSanitize");
+const errorHandler = require("./middlewares/errorHandler");
+
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Security: Disable Express server fingerprinting
+app.disable("x-powered-by");
+
+// Enterprise Security Headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  next();
+});
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
+app.use(mongoSanitize);
+
+// Rate limiters
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === "production" ? 10 : 200, // Max 10 in production, generous in development
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many login attempts from this IP address. Please try again after 15 minutes.",
+  },
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000, // Generous ceiling for standard SPA interactivity
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many requests from this IP address. Please try again later.",
+  },
+});
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.NEXT_PUBLIC_APP_URL,
+  "http://localhost:5173",
+  "http://localhost:5000",
+  "http://localhost:3000",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true, // required so the browser sends/receives the httpOnly cookie
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, Postman, or curl)
+      if (!origin) return callback(null, true);
+
+      // Allow specified origins, Vercel deployments (*.vercel.app), or localhost
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        process.env.NODE_ENV !== "production"
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
+    credentials: true, // required for httpOnly session cookies
   }),
 );
 
-// Serve static uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Serve static uploaded files with HTTP caching
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads"), {
+    maxAge: "1d",
+    etag: true,
+  }),
+);
 
 // Testing / Health Check Route with Authentication Detection
 // Method GET -> http://localhost:5000/
@@ -100,9 +167,27 @@ app.get("/", async (req, res) => {
       suppliers: "/api/suppliers",
       endpoints: "/api/endpoints",
       settings: "/api/settings",
+      reports: "/api/reports",
+      ai: "/api/ai",
+      notifications: "/api/notifications",
+      telemedicine: "/api/telemedicine",
     },
   });
 });
+
+// Dedicated health endpoint for monitoring & uptime checks
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    service: "SmartClinic Management System Backend API",
+  });
+});
+
+// Apply Rate Limiters
+app.use("/api", apiLimiter);
+app.use("/api/auth/login", loginLimiter);
 
 // API Routes
 app.use("/api/users", require("./routes/userRoutes"));
@@ -115,6 +200,11 @@ app.use("/api/medicines", require("./routes/medicineRoutes"));
 app.use("/api/suppliers", require("./routes/supplierRoutes"));
 app.use("/api/endpoints", require("./routes/endRoutes"));
 app.use("/api/settings", require("./routes/settingsRoutes"));
+app.use("/api/reports", require("./routes/reportRoutes"));
+app.use("/api/ai", require("./routes/aiRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
+app.use("/api/telemedicine", require("./routes/telemedicineRoutes"));
+app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 
 // 404 Handler for undefined routes (Express 5 compatible fallback)
 app.use((req, res, next) => {
@@ -122,12 +212,6 @@ app.use((req, res, next) => {
 });
 
 // Global Error Handler (MUST be the last middleware)
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
-});
+app.use(errorHandler);
 
 module.exports = app;

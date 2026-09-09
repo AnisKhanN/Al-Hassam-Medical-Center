@@ -23,7 +23,13 @@ const saleItemSchema = new mongoose.Schema(
 
 const saleSchema = new mongoose.Schema(
   {
-    saleId: { type: String, unique: true, index: true },
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      index: true,
+    },
+    saleId: { type: String, required: true, index: true },
     items: {
       type: [saleItemSchema],
       validate: [(arr) => arr.length > 0, "At least one sale item is required"],
@@ -57,7 +63,8 @@ saleSchema.methods.recalculate = function () {
   );
 };
 
-saleSchema.index({ createdAt: -1 });
-saleSchema.index({ status: 1 });
+saleSchema.index({ clinicId: 1, saleId: 1 }, { unique: true });
+saleSchema.index({ clinicId: 1, createdAt: -1 });
+saleSchema.index({ clinicId: 1, status: 1 });
 
 module.exports = mongoose.model("Sale", saleSchema);

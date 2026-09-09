@@ -8,22 +8,36 @@ const userSchema = new mongoose.Schema(
       required: [true, "Name is required"],
       trim: true,
     },
+    username: {
+      type: String,
+      trim: true,
+      sparse: true,
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true,
+      unique: [true, "Email already taken"],
       lowercase: true,
       trim: true,
+      validate: {
+        validator: function (v) {
+          return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+        },
+        message: "Please enter a valid email",
+      },
     },
     password: {
       type: String,
       required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters long"],
       select: false,
     },
     role: {
       type: String,
-      enum: ["Admin", "Doctor", "Receptionist", "Pharmacist"],
+      enum: ["Admin", "Doctor", "Receptionist", "Pharmacist", "Patient"],
       default: "Doctor",
+      required: [true, "Role is required"],
+      trim: true,
     },
     isActive: {
       type: Boolean,
@@ -32,11 +46,12 @@ const userSchema = new mongoose.Schema(
     profilePic: {
       type: String,
       default: "",
+      trim: true,
     },
     clinicId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Clinic",
-      default: () => new mongoose.Types.ObjectId(),
+      default: null,
       index: true,
     },
     clinicName: {
@@ -47,6 +62,7 @@ const userSchema = new mongoose.Schema(
     clinicLogo: {
       type: String,
       default: "",
+      trim: true,
     },
     clinicDomain: {
       type: String,
@@ -63,6 +79,34 @@ const userSchema = new mongoose.Schema(
     isClinicOwner: {
       type: Boolean,
       default: false,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isTwoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    is2FAVerified: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorSecret: {
+      type: String,
+      select: false,
     },
   },
   {

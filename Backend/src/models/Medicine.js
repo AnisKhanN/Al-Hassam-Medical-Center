@@ -18,6 +18,7 @@ const batchSchema = new mongoose.Schema(
       min: 0,
     },
     expiryDate: { type: Date, required: [true, "Expiry date is required"] },
+    batchBarcode: { type: String, trim: true },
     receivedDate: { type: Date, default: Date.now },
   },
   { timestamps: true },
@@ -25,7 +26,14 @@ const batchSchema = new mongoose.Schema(
 
 const medicineSchema = new mongoose.Schema(
   {
-    medicineId: { type: String, unique: true, index: true },
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      index: true,
+    },
+    medicineId: { type: String, required: true, index: true },
+    barcode: { type: String, trim: true, index: true },
     name: {
       type: String,
       required: [true, "Medicine name is required"],
@@ -90,8 +98,10 @@ medicineSchema.virtual("nearestExpiry").get(function () {
 medicineSchema.set("toJSON", { virtuals: true });
 medicineSchema.set("toObject", { virtuals: true });
 
-medicineSchema.index({ name: 1 });
-medicineSchema.index({ category: 1 });
-medicineSchema.index({ isActive: 1 });
+medicineSchema.index({ clinicId: 1, medicineId: 1 }, { unique: true });
+medicineSchema.index({ clinicId: 1, name: 1 });
+medicineSchema.index({ clinicId: 1, category: 1, isActive: 1 });
+medicineSchema.index({ clinicId: 1, barcode: 1, isActive: 1 });
+medicineSchema.index({ clinicId: 1, isActive: 1 });
 
 module.exports = mongoose.model("Medicine", medicineSchema);

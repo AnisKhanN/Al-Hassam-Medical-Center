@@ -43,7 +43,13 @@ const paymentSchema = new mongoose.Schema(
 
 const billSchema = new mongoose.Schema(
   {
-    billId: { type: String, unique: true, index: true },
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      index: true,
+    },
+    billId: { type: String, required: true, index: true },
     patient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Patient",
@@ -94,8 +100,9 @@ billSchema.methods.recalculate = function () {
   }
 };
 
-billSchema.index({ patient: 1 });
-billSchema.index({ status: 1 });
-billSchema.index({ createdAt: -1 });
+billSchema.index({ clinicId: 1, billId: 1 }, { unique: true });
+billSchema.index({ clinicId: 1, patient: 1 });
+billSchema.index({ clinicId: 1, status: 1 });
+billSchema.index({ clinicId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Bill", billSchema);

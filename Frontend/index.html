@@ -2,11 +2,160 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>SmartClinic — Integrated Clinic & Pharmacy Management SaaS</title>
+    
+    <!-- Primary SEO Meta Tags -->
+    <meta
+      name="description"
+      content="SmartClinic is an enterprise-grade, multi-tenant healthcare SaaS engineered for clinics and community pharmacies. Features Electronic Health Records (EHR), FEFO inventory POS, double-booking prevention, WebRTC telemedicine, and Google Gemini AI trilingual discharge slips."
+    />
+    <meta
+      name="keywords"
+      content="SmartClinic, clinic management software, pharmacy management SaaS, electronic health records, EHR Pakistan, FEFO inventory, telemedicine WebRTC, clinic billing POS, Sanghar healthcare, Anis Khan Niazi"
+    />
+    <meta name="author" content="Anis Khan Niazi" />
+    <meta name="application-name" content="SmartClinic" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="http://localhost:5173/" />
+    
+    <!-- Theme and Display -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://localhost:5173/" />
+    <meta
+      property="og:title"
+      content="SmartClinic — Integrated Clinic & Pharmacy Management SaaS"
+    />
+    <meta
+      property="og:description"
+      content="Modern Electronic Health Records, automated FEFO pharmacy inventory, split billing POS, WebRTC video consultations, and AI-driven trilingual care slips."
+    />
+    <meta property="og:image" content="/favicon.svg" />
+    <meta property="og:site_name" content="SmartClinic SaaS" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="http://localhost:5173/" />
+    <meta
+      name="twitter:title"
+      content="SmartClinic — Integrated Clinic & Pharmacy Management SaaS"
+    />
+    <meta
+      name="twitter:description"
+      content="Modern Electronic Health Records, automated FEFO pharmacy inventory, split billing POS, WebRTC video consultations, and AI-driven trilingual care slips."
+    />
+    <meta name="twitter:image" content="/favicon.svg" />
+
+    <!-- Geolocation Meta Tags for Local & Regional Search (Sanghar, Sindh, Pakistan) -->
+    <meta name="geo.region" content="PK-SD" />
+    <meta name="geo.placename" content="Sanghar, Sindh, Pakistan" />
+    <meta name="geo.position" content="26.0464;68.9482" />
+    <meta name="ICBM" content="26.0464, 68.9482" />
+
+    <!-- AEO & GEO: LLM / AI Search Engine Manifest Reference -->
+    <link rel="help" href="/llms.txt" type="text/markdown" title="LLM Knowledge Documentation" />
+
+    <!-- Performance: DNS Prefetch and Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="http://localhost:5000" />
+
+    <!-- JSON-LD Structured Data: SoftwareApplication + MedicalBusiness + FAQPage (AEO & GEO Optimized) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            "name": "SmartClinic SaaS",
+            "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS",
+            "applicationCategory": "HealthApplication",
+            "description": "Full-stack healthcare operating system for outpatient clinics and pharmacies featuring EHR, conflict-free scheduling, FEFO inventory, split billing, and AI discharge slips.",
+            "author": {
+              "@type": "Person",
+              "name": "Anis Khan Niazi",
+              "jobTitle": "Lead Full-Stack Software Engineer",
+              "alumniOf": "BSIT Degree Program"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "PKR"
+            }
+          },
+          {
+            "@type": "MedicalBusiness",
+            "name": "SmartClinic Healthcare Facility",
+            "description": "Outpatient clinic and modern community pharmacy facility providing clinical consultations, electronic prescriptions, and diagnostic records.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Sanghar",
+              "addressRegion": "Sindh",
+              "addressCountry": "PK"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Can SmartClinic be used in both single-doctor clinics and multi-specialty hospitals?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. SmartClinic is built with multi-role Role-Based Access Control (RBAC). Whether you are a solo practitioner managing appointments and billing or a multi-department healthcare facility with separate doctors, reception desks, and an attached pharmacy, SmartClinic adapts seamlessly."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does the AI Assistant work without constant external internet connectivity?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "SmartClinic features a Dual-Engine AI Architecture. While it connects to Google Gemini and OpenAI LLMs when internet is available, it includes a built-in deterministic Heuristic Analytics Engine that answers queries, parses prescription text, and audits records completely offline."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How are roles and medical records secured in SmartClinic?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Security is strictly enforced via cryptographically signed JWT tokens, BCrypt password hashing, and role middleware across 4 tiers: Admin, Doctor, Receptionist, and Pharmacist. Non-admin users cannot access administrative financials, and non-clinical users cannot view sensitive diagnostic notes."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What payment methods are supported for clinic and pharmacy billing?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The billing system supports direct Cash, Credit/Debit Cards, Bank Transfers, and local mobile wallets including JazzCash and EasyPaisa, with real-time balance tracking, split payments, and thermal receipt printing."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does automated FEFO inventory management work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "SmartClinic uses First-Expiry-First-Out (FEFO) inventory algorithms. When dispensing medicines at the POS counter, the system automatically pulls from batches with the earliest expiry dates first, preventing stock spoilage and expired drug waste."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
-  <body>
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+    <noscript>
+      <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+        <h2>JavaScript Required</h2>
+        <p>SmartClinic requires JavaScript to provide real-time clinical workflows, electronic health records, and 3D visualization. Please enable JavaScript to proceed.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

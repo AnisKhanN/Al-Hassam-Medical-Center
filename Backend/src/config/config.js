@@ -25,10 +25,17 @@ const config = {
     process.env.APP_NAME ||
     process.env.NEXT_PUBLIC_APP_NAME ||
     "SmartClinic SaaS",
+  POSTMAN_API_KEY: process.env.POSTMAN_API_KEY,
   openaiApiKey: process.env.OPENAI_API_KEY,
   defaultClinicName: process.env.DEFAULT_CLINIC_NAME || "SmartClinic",
   defaultCurrency: process.env.DEFAULT_CURRENCY || "PKR",
   defaultTimezone: process.env.DEFAULT_TIMEZONE || "Asia/Karachi",
+  mongoDbName: process.env.MONGODB_DB_NAME || "smartclinic",
+  // Twilio WhatsApp Gateway (Business API)
+  twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
+  twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
+  twilioWhatsappFrom: process.env.TWILIO_WHATSAPP_FROM_NUMBER,
+  twilioWhatsappServiceSid: process.env.TWILIO_WHATSAPP_SERVICE_SID,
 };
 
 module.exports = config;

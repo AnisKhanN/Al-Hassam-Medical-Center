@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const appointmentSchema = new mongoose.Schema(
   {
-    appointmentId: { type: String, unique: true, index: true },
+    appointmentId: { type: String, required: true, index: true },
     patient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Patient",
@@ -30,12 +30,58 @@ const appointmentSchema = new mongoose.Schema(
     },
     notes: { type: String, trim: true }, // filled by the doctor when marking Completed
     cancelReason: { type: String, trim: true },
+    isTelemedicine: { type: Boolean, default: false },
+    meetingRoomId: { type: String, trim: true, index: true },
+    meetingStatus: {
+      type: String,
+      enum: ["Scheduled", "Waiting", "Active", "Completed", "Cancelled"],
+      default: "Scheduled",
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    // clinic context
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+      index: true,
+    },
+    clinicName: {
+      type: String,
+      default: "SmartClinic",
+      trim: true,
+    },
+    clinicDomain: {
+      type: String,
+      lowercase: true,
+      trim: true,
+    },
+    clinicStatus: {
+      type: String,
+      enum: ["active", "inactive", "suspended", "trial"],
+      default: "active",
+    },
+    searchTokens: {
+      type: [String],
+      default: [],
+      maxlength: 20,
+    },
+    isArchived: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    parentAppointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+      index: true,
+      sparse: true,
+    },
   },
+
   { timestamps: true },
 );
 
@@ -47,8 +93,15 @@ appointmentSchema.virtual("endTime").get(function () {
 appointmentSchema.set("toJSON", { virtuals: true });
 appointmentSchema.set("toObject", { virtuals: true });
 
+appointmentSchema.index({ clinicId: 1, appointmentId: 1 }, { unique: true });
+appointmentSchema.index({ clinicId: 1, doctor: 1, appointmentDate: 1 });
+appointmentSchema.index({ clinicId: 1, appointmentDate: 1 });
+appointmentSchema.index({ clinicId: 1, patient: 1 });
+appointmentSchema.index({ clinicId: 1, status: 1 });
 appointmentSchema.index({ doctor: 1, appointmentDate: 1 });
+appointmentSchema.index({ appointmentDate: 1 });
 appointmentSchema.index({ patient: 1 });
 appointmentSchema.index({ status: 1 });
+appointmentSchema.index({ doctor: 1, status: 1 });
 
 module.exports = mongoose.model("Appointment", appointmentSchema);

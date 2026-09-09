@@ -1,0 +1,72 @@
+# Robots.txt for SmartClinic SaaS OS
+# Comprehensive SEO, AEO (Answer Engine) & GEO (Generative Engine) Configuration
+
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /docs
+Allow: /project-report
+Allow: /rbac-report
+Allow: /login
+Allow: /PROJECT_REPORT.md
+Allow: /RBAC_AUDIT_REPORT.md
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /sitemap.xml
+Disallow: /dashboard
+Disallow: /admin/
+Disallow: /patients/
+Disallow: /appointments/
+Disallow: /billing/
+Disallow: /pharmacy/
+Disallow: /reports/
+Disallow: /settings/
+Disallow: /ai-assistant/
+Disallow: /telemedicine/
+Disallow: /api/
+
+# Generative AI & Answer Engine Crawlers (AEO / GEO Optimization)
+User-agent: GPTBot
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+Allow: /PROJECT_REPORT.md
+Allow: /RBAC_AUDIT_REPORT.md
+Disallow: /dashboard
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /docs
+Allow: /llms.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+Allow: /PROJECT_REPORT.md
+Allow: /RBAC_AUDIT_REPORT.md
+Disallow: /dashboard
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+Allow: /PROJECT_REPORT.md
+Allow: /RBAC_AUDIT_REPORT.md
+Disallow: /dashboard
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /docs
+Allow: /about
+Allow: /llms.txt
+Disallow: /dashboard
+Disallow: /api/
+
+Sitemap: http://localhost:5173/sitemap.xml

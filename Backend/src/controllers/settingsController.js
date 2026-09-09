@@ -3,14 +3,20 @@ const User = require("../models/User");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
-const getOrCreateSettings = async () => {
-  let settings = await ClinicSettings.findOne();
-  if (!settings) settings = await ClinicSettings.create({});
+const getOrCreateSettings = async (clinicId, userId) => {
+  let settings = await ClinicSettings.findOne({ clinicId });
+  if (!settings) {
+    settings = await ClinicSettings.create({
+      clinicId,
+      clinicName: "SmartClinic",
+      updatedBy: userId,
+    });
+  }
   return settings;
 };
 
 exports.getClinicSettings = catchAsync(async (req, res) => {
-  const settings = await getOrCreateSettings();
+  const settings = await getOrCreateSettings(req.user.clinicId, req.user.id);
   res.status(200).json({ success: true, data: settings });
 });
 
@@ -18,7 +24,7 @@ exports.updateClinicSettings = catchAsync(async (req, res, next) => {
   const { clinicName, address, phone, email } = req.body;
   if (!clinicName) return next(new AppError("Clinic name is required", 400));
 
-  const settings = await getOrCreateSettings();
+  const settings = await getOrCreateSettings(req.user.clinicId, req.user.id);
   settings.clinicName = clinicName;
   settings.address = address;
   settings.phone = phone;

@@ -1,8 +1,10 @@
 const Counter = require("../models/Counter");
 
-const generateSaleId = async () => {
+// Scoped per clinic when clinicId is supplied.
+const generateSaleId = async (clinicId) => {
+  const counterKey = clinicId ? `saleId_${clinicId}` : "saleId";
   const counter = await Counter.findByIdAndUpdate(
-    "saleId",
+    counterKey,
     { $inc: { seq: 1 } },
     { returnDocument: "after", upsert: true },
   );

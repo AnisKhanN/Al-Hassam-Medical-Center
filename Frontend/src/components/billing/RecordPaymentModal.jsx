@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiX } from "react-icons/fi";
+import { FiX, FiCheckCircle } from "react-icons/fi";
 
-const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue }) => {
+const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue = 0 }) => {
   const {
     register,
     handleSubmit,
@@ -34,7 +34,8 @@ const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue }) => {
   };
 
   const inputClass =
-    "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400";
+    "w-full rounded-xl border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all";
+  const labelClass = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400";
 
   return (
     <AnimatePresence>
@@ -43,7 +44,7 @@ const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -51,28 +52,39 @@ const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-7 shadow-2xl"
           >
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-800">
-                Record Payment
-              </h2>
+            <div className="mb-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/40">
+                  <FiCheckCircle size={20} />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                    Record Patient Payment
+                  </h2>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
+                    Apply cash, card or electronic settlement
+                  </p>
+                </div>
+              </div>
               <button
                 onClick={onClose}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition"
               >
                 <FiX size={18} />
               </button>
             </div>
-            <p className="mb-4 text-sm text-slate-500">
-              Balance due:{" "}
-              <span className="font-medium text-slate-700">
+
+            <div className="mb-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 p-3.5 flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Remaining Balance</span>
+              <span className="text-lg font-black text-amber-600 dark:text-amber-400">
                 Rs. {balanceDue.toLocaleString()}
               </span>
-            </p>
+            </div>
 
             {errors.root && (
-              <div className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+              <div className="mb-4 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 px-3.5 py-2 text-sm text-red-600 dark:text-red-300">
                 {errors.root.message}
               </div>
             )}
@@ -83,8 +95,8 @@ const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue }) => {
               className="space-y-4"
             >
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-600">
-                  Amount (Rs.)
+                <label className={labelClass}>
+                  Tender Amount (Rs.) *
                 </label>
                 <input
                   type="number"
@@ -103,37 +115,53 @@ const RecordPaymentModal = ({ isOpen, onClose, onSubmit, balanceDue }) => {
                   })}
                 />
                 {errors.amount && (
-                  <p className="mt-1 text-xs text-red-500">
+                  <p className="mt-1 text-xs text-rose-500 font-medium">
                     {errors.amount.message || "A valid amount is required"}
                   </p>
                 )}
               </div>
+
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-600">
-                  Method
+                <label className={labelClass}>
+                  Payment Modality *
                 </label>
                 <select className={inputClass} {...register("method")}>
-                  <option value="Cash">Cash</option>
-                  <option value="Card">Card</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                  <option value="Other">Other</option>
+                  <option value="Cash" className="dark:bg-slate-900 dark:text-white">Cash</option>
+                  <option value="Card" className="dark:bg-slate-900 dark:text-white">Card (POS / Debit / Credit)</option>
+                  <option value="Bank Transfer" className="dark:bg-slate-900 dark:text-white">Bank Transfer (IBFT)</option>
+                  <option value="Other" className="dark:bg-slate-900 dark:text-white">Other / Mobile Wallet</option>
                 </select>
               </div>
+
               {(method === "Card" || method === "Bank Transfer") && (
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-600">
-                    Reference / Transaction No.
+                  <label className={labelClass}>
+                    Reference / Transaction ID
                   </label>
-                  <input className={inputClass} {...register("reference")} />
+                  <input
+                    className={inputClass}
+                    placeholder="e.g. Auth code / Transaction ref"
+                    {...register("reference")}
+                  />
                 </div>
               )}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-lg bg-green-600 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 disabled:opacity-60"
-              >
-                {isSubmitting ? "Recording..." : "Record Payment"}
-              </button>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700 shadow-md shadow-emerald-500/25 disabled:opacity-60 cursor-pointer"
+                >
+                  {isSubmitting ? "Recording..." : "Record Payment"}
+                </button>
+              </div>
             </form>
           </motion.div>
         </motion.div>

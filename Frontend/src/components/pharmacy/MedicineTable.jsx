@@ -6,9 +6,11 @@ import StockBadge from "./StockBadge";
 const MedicineTable = ({ medicines = [], onEdit, onArchive }) => {
   if (medicines.length === 0) {
     return (
-      <p className="py-10 text-center text-sm text-slate-400">
-        No medicines found.
-      </p>
+      <div className="py-16 text-center">
+        <p className="text-sm font-medium text-slate-400 dark:text-slate-500">
+          No medicines found matching your search.
+        </p>
+      </div>
     );
   }
 
@@ -16,16 +18,16 @@ const MedicineTable = ({ medicines = [], onEdit, onArchive }) => {
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
-          <tr className="border-b border-slate-100 bg-slate-50/60 text-xs uppercase tracking-wide text-slate-500">
-            <th className="px-4 py-3">Medicine</th>
-            <th className="px-4 py-3">Category</th>
-            <th className="px-4 py-3">Price</th>
-            <th className="px-4 py-3">Stock Status</th>
-            <th className="px-4 py-3">Nearest Expiry</th>
-            <th className="px-4 py-3 text-right">Actions</th>
+          <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
+            <th className="px-5 py-3.5">Medicine Formulation</th>
+            <th className="px-5 py-3.5">Drug Category</th>
+            <th className="px-5 py-3.5">Unit Pricing</th>
+            <th className="px-5 py-3.5">Stock Level</th>
+            <th className="px-5 py-3.5">Nearest Expiry</th>
+            <th className="px-5 py-3.5 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-50">
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
           {medicines.map((m) => {
             const expiryText = m.nearestExpiry
               ? format(new Date(m.nearestExpiry), "dd MMM yyyy")
@@ -34,35 +36,35 @@ const MedicineTable = ({ medicines = [], onEdit, onArchive }) => {
             return (
               <tr
                 key={m._id}
-                className="transition hover:bg-slate-50/60"
+                className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors"
               >
-                <td className="px-4 py-3">
+                <td className="px-5 py-4">
                   <Link
                     to={`/pharmacy/medicines/${m._id}`}
-                    className="font-medium text-slate-800 hover:text-blue-600"
+                    className="font-semibold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition"
                   >
                     {m.name}
                   </Link>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span className="font-mono">{m.medicineId}</span>
+                  <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                    <span className="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px]">{m.medicineId}</span>
                     {m.genericName && <span>· {m.genericName}</span>}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-slate-600">
-                  <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                <td className="px-5 py-4">
+                  <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
                     {m.category}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-medium text-slate-700">
-                  Rs. {m.unitPrice?.toLocaleString()} <span className="text-xs font-normal text-slate-400">/{m.unit}</span>
+                <td className="px-5 py-4 font-semibold text-slate-800 dark:text-slate-200">
+                  Rs. {m.unitPrice?.toLocaleString()} <span className="text-xs font-normal text-slate-400 dark:text-slate-500">/{m.unit}</span>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-4">
                   <StockBadge
                     totalStock={m.totalStock}
                     isLowStock={m.isLowStock}
                   />
                 </td>
-                <td className="px-4 py-3 text-xs text-slate-500">
+                <td className="px-5 py-4 text-xs font-mono text-slate-600 dark:text-slate-300">
                   {expiryText}
                 </td>
                 <td className="px-4 py-3 text-right">

@@ -8,7 +8,7 @@ const catchAsync = require("../utils/catchAsync");
 // Real overlap check, not exact-slot matching: a new [start, start+duration)
 // window conflicts with any existing Scheduled appointment for the same doctor
 // whose window intersects it. excludeId lets a reschedule ignore itself.
-const hasConflict = async (doctorId, startTime, duration, excludeId = null) => {
+const hasConflict = async (doctorId, startTime, duration, excludeId = null, clinicId = null) => {
   const newStart = new Date(startTime);
   const newEnd = new Date(newStart.getTime() + duration * 60000);
   const query = {
@@ -16,11 +16,12 @@ const hasConflict = async (doctorId, startTime, duration, excludeId = null) => {
     status: { $ne: "Cancelled" },
     appointmentDate: { $lt: newEnd },
   };
+  if (clinicId) query.clinicId = clinicId;
   if (excludeId) query._id = { $ne: excludeId };
 
-  const candidates = await Appointment.find(query).select(
-    "appointmentDate duration",
-  );
+  const candidates = await Appointment.find(query)
+    .select("appointmentDate duration")
+    .lean();
   return candidates.some((appt) => {
     const existingEnd = new Date(
       appt.appointmentDate.getTime() + appt.duration * 60000,
@@ -39,7 +40,16 @@ const withRefs = (query) =>
 // @route   POST /api/appointments
 // @access  Private/Admin,Receptionist
 exports.createAppointment = catchAsync(async (req, res, next) => {
-  const { patient, doctor, appointmentDate, duration, reason } = req.body;
+  const {
+    patient,
+    doctor,
+    appointmentDate,
+    duration,
+    reason,
+    isTelemedicine,
+    meetingRoomId,
+    meetingStatus,
+  } = req.body;
 
   if (!patient || !doctor || !appointmentDate || !reason) {
     return next(
@@ -53,15 +63,15 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
   }
 
   const [patientDoc, doctorDoc] = await Promise.all([
-    Patient.findOne({ _id: patient, isActive: true }),
-    User.findOne({ _id: doctor, role: "Doctor", isActive: true }),
+    Patient.findOne({ _id: patient, clinicId: req.user.clinicId, isActive: true }),
+    User.findOne({ _id: doctor, clinicId: req.user.clinicId, role: "Doctor", isActive: true }),
   ]);
   if (!patientDoc)
     return next(new AppError("Patient not found or inactive", 404));
   if (!doctorDoc)
     return next(new AppError("Doctor not found or inactive", 404));
 
-  if (await hasConflict(doctor, apptDate, duration || 30)) {
+  if (await hasConflict(doctor, apptDate, duration || 30, null, req.user.clinicId)) {
     return next(
       new AppError(
         "This doctor already has an appointment in that time slot",
@@ -70,18 +80,25 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     );
   }
 
-  const appointmentId = await generateAppointmentId();
+  const appointmentId = await generateAppointmentId(req.user.clinicId);
   const appointment = await Appointment.create({
+    clinicId: req.user.clinicId,
     appointmentId,
     patient,
     doctor,
     appointmentDate: apptDate,
     duration: duration || 30,
     reason,
+    isTelemedicine: Boolean(isTelemedicine),
+    meetingRoomId: isTelemedicine
+      ? meetingRoomId ||
+        `tele-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`
+      : null,
+    meetingStatus: isTelemedicine ? meetingStatus || "Waiting" : "Scheduled",
     createdBy: req.user.id,
   });
 
-  const populated = await withRefs(Appointment.findById(appointment._id));
+  const populated = await withRefs(Appointment.findOne({ _id: appointment._id, clinicId: req.user.clinicId }));
   res.status(201).json({ success: true, data: populated });
 });
 
@@ -89,15 +106,19 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
 // @route   GET /api/appointments?date=&dateFrom=&dateTo=&doctor=&patient=&status=&page=&limit=
 // @access  Private/Admin,Doctor,Receptionist
 exports.getAppointments = catchAsync(async (req, res) => {
-  const { date, dateFrom, dateTo, doctor, patient, status } = req.query;
+  const { date, dateFrom, dateTo, doctor, patient, status, isTelemedicine } =
+    req.query;
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const skip = (page - 1) * limit;
 
-  const filter = {};
+  const filter = { clinicId: req.user.clinicId };
   if (doctor) filter.doctor = doctor;
   if (patient) filter.patient = patient;
   if (status) filter.status = status;
+  if (isTelemedicine !== undefined) {
+    filter.isTelemedicine = isTelemedicine === "true";
+  }
 
   // Doctors are scoped to their own schedule server-side, regardless of what
   // doctor id they pass in the query — never trust the client for this.
@@ -119,7 +140,8 @@ exports.getAppointments = catchAsync(async (req, res) => {
     withRefs(Appointment.find(filter))
       .sort("appointmentDate")
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(),
     Appointment.countDocuments(filter),
   ]);
 
@@ -137,10 +159,14 @@ exports.getAppointments = catchAsync(async (req, res) => {
 // @route   GET /api/appointments/:id
 // @access  Private/Admin,Doctor,Receptionist
 exports.getAppointmentById = catchAsync(async (req, res, next) => {
-  const appointment = await Appointment.findById(req.params.id)
+  const appointment = await Appointment.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+  })
     .populate("patient", "fullName patientId phone gender")
     .populate("doctor", "name")
-    .populate("createdBy", "name role");
+    .populate("createdBy", "name role")
+    .lean();
 
   if (!appointment) return next(new AppError("Appointment not found", 404));
 
@@ -158,7 +184,10 @@ exports.getAppointmentById = catchAsync(async (req, res, next) => {
 // @route   PUT /api/appointments/:id
 // @access  Private/Admin,Receptionist
 exports.updateAppointment = catchAsync(async (req, res, next) => {
-  const appointment = await Appointment.findById(req.params.id);
+  const appointment = await Appointment.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+  });
   if (!appointment) return next(new AppError("Appointment not found", 404));
 
   if (appointment.status !== "Scheduled") {
@@ -187,6 +216,7 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
         newDate,
         newDuration,
         appointment._id,
+        req.user.clinicId,
       )
     ) {
       return next(
@@ -203,7 +233,7 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
   if (reason) appointment.reason = reason;
   await appointment.save();
 
-  const populated = await withRefs(Appointment.findById(appointment._id));
+  const populated = await withRefs(Appointment.findOne({ _id: appointment._id, clinicId: req.user.clinicId }));
   res.status(200).json({ success: true, data: populated });
 });
 
@@ -219,7 +249,10 @@ exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
     );
   }
 
-  const appointment = await Appointment.findById(req.params.id);
+  const appointment = await Appointment.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+  });
   if (!appointment) return next(new AppError("Appointment not found", 404));
 
   if (appointment.status !== "Scheduled") {
@@ -231,13 +264,22 @@ exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Only the treating doctor marks a visit Completed — same rule as the
-  // Patient module: doctors own clinical outcomes, receptionists don't.
+  // Enforce doctor ownership: A doctor can only update the status of their own appointments
+  if (
+    req.user.role === "Doctor" &&
+    String(appointment.doctor) !== req.user.id
+  ) {
+    return next(
+      new AppError(
+        "Doctors are only permitted to update the status of their own appointments",
+        403,
+      ),
+    );
+  }
+
+  // Only doctors mark a visit Completed — receptionists/admins do not complete clinical visits
   if (status === "Completed") {
-    if (
-      req.user.role !== "Doctor" ||
-      String(appointment.doctor) !== req.user.id
-    ) {
+    if (req.user.role !== "Doctor") {
       return next(
         new AppError(
           "Only the assigned doctor can mark this appointment as completed",
@@ -257,6 +299,6 @@ exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
   appointment.status = status;
   await appointment.save();
 
-  const populated = await withRefs(Appointment.findById(appointment._id));
+  const populated = await withRefs(Appointment.findOne({ _id: appointment._id, clinicId: req.user.clinicId }));
   res.status(200).json({ success: true, data: populated });
 });

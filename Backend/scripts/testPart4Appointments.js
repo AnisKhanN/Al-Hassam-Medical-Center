@@ -10,12 +10,20 @@ const runAppointmentTests = async () => {
   console.log("[AUTH SETUP] Logging in Admin, Doctor, and Receptionist...");
 
   // 1. Admin Login
-  const adminRes = await fetch(`${BASE_URL}/auth/login`, {
+  let adminRes = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123!" }),
+    body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123" }),
   });
-  const adminData = await adminRes.json();
+  let adminData = await adminRes.json();
+  if (!adminData.token) {
+    adminRes = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "admin@clinic.com", password: "ChangeMe123!" }),
+    });
+    adminData = await adminRes.json();
+  }
   const adminToken = adminData.token;
   if (!adminToken) throw new Error("Admin login failed!");
   console.log("✔ Admin logged in.");
@@ -23,43 +31,24 @@ const runAppointmentTests = async () => {
   // 2. Doctor Login (or create)
   let doctorToken = "";
   let doctorUser = null;
-  const docLoginRes = await fetch(`${BASE_URL}/auth/login`, {
+  let docLoginRes = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
+    body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123" }),
   });
-  const docLoginData = await docLoginRes.json();
-  if (docLoginData.token) {
-    doctorToken = docLoginData.token;
-    doctorUser = docLoginData.data;
-    console.log(`✔ Doctor logged in (${doctorUser?.name || 'Dr. Amina Khan'}).`);
-  } else {
-    // Create doctor
-    const createDoc = await fetch(`${BASE_URL}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${adminToken}`,
-      },
-      body: JSON.stringify({
-        name: "Dr. Amina Khan",
-        email: "amina@clinic.com",
-        password: "Doctor123!",
-        role: "Doctor",
-      }),
-    });
-    const docCreateData = await createDoc.json();
-    doctorUser = docCreateData.data;
-
-    const docReLogin = await fetch(`${BASE_URL}/auth/login`, {
+  let docLoginData = await docLoginRes.json();
+  if (!docLoginData.token) {
+    docLoginRes = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: "amina@clinic.com", password: "Doctor123!" }),
     });
-    const docReLoginData = await docReLogin.json();
-    doctorToken = docReLoginData.token;
-    doctorUser = docReLoginData.data;
-    console.log("✔ Doctor created & logged in.");
+    docLoginData = await docLoginRes.json();
+  }
+  if (docLoginData.token) {
+    doctorToken = docLoginData.token;
+    doctorUser = docLoginData.data;
+    console.log(`✔ Doctor logged in (${doctorUser?.name || 'Dr. Amina Khan'}).`);
   }
 
   const doctorId = doctorUser?.id || doctorUser?._id;
@@ -67,36 +56,23 @@ const runAppointmentTests = async () => {
 
   // 3. Receptionist Login (or create)
   let recepToken = "";
-  const recepLogin = await fetch(`${BASE_URL}/auth/login`, {
+  let recepLogin = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "receptionist@clinic.com", password: "Recep123!" }),
+    body: JSON.stringify({ email: "receptionist@clinic.com", password: "Recep123" }),
   });
-  const recepLoginData = await recepLogin.json();
-  if (recepLoginData.token) {
-    recepToken = recepLoginData.token;
-    console.log("✔ Receptionist logged in.");
-  } else {
-    await fetch(`${BASE_URL}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${adminToken}`,
-      },
-      body: JSON.stringify({
-        name: "Tariq Receptionist",
-        email: "receptionist@clinic.com",
-        password: "Recep123!",
-        role: "Receptionist",
-      }),
-    });
-    const recepReLogin = await fetch(`${BASE_URL}/auth/login`, {
+  let recepLoginData = await recepLogin.json();
+  if (!recepLoginData.token) {
+    recepLogin = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: "receptionist@clinic.com", password: "Recep123!" }),
     });
-    recepToken = (await recepReLogin.json()).token;
-    console.log("✔ Receptionist created & logged in.");
+    recepLoginData = await recepLogin.json();
+  }
+  if (recepLoginData.token) {
+    recepToken = recepLoginData.token;
+    console.log("✔ Receptionist logged in.");
   }
 
   // 4. Ensure an active patient exists
@@ -129,19 +105,18 @@ const runAppointmentTests = async () => {
 
   console.log("\n--------------------------------------------------");
 
-  // Set up test dates (Tomorrow at 10:00 AM)
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(10, 0, 0, 0);
-  const apptDate1Iso = tomorrow.toISOString();
+  // Set up unique collision-proof test dates for this run
+  const testBaseDate = new Date();
+  testBaseDate.setDate(testBaseDate.getDate() + 3 + Math.floor(Math.random() * 20));
+  testBaseDate.setHours(8 + Math.floor(Math.random() * 8), Math.floor(Math.random() * 4) * 15, 0, 0);
+  const apptDate1Iso = testBaseDate.toISOString();
 
-  // Overlapping date (+15 minutes: 10:15 AM)
-  const overlapDate = new Date(tomorrow.getTime() + 15 * 60 * 1000);
+  // Overlapping date (+15 minutes)
+  const overlapDate = new Date(testBaseDate.getTime() + 15 * 60 * 1000);
   const apptOverlapIso = overlapDate.toISOString();
 
-  // Distinct future date for Appointment 2 (Tomorrow at 2:00 PM)
-  const appt2Date = new Date(tomorrow);
-  appt2Date.setHours(14, 0, 0, 0);
+  // Distinct future date for Appointment 2 (+3 hours)
+  const appt2Date = new Date(testBaseDate.getTime() + 3 * 60 * 60 * 1000);
   const apptDate2Iso = appt2Date.toISOString();
 
   let appt1Id = "";
@@ -207,7 +182,7 @@ const runAppointmentTests = async () => {
   // ==========================================
   // STEP 3: Single day filter (?date=YYYY-MM-DD)
   // ==========================================
-  const targetDateStr = tomorrow.toISOString().split("T")[0];
+  const targetDateStr = testBaseDate.toISOString().split("T")[0];
   console.log(`\n[STEP 3] Filter appointments for date: ${targetDateStr}...`);
   const dateFilterRes = await fetch(`${BASE_URL}/appointments?date=${targetDateStr}`, {
     headers: { Authorization: `Bearer ${adminToken}` },
@@ -227,8 +202,8 @@ const runAppointmentTests = async () => {
   // ==========================================
   // STEP 4: Calendar range (?dateFrom=...&dateTo=...)
   // ==========================================
-  const startOfMonth = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), 1).toISOString();
-  const endOfMonth = new Date(tomorrow.getFullYear(), tomorrow.getMonth() + 1, 0, 23, 59, 59).toISOString();
+  const startOfMonth = new Date(testBaseDate.getFullYear(), testBaseDate.getMonth(), 1).toISOString();
+  const endOfMonth = new Date(testBaseDate.getFullYear(), testBaseDate.getMonth() + 1, 0, 23, 59, 59).toISOString();
   console.log(`\n[STEP 4] Query calendar range: from ${startOfMonth.split("T")[0]} to ${endOfMonth.split("T")[0]}...`);
   const rangeRes = await fetch(`${BASE_URL}/appointments?dateFrom=${startOfMonth}&dateTo=${endOfMonth}`, {
     headers: { Authorization: `Bearer ${adminToken}` },

@@ -1,0 +1,19 @@
+{
+  "name": "SmartClinic Healthcare SaaS & Pharmacy",
+  "short_name": "SmartClinic",
+  "description": "Integrated Clinic & Pharmacy Management SaaS with EHR, FEFO inventory, split billing, and Gemini AI.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["medical", "health", "productivity", "business"]
+}

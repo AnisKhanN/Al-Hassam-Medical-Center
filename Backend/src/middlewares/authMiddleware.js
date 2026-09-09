@@ -4,11 +4,11 @@ const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.protect = catchAsync(async (req, res, next) => {
-  // cookie first (browser flow), fall back to Bearer header (useful for curl/Postman testing)
+  // Explicit Bearer header first (API clients/Postman/mobile), fall back to cookie (browser SPA session)
   const token =
-    req.cookies?.token ||
     (req.headers.authorization?.startsWith("Bearer") &&
-      req.headers.authorization.split(" ")[1]);
+      req.headers.authorization.split(" ")[1]) ||
+    req.cookies?.token;
 
   if (!token)
     return next(new AppError("Not authenticated. Please log in.", 401));
@@ -30,7 +30,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!user.isActive)
     return next(new AppError("This account has been deactivated.", 403));
 
+  if (user.clinicStatus === "suspended" || user.clinicStatus === "inactive") {
+    return next(
+      new AppError(
+        "Your clinic account has been suspended or deactivated. Please contact platform support.",
+        403,
+      ),
+    );
+  }
+
   req.user = user;
+  req.clinicId = user.clinicId;
   next();
 });
 
@@ -47,3 +57,24 @@ exports.authorize =
     }
     next();
   };
+
+exports.optionalAuth = catchAsync(async (req, res, next) => {
+  const token =
+    (req.headers.authorization?.startsWith("Bearer") &&
+      req.headers.authorization.split(" ")[1]) ||
+    req.cookies?.token;
+
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    if (user && user.isActive && user.clinicStatus !== "suspended") {
+      req.user = user;
+      req.clinicId = user.clinicId;
+    }
+  } catch (err) {
+    // Invalid/expired token — proceed as unauthenticated participant
+  }
+  next();
+});

@@ -266,7 +266,6 @@ Dashboard Testing Instructions:
    today's bar both update.
 9. As Receptionist, create an unpaid bill → refresh → "Unpaid Bills" count increments.
 
-
 Settings Testing Instructions
 1. Log in as any role → /settings → only "Security" tab visible, no tab switcher shown (single tab).
 2. Enter wrong current password → submit → red "Current password is incorrect" banner.
@@ -281,15 +280,59 @@ Settings Testing Instructions
 9. Try PUT /api/settings/clinic directly as a non-Admin token → expect 403 (backend enforces regardless
    of frontend hiding).
 
+Demonstrating AI Assistant in Frontend
+Navigate to http://localhost:5173/login.
+Log in using email 'admin@clinic.com' and password 'ChangeMe123!'.
+Once logged in, navigate to http://localhost:5173/ai-assistant (or click 'AI Assistant' in the sidebar navigation).
+Inspect the AI Assistant page.
+1. Check the AI Status banner/badge.
+2. In the 'Natural Language Search' tab, click one of the quick sample queries like 'What was our total revenue and sales?' or type 'What is our total revenue?' in the query input and click 'Ask AI' / search. Wait for and view the AI response.
+3. Click on the 'Daily Executive Brief' tab. Wait for the data to load.
+4. Click on the 'Inventory & Expiry' tab. Review the AI inventory risk insights.
+5. Click on the 'Sales & Financial Health' tab. Review the sales insights and summary.
+6. Click on the 'Admin Recommendations' tab. Review the recommendations.
+7. Click on the 'Prescription Digitizer' tab. Review how unstructured clinical/prescription text is parsed.
+8. Click on the 'Audit & Safety Logs' tab. Review the logs.
+Conclude and report all findings clearly with descriptions of each AI capability in the final report.
+
+Testing Landing Page 3D Hero and Dark Mode
+Navigate to http://localhost:5173/
+1. Inspect the new public Landing Page.
+2. Scroll through the 3D Hero section, verifying the Three.js 3D medical core canvas, headline, CTAs, and floating glassmorphism KPI badges.
+3. Test the interactive 'Clinic in Action' tabs (click between 'AI Analytics Engine', 'Doctor EHR Consultation', 'Smart Pharmacy POS', and 'Multi-Gateway Invoicing').
+4. In the top navigation bar, click the ThemeToggle button (Sun/Moon icon) to switch to Dark Mode. Confirm that the theme smoothly switches to dark mode.
+5. Scroll down to check the AI Engine deep dive, Core Clinic Modules, Role-Based Workflows, Security, and FAQ accordion (click an FAQ to expand it).
+6. Click 'Sign In' or 'Launch Demo' to go to the Login page (/login). Verify that dark mode persists on the login page.
+7. Log in with email 'admin@clinic.com' and password 'ChangeMe123!'.
+8. Once inside the dashboard, verify the sidebar navigation: notice 'AI Assistant' is present with its brain/CPU icon, and notice the ThemeToggle switch at the bottom of the sidebar.
+9. Click 'AI Assistant' in the sidebar to navigate to /ai-assistant.
+10. Toggle the theme back to light mode and back to dark mode in the sidebar to confirm smooth theme toggling inside the authenticated app.
+Conclude and report all visual and functional results.
+Scratchpad#L1
+
+Testing AI Assistant
+1. Log in with any authenticated user (Admin, Receptionist, Doctor, etc.).
+2. Navigate to the AI Assistant page from the sidebar menu.
+3. In the chat window, send a test query, such as: "What is the difference between a bacterial and viral infection?"
+4. Observe the AI's response. It should be displayed in the chat window with a thinking indicator while generating.
+5. Try a more specific clinical query, for example: "What are the common symptoms of diabetes?"
+6. Confirm that the response is relevant, accurate, and formatted clearly (e.g., using bullet points for symptoms).
+7. Verify that the conversation history persists (messages remain visible) after a page reload (e.g., refresh the browser tab).
+8. Send another message, for instance: "Suggest a few lifestyle changes for managing diabetes."
+9. Check the AI's response for actionable health advice.
+10. Finally, send a simple conversational message like: "Hello, how are you?" to verify the AI can handle basic small talk.
+
+
+
 How much did I work for free for my project?
 Authentication       ✅
 Users                ✅
 Patients             ✅
 Appointments         ✅
 Billing              ✅
-Pharmacy             ← NOW
-Inventory             ← NOW
-Prescriptions         ← NEXT
-Dashboard             ← NEXT
-Reports              ← NEXT
-AI                   ← LAST
+Pharmacy             ✅
+Inventory            ✅
+Prescriptions        ✅
+Dashboard            ✅
+Reports              ✅
+AI                   ✅

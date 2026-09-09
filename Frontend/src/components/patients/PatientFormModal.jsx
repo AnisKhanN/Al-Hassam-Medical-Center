@@ -65,28 +65,33 @@ const PatientFormModal = ({ isOpen, onClose, onSubmit, editingPatient }) => {
         }
     };
 
-    const inputClass = 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400';
-    const labelClass = 'mb-1 block text-sm font-medium text-slate-600';
+    const inputClass = 'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:disabled:bg-slate-900/50 dark:disabled:text-slate-500 transition-all';
+    const labelClass = 'mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300';
 
     return (
         <AnimatePresence>
             {isOpen && (
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 py-8 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-8 backdrop-blur-md"
                     onClick={onClose}
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl"
+                        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <div className="mb-5 flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-slate-800">{isEditMode ? 'Edit Patient' : 'Register Patient'}</h2>
-                            <button onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><FiX size={18} /></button>
+                        <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{isEditMode ? 'Edit Patient' : 'Register Patient'}</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Complete demographic and medical record information</p>
+                            </div>
+                            <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors">
+                                <FiX size={18} />
+                            </button>
                         </div>
 
-                        {errors.root && <div className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{errors.root.message}</div>}
+                        {errors.root && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950/40 dark:border dark:border-red-900/50 dark:text-red-300">{errors.root.message}</div>}
 
                         <form onSubmit={handleSubmit(submit)} noValidate className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
@@ -117,9 +122,9 @@ const PatientFormModal = ({ isOpen, onClose, onSubmit, editingPatient }) => {
                                 <div>
                                     <label className={labelClass}>Gender</label>
                                     <select className={inputClass} {...register('gender', { required: true })}>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
+                                        <option value="Male" className="dark:bg-slate-900 dark:text-white">Male</option>
+                                        <option value="Female" className="dark:bg-slate-900 dark:text-white">Female</option>
+                                        <option value="Other" className="dark:bg-slate-900 dark:text-white">Other</option>
                                     </select>
                                 </div>
                                 <div>
@@ -154,7 +159,11 @@ const PatientFormModal = ({ isOpen, onClose, onSubmit, editingPatient }) => {
                                 <div>
                                     <label className={labelClass}>Blood Group</label>
                                     <select className={inputClass} {...register('bloodGroup')}>
-                                        {BLOOD_GROUPS.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
+                                        {BLOOD_GROUPS.map((bg) => (
+                                            <option key={bg} value={bg} className="dark:bg-slate-900 dark:text-white">
+                                                {bg}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div>
@@ -163,8 +172,8 @@ const PatientFormModal = ({ isOpen, onClose, onSubmit, editingPatient }) => {
                                 </div>
                             </div>
 
-                            <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
-                                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Emergency Contact</p>
+                            <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                                <p className="mb-2.5 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Emergency Contact</p>
                                 <div className="grid grid-cols-3 gap-3">
                                     <input placeholder="Name" className={inputClass} {...register('emergencyName')} />
                                     <input placeholder="Phone" className={inputClass} {...register('emergencyPhone')} />
@@ -172,13 +181,15 @@ const PatientFormModal = ({ isOpen, onClose, onSubmit, editingPatient }) => {
                                 </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-60"
-                            >
-                                {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Register Patient'}
-                            </button>
+                            <div className="pt-2">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/30 disabled:opacity-60"
+                                >
+                                    {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Register Patient'}
+                                </button>
+                            </div>
                         </form>
                     </motion.div>
                 </motion.div>

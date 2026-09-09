@@ -11,6 +11,7 @@ const {
   getCategories,
   getLowStock,
   getExpiringSoon,
+  getMedicineByBarcode,
 } = require("../controllers/medicineController");
 
 router.use(protect, authorize("Admin", "Pharmacist"));
@@ -18,6 +19,7 @@ router.use(protect, authorize("Admin", "Pharmacist"));
 router.get("/categories", getCategories);
 router.get("/low-stock", getLowStock);
 router.get("/expiring", getExpiringSoon);
+router.get("/barcode/:barcode", getMedicineByBarcode);
 
 router.route("/").get(getMedicines).post(createMedicine);
 router

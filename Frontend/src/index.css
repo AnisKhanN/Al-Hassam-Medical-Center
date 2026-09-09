@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@custom-variant dark (:where(.dark, [data-theme="dark"]) &);
+
 :root {
   font-family:
     Inter,
@@ -10,11 +12,18 @@
   line-height: 1.5;
   font-weight: 400;
   color: #111827;
-  background-color: #f9fafb;
+  background-color: #f8fafc;
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.dark {
+  color-scheme: dark;
+  color: #f1f5f9;
+  background-color: #0b0f19;
 }
 
 * {
@@ -25,9 +34,109 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: #f8fafc;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.dark body {
+  background-color: #0b0f19;
+  color: #f1f5f9;
 }
 
 #root {
   min-height: 100vh;
 }
+
+/* Custom Sheryians-style modern smooth scrollbars */
+html {
+  scroll-behavior: auto;
+  overscroll-behavior-y: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(37, 99, 235, 0.75);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.6);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.85);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* ==========================================================================
+   Dark Mode Form Controls & Input Contrast Hardening
+   Ensures text typed into ANY input in dark mode is crystal-clear & high contrast
+   ========================================================================== */
+.dark input,
+.dark textarea,
+.dark select {
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Invert native date picker icon in dark mode so calendar is clearly visible */
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) brightness(1.2);
+  cursor: pointer;
+}
+
+/* Fix browser autofill in dark mode so it doesn't force a white background with white text */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark textarea:-webkit-autofill,
+.dark textarea:-webkit-autofill:hover,
+.dark textarea:-webkit-autofill:focus,
+.dark select:-webkit-autofill,
+.dark select:-webkit-autofill:hover,
+.dark select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #38bdf8;
+}
+
+/* Ensure inputs with bg-white fall back cleanly to dark slate in dark mode */
+.dark input.bg-white,
+.dark textarea.bg-white,
+.dark select.bg-white {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+
