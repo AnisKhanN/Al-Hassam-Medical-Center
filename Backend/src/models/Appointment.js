@@ -23,6 +23,12 @@ const appointmentSchema = new mongoose.Schema(
       required: [true, "Reason for visit is required"],
       trim: true,
     },
+    specialty: {
+      type: String,
+      trim: true,
+      default: "General Medicine",
+      index: true,
+    },
     status: {
       type: String,
       enum: ["Scheduled", "Completed", "Cancelled", "No-show"],

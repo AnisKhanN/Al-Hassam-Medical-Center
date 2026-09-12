@@ -1,16 +1,14 @@
 import { Link } from "react-router-dom";
 import {
   FiActivity,
-  FiMail,
   FiPhone,
   FiMapPin,
-  FiGithub,
-  FiLinkedin,
-  FiGlobe,
-  FiArrowRight,
   FiArrowUp,
-  FiShield,
-  FiCpu,
+  FiClock,
+  FiUsers,
+  FiPackage,
+  FiHeart,
+  FiMessageCircle,
   FiCheckCircle,
 } from "react-icons/fi";
 import { useSmoothScroll } from "../../hooks/useSmoothScroll";
@@ -31,295 +29,219 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800/90 text-slate-600 dark:text-slate-400 text-xs pt-12 pb-20 sm:pb-12 transition-colors duration-200">
+    <footer className="w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800/90 text-slate-600 dark:text-slate-400 text-xs pt-14 pb-20 sm:pb-12 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12">
           {/* Column 1 & 2: Brand Profile, Mission, Live Status & Socials */}
           <div className="sm:col-span-2 space-y-4 text-left">
             <Link to="/" className="inline-flex items-center gap-3 group">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform duration-200">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-blue-600 text-white shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
                 <FiActivity size={20} className="stroke-[2.5]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    SmartClinic
+                    Al-Hassam Medical Center
                   </span>
-                  <span className="rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
-                    SaaS OS
+                  <span className="rounded-full bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                    24/7 Open
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  BSIT Capstone Project • Lead Architect: Anis Khan Niazi
+                  Nawabshah Road, City Sanghar
                 </p>
               </div>
             </Link>
 
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-sm">
-              An enterprise-grade, multi-tenant clinical operating system
-              unifying Electronic Health Records (EHR), FEFO inventory,
-              conflict-free scheduling, and bilingual AI discharge intelligence.
+              Al-Hassam Medical Center is a dedicated 24-hour healthcare facility
+              providing around-the-clock emergency medical care, outpatient
+              clinics, on-site pharmacy, and visiting specialist doctor
+              consultations in Sanghar, Sindh.
             </p>
 
-            {/* Live Status Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+            {/* Operating Hours & Status */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>All Systems Operational • 99.98% SLA</span>
+              <span>Open 24 Hours • Monday to Sunday (All Day)</span>
             </div>
 
-            {/* Social Media & Contact Accounts */}
-            <div className="pt-2">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-                Connect With The Founder
+            {/* Helpline Fast Action */}
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
+              <a
+                href="tel:+923325136733"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 transition-colors shadow-xs"
+              >
+                <FiPhone size={13} className="animate-pulse" />
+                <span>+92 332 5136733</span>
+              </a>
+              <a
+                href="https://wa.me/923325136733?text=Hello%20Al-Hassam%20Medical%20Center,%20I%20need%20assistance."
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs px-3.5 py-2 transition-colors"
+              >
+                <FiMessageCircle size={13} className="text-emerald-500" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Column 2: Specialist Disciplines */}
+          <div className="space-y-3 text-left">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+              <FiUsers className="text-blue-500" />
+              <span>Specialist Faculty</span>
+            </p>
+            <ul className="space-y-2">
+              {[
+                "Child Care & Pediatrics",
+                "General Medicine",
+                "Cardiology",
+                "Gastroenterology",
+                "General Surgery",
+                "Gynecology & Obstetrics",
+                "Ophthalmology (Eye Care)",
+              ].map((specialty, idx) => (
+                <li key={idx}>
+                  <button
+                    onClick={() => handleScrollTo("#specialists")}
+                    className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-0.5 transition-colors cursor-pointer"
+                  >
+                    {specialty}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Clinical Facilities */}
+          <div className="space-y-3 text-left">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+              <FiPackage className="text-emerald-500" />
+              <span>Facilities &amp; Services</span>
+            </p>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => handleScrollTo("#facilities")}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 text-left py-0.5 transition-colors cursor-pointer"
+                >
+                  24/7 Emergency &amp; Triage
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleScrollTo("#facilities")}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 text-left py-0.5 transition-colors cursor-pointer"
+                >
+                  On-Site 24-Hour Pharmacy
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleScrollTo("#facilities")}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 text-left py-0.5 transition-colors cursor-pointer"
+                >
+                  Outpatient Consultation Suites
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleScrollTo("#facilities")}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 text-left py-0.5 transition-colors cursor-pointer"
+                >
+                  12-Lead Diagnostic ECG
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleScrollTo("#facilities")}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 text-left py-0.5 transition-colors cursor-pointer"
+                >
+                  Maternal &amp; Child Health Suite
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleScrollTo("#facilities")}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 text-left py-0.5 transition-colors cursor-pointer"
+                >
+                  Minor Surgery &amp; Wound Dressing
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Location, Emergency & Staff Login */}
+          <div className="space-y-3 text-left">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+              <FiMapPin className="text-teal-500" />
+              <span>Location &amp; Access</span>
+            </p>
+            <div className="space-y-2 text-xs">
+              <p className="font-semibold text-slate-900 dark:text-white leading-snug">
+                Nawabshah Road, City Sanghar
               </p>
-              <div className="flex items-center gap-2.5">
-                <a
-                  href="https://linkedin.com/in/aniskhanniazi"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="LinkedIn Profile"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-xs"
-                >
-                  <FiLinkedin size={15} />
-                </a>
-                <a
-                  href="https://github.com/aniskhanniazi"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="GitHub Repository"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-900 hover:text-white dark:hover:bg-slate-700 dark:hover:text-white transition-all shadow-xs"
-                >
-                  <FiGithub size={15} />
-                </a>
-                <a
-                  href="mailto:aniskhan22@gmail.com"
-                  aria-label="Email Contact"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all shadow-xs"
-                >
-                  <FiMail size={15} />
-                </a>
-                <a
-                  href="tel:+923000000000"
-                  aria-label="Telephone Support"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white transition-all shadow-xs"
-                >
-                  <FiPhone size={15} />
-                </a>
-              </div>
-            </div>
-          </div>
+              <p className="text-slate-500 dark:text-slate-400">
+                Sindh, Pakistan
+              </p>
 
-          {/* Column 2: Clinical Platform */}
-          <div className="space-y-3 text-left">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Clinical Platform
-            </p>
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#features")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  Patient EHR &amp; Records
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#features")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  Conflict-Free Scheduling
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#modules")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  FEFO Pharmacy POS
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#ai-engine")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  Dual-Engine Gemini AI
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#workflows")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  WebRTC Telemedicine
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#security")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  Multi-Gateway Invoicing
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Company & E-E-A-T */}
-          <div className="space-y-3 text-left">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Company &amp; Story
-            </p>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/about"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors"
-                >
-                  About Us &amp; Founder
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about#story"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors"
-                >
-                  Why I Started SmartClinic
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about#values"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors"
-                >
-                  Our Core Values &amp; Mission
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#security")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  E-E-A-T &amp; Trust Architecture
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleScrollTo("#faq")}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 text-left py-1 transition-colors"
-                >
-                  Frequently Asked Questions
-                </button>
-              </li>
-              <li>
-                <Link
-                  to="/docs"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors text-blue-600 dark:text-blue-400 font-bold"
-                >
-                  Docs &amp; Reports Center
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="/PROJECT_REPORT.md"
-                  download="SmartClinic_PROJECT_REPORT.md"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors text-[11px]"
-                >
-                  📥 Download FYP Report (.md)
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/RBAC_AUDIT_REPORT.md"
-                  download="SmartClinic_RBAC_AUDIT_REPORT.md"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors text-[11px]"
-                >
-                  📥 Download RBAC Audit (.md)
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/api/health"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 block py-1 transition-colors text-emerald-600 dark:text-emerald-400 font-semibold"
-                >
-                  API Health Probe
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Location, Support & Staff Login */}
-          <div className="space-y-3 text-left">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Deployment &amp; Access
-            </p>
-            <div className="space-y-2.5 text-xs">
-              <div className="flex items-start gap-2 text-slate-600 dark:text-slate-300">
-                <FiMapPin className="text-blue-500 mt-0.5 shrink-0" size={14} />
-                <span>
-                  Sector F-10, Islamabad &amp; Sanghar, Sindh, Pakistan
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                <FiMail className="text-blue-500 shrink-0" size={14} />
-                <a
-                  href="mailto:aniskhan22@gmail.com"
-                  className="hover:underline truncate"
-                >
-                  aniskhan22@gmail.com
-                </a>
-              </div>
               <div className="pt-2">
+                <a
+                  href="https://maps.google.com/?q=Nawabshah+Road+Sanghar"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                >
+                  <FiMapPin size={12} />
+                  <span>Google Maps Route</span>
+                </a>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Doctor / Staff Portal
+                </p>
                 <Link
                   to="/login"
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 text-white font-bold px-4 py-2.5 shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all text-xs"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 mt-1"
                 >
-                  <span>Staff Portal Login</span>
-                  <FiArrowRight size={14} />
+                  <span>Portal Sign In →</span>
                 </Link>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Sub-Footer Bar */}
-        <div className="border-t border-slate-200 dark:border-slate-800/80 pt-8 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="space-y-1">
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              © {new Date().getFullYear()} SmartClinic SaaS. All rights
-              reserved.
-            </p>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500">
-              Designed, Engineered &amp; Maintained with pride by{" "}
-              <strong className="text-slate-700 dark:text-slate-300 font-semibold">
-                Anis Khan Niazi
-              </strong>
-            </p>
-          </div>
+        {/* Bottom Bar: Copyright, Location & Scroll to Top */}
+        <div className="mt-12 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 dark:text-slate-400">
+          <p className="text-center sm:text-left">
+            © {new Date().getFullYear()} Al-Hassam Medical Center. Nawabshah
+            Road, City Sanghar. All Rights Reserved.
+          </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] font-medium">
-            <span className="text-slate-400 dark:text-slate-600 hidden sm:inline">
-              •
-            </span>
-            <span className="text-slate-500 dark:text-slate-400">
-              HIPAA &amp; FHIR Inspired
-            </span>
-            <span className="text-slate-400 dark:text-slate-600 hidden sm:inline">
-              •
-            </span>
-            <span className="text-slate-500 dark:text-slate-400">
-              ISO 27001 Controls
-            </span>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => handleScrollTo("#faq")}
+              className="hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            >
+              Patient FAQs
+            </button>
+            <button
+              onClick={() => handleScrollTo("#contact")}
+              className="hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            >
+              Contact Hub
+            </button>
             <button
               onClick={handleBackToTop}
-              className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer ml-2"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold transition-colors cursor-pointer"
+              aria-label="Back to top of page"
             >
               <span>Back to Top</span>
               <FiArrowUp size={12} />

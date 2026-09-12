@@ -1,5 +1,6 @@
 const ClinicSettings = require("../models/ClinicSettings");
 const User = require("../models/User");
+const Clinic = require("../models/Clinic");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -21,16 +22,45 @@ exports.getClinicSettings = catchAsync(async (req, res) => {
 });
 
 exports.updateClinicSettings = catchAsync(async (req, res, next) => {
-  const { clinicName, address, phone, email } = req.body;
+  const {
+    clinicName,
+    address,
+    phone,
+    email,
+    tagline,
+    emergencyContact,
+    website,
+    defaultConsultationFee,
+  } = req.body;
   if (!clinicName) return next(new AppError("Clinic name is required", 400));
 
   const settings = await getOrCreateSettings(req.user.clinicId, req.user.id);
-  settings.clinicName = clinicName;
-  settings.address = address;
-  settings.phone = phone;
-  settings.email = email;
+  settings.clinicName = clinicName.trim();
+  if (address !== undefined) settings.address = address;
+  if (phone !== undefined) settings.phone = phone;
+  if (email !== undefined) settings.email = email;
+  if (tagline !== undefined) settings.tagline = tagline;
+  if (emergencyContact !== undefined) settings.emergencyContact = emergencyContact;
+  if (website !== undefined) settings.website = website;
+  if (defaultConsultationFee !== undefined) {
+    settings.defaultConsultationFee = Number(defaultConsultationFee) || 0;
+  }
   settings.updatedBy = req.user.id;
   await settings.save();
+
+  // Synchronize with primary Clinic record and User clinic tenancy names
+  if (req.user.clinicId) {
+    await Clinic.findByIdAndUpdate(req.user.clinicId, {
+      name: settings.clinicName,
+      phone: settings.phone,
+      address: settings.address,
+      email: settings.email,
+    });
+    await User.updateMany(
+      { clinicId: req.user.clinicId },
+      { clinicName: settings.clinicName }
+    );
+  }
 
   res.status(200).json({ success: true, data: settings });
 });

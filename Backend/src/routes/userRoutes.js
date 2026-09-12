@@ -9,13 +9,14 @@ const {
   updateUser,
   deactivateUser,
   getDoctors,
+  toggleDoctorDuty,
 } = require("../controllers/userController");
 
 router.use(protect);
 
-// Needed by Receptionists to populate the doctor dropdown when booking
-// appointments — intentionally placed before the Admin-only gate below.
-router.get("/doctors", authorize("Admin", "Receptionist"), getDoctors);
+// Needed by Admin, Receptionists, and Doctors for roster & dropdowns
+router.get("/doctors", authorize("Admin", "Receptionist", "Doctor"), getDoctors);
+router.patch("/:id/duty", authorize("Admin", "Doctor"), toggleDoctorDuty);
 
 router.use(authorize("Admin"));
 

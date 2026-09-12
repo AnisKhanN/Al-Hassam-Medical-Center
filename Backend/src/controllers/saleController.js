@@ -42,56 +42,74 @@ exports.createSale = catchAsync(async (req, res, next) => {
     }
   }
 
-  const session = await mongoose.startSession();
   let saleDoc;
-  try {
-    await session.withTransaction(async () => {
-      const saleItems = [];
+  const performSale = async (sess) => {
+    const saleItems = [];
 
-      for (const item of items) {
-        const medicine = await Medicine.findOne({
-          _id: item.medicine,
-          clinicId: req.user.clinicId,
-          isActive: true,
-        }).session(session);
-        if (!medicine)
-          throw new AppError(
-            `Medicine ${item.medicine} not found or inactive`,
-            404,
-          );
+    for (const item of items) {
+      const query = Medicine.findOne({
+        _id: item.medicine,
+        clinicId: req.user.clinicId,
+        isActive: true,
+      });
+      if (sess) query.session(sess);
+      const medicine = await query;
+      if (!medicine)
+        throw new AppError(
+          `Medicine ${item.medicine} not found or inactive`,
+          404,
+        );
 
-        const deductedFrom = deductFEFO(medicine, item.quantity);
-        if (!deductedFrom) {
-          throw new AppError(
-            `Insufficient stock for ${medicine.name} (requested ${item.quantity}, available ${medicine.totalStock})`,
-            409,
-          );
-        }
-
-        await medicine.save({ session });
-
-        saleItems.push({
-          medicine: medicine._id,
-          medicineName: medicine.name,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice ?? medicine.unitPrice,
-          deductedFrom,
-        });
+      const deductedFrom = deductFEFO(medicine, item.quantity);
+      if (!deductedFrom) {
+        throw new AppError(
+          `Insufficient stock for ${medicine.name} (requested ${item.quantity}, available ${medicine.totalStock})`,
+          409,
+        );
       }
 
-      const saleId = await generateSaleId(req.user.clinicId);
-      const sale = new Sale({
-        clinicId: req.user.clinicId,
-        saleId,
-        items: saleItems,
-        customerName,
-        customerPhone,
-        soldBy: req.user.id,
+      await medicine.save(sess ? { session: sess } : undefined);
+
+      saleItems.push({
+        medicine: medicine._id,
+        medicineName: medicine.name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice ?? medicine.unitPrice,
+        deductedFrom,
       });
-      sale.recalculate();
-      await sale.save({ session });
-      saleDoc = sale;
+    }
+
+    const saleId = await generateSaleId(req.user.clinicId);
+    const sale = new Sale({
+      clinicId: req.user.clinicId,
+      saleId,
+      items: saleItems,
+      customerName,
+      customerPhone,
+      soldBy: req.user.id,
     });
+    sale.recalculate();
+    await sale.save(sess ? { session: sess } : undefined);
+    saleDoc = sale;
+  };
+
+  const session = await mongoose.startSession().catch(() => null);
+  try {
+    if (session) {
+      try {
+        await session.withTransaction(async () => {
+          await performSale(session);
+        });
+      } catch (txnErr) {
+        if (/replica set/i.test(txnErr.message) || /transaction numbers/i.test(txnErr.message)) {
+          await performSale(null);
+        } else {
+          throw txnErr;
+        }
+      }
+    } else {
+      await performSale(null);
+    }
   } catch (err) {
     return next(
       err instanceof AppError
@@ -99,7 +117,7 @@ exports.createSale = catchAsync(async (req, res, next) => {
         : new AppError(err.message || "Failed to record sale", 500),
     );
   } finally {
-    session.endSession();
+    if (session) session.endSession();
   }
 
   const populated = await Sale.findOne({ _id: saleDoc._id, clinicId: req.user.clinicId })
@@ -110,8 +128,8 @@ exports.createSale = catchAsync(async (req, res, next) => {
 
 exports.getSales = catchAsync(async (req, res) => {
   const { status, dateFrom, dateTo } = req.query;
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
   const skip = (page - 1) * limit;
 
   const filter = { clinicId: req.user.clinicId };
@@ -158,27 +176,45 @@ exports.voidSale = catchAsync(async (req, res, next) => {
   if (sale.status === "Voided")
     return next(new AppError("Sale is already voided", 400));
 
-  const session = await mongoose.startSession();
+  const performVoid = async (sess) => {
+    for (const item of sale.items) {
+      const query = Medicine.findOne({
+        _id: item.medicine,
+        clinicId: req.user.clinicId,
+      });
+      if (sess) query.session(sess);
+      const medicine = await query;
+      if (!medicine) continue;
+
+      item.deductedFrom.forEach(({ batchId, quantity }) => {
+        const batch = medicine.batches.id(batchId);
+        if (batch) batch.quantity += quantity;
+      });
+      await medicine.save(sess ? { session: sess } : undefined);
+    }
+
+    sale.status = "Voided";
+    sale.voidReason = voidReason;
+    await sale.save(sess ? { session: sess } : undefined);
+  };
+
+  const session = await mongoose.startSession().catch(() => null);
   try {
-    await session.withTransaction(async () => {
-      for (const item of sale.items) {
-        const medicine = await Medicine.findOne({
-          _id: item.medicine,
-          clinicId: req.user.clinicId,
-        }).session(session);
-        if (!medicine) continue;
-
-        item.deductedFrom.forEach(({ batchId, quantity }) => {
-          const batch = medicine.batches.id(batchId);
-          if (batch) batch.quantity += quantity;
+    if (session) {
+      try {
+        await session.withTransaction(async () => {
+          await performVoid(session);
         });
-        await medicine.save({ session });
+      } catch (txnErr) {
+        if (/replica set/i.test(txnErr.message) || /transaction numbers/i.test(txnErr.message)) {
+          await performVoid(null);
+        } else {
+          throw txnErr;
+        }
       }
-
-      sale.status = "Voided";
-      sale.voidReason = voidReason;
-      await sale.save({ session });
-    });
+    } else {
+      await performVoid(null);
+    }
   } catch (err) {
     return next(
       err instanceof AppError
@@ -186,7 +222,7 @@ exports.voidSale = catchAsync(async (req, res, next) => {
         : new AppError(err.message || "Failed to void sale", 500),
     );
   } finally {
-    session.endSession();
+    if (session) session.endSession();
   }
 
   const populated = await Sale.findOne({ _id: sale._id, clinicId: req.user.clinicId })
@@ -208,11 +244,13 @@ exports.getSalesSummary = catchAsync(async (req, res) => {
     ? new Date(req.query.dateFrom)
     : new Date(dateTo.getFullYear(), dateTo.getMonth(), 1);
 
+  const clinicObjectId = new mongoose.Types.ObjectId(req.user.clinicId);
+
   const [dailySales, topMedicines, totals] = await Promise.all([
     Sale.aggregate([
       {
         $match: {
-          clinicId: req.user.clinicId,
+          clinicId: clinicObjectId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },
@@ -228,7 +266,7 @@ exports.getSalesSummary = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
-          clinicId: req.user.clinicId,
+          clinicId: clinicObjectId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },
@@ -249,7 +287,7 @@ exports.getSalesSummary = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
-          clinicId: req.user.clinicId,
+          clinicId: clinicObjectId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },

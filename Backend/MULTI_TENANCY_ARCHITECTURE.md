@@ -1,8 +1,8 @@
-# SmartClinic SaaS — Multi-Tenant Architecture & Security Specification
+# SmartClinic SaaS, Multi-Tenant Architecture & Security Specification
 
-**System:** Smart Clinic & Pharmacy Management SaaS for Local Healthcare Facilities  
-**Author:** Anis Khan Niazi (BSIT Final Year Project)  
-**Technology Stack:** Node.js, Express 5, MongoDB Atlas, Mongoose 9, React + Vite, JWT + HttpOnly Cookies  
+**System:** Smart Clinic & Pharmacy Management SaaS for Local Healthcare Facilities
+**Author:** Anis Khan Niazi (BSIT Final Year Project)
+**Technology Stack:** Node.js, Express 5, MongoDB Atlas, Mongoose 9, React + Vite, JWT + HttpOnly Cookies
 
 ---
 
@@ -31,6 +31,7 @@ graph TD
 ## 2. Tenant Onboarding & Authentication Architecture
 
 ### 2.1 Self-Service Clinic Onboarding
+
 - **Route:** `POST /api/auth/register-clinic` (also aliased to `POST /api/auth/register`)
 - **Access:** Public
 - **Provisioning Steps:**
@@ -43,7 +44,9 @@ graph TD
   7. Signs and issues JWT token and secure cookie.
 
 ### 2.2 JWT Payload Structure
+
 The JWT token issued upon login or clinic creation encapsulates tenant context:
+
 ```json
 {
   "id": "6aa170ed562fde854d97dc4a",
@@ -55,7 +58,9 @@ The JWT token issued upon login or clinic creation encapsulates tenant context:
 ```
 
 ### 2.3 Middleware Tenant Enforcement
+
 Every authenticated request passes through `protect` in `src/middlewares/authMiddleware.js`:
+
 - Verifies JWT signature and expiry.
 - Fetches active user and verifies `user.isActive === true`.
 - **Tenant Status Guard:** If `user.clinicStatus === 'suspended'` or `user.clinicStatus === 'inactive'`, the request is blocked with `403 Forbidden`.
@@ -67,24 +72,24 @@ Every authenticated request passes through `protect` in `src/middlewares/authMid
 
 SmartClinic defines four distinct clinical operational roles:
 
-| Module / Endpoint Group | Admin | Doctor | Receptionist | Pharmacist | Tenant Scoping Rule |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| **Clinic Settings** (`/settings`) | ✅ Read/Write | ❌ | ❌ | ❌ | Scoped to `clinicId` |
-| **Staff Management** (`/users`) | ✅ Full CRUD | ❌ | ❌ | ❌ | Only lists staff in same `clinicId` |
-| **Doctor List** (`/users/doctors`) | ✅ Read | ✅ Read | ✅ Read | ❌ | Active doctors within `clinicId` |
-| **Patient Demographics** (`/patients`) | ✅ Full CRUD | ✅ Read | ✅ Full CRUD | ❌ | Scoped to `clinicId` |
-| **Clinical EHR Notes** (`/patients/:id/history`) | ❌ | ✅ Write | ❌ | ❌ | Doctor must belong to same `clinicId` |
-| **Appointments** (`/appointments`) | ✅ Full CRUD | ✅ Doctor Scoped | ✅ Full CRUD | ❌ | Scoped to `clinicId`; Doctors view their assigned slots |
-| **Appointment Completion** | ❌ | ✅ Assigned Only | ❌ | ❌ | Only assigned doctor can mark Completed |
-| **Billing & Payments** (`/bills`) | ✅ Full CRUD | ❌ | ✅ Full CRUD | ❌ | Scoped to `clinicId` |
-| **Revenue Analytics** (`/bills/revenue`, `/reports/revenue`) | ✅ Read | ❌ | ❌ | ❌ | Strictly Admin; grouped by `clinicId` |
-| **Pharmacy Suppliers** (`/suppliers`) | ✅ Full CRUD | ❌ | ❌ | ✅ Full CRUD | Scoped to `clinicId` |
-| **Medicine Inventory** (`/medicines`) | ✅ Full CRUD | ❌ | ❌ | ✅ Full CRUD | Scoped to `clinicId` |
-| **POS Medicine Sales** (`/sales`) | ✅ Full CRUD | ❌ | ❌ | ✅ Create/Read | Scoped to `clinicId`; FEFO auto-deduction |
-| **Void Sale & Restock** (`/sales/:id/void`) | ✅ Write | ❌ | ❌ | ❌ | Admin authorization required to reverse transaction |
-| **Operations Dashboard** (`/dashboard`) | ✅ Overview/Rev/Pharm | ✅ 'Your Day' | ✅ Overview/Rev | ✅ Inventory/Sales | Zero 403s: Frontend views align with RBAC permissions |
-| **Bilingual Gemini AI** (`/ai`) | ✅ Full | ✅ Clinical Notes | ✅ Daily Report | ✅ Stock Insights | Multi-tenant audit trail with non-blocking logging |
-| **Telemedicine** (`/telemedicine`) | ✅ Read/Write | ✅ Read/Write | ❌ | ❌ | WebRTC room generation; EHR masked for unauthenticated |
+| Module / Endpoint Group                                      |         Admin         |      Doctor       |  Receptionist   |     Pharmacist     | Tenant Scoping Rule                                     |
+| :----------------------------------------------------------- | :-------------------: | :---------------: | :-------------: | :----------------: | :------------------------------------------------------ |
+| **Clinic Settings** (`/settings`)                            |     ✅ Read/Write     |        ❌         |       ❌        |         ❌         | Scoped to `clinicId`                                    |
+| **Staff Management** (`/users`)                              |     ✅ Full CRUD      |        ❌         |       ❌        |         ❌         | Only lists staff in same `clinicId`                     |
+| **Doctor List** (`/users/doctors`)                           |        ✅ Read        |      ✅ Read      |     ✅ Read     |         ❌         | Active doctors within `clinicId`                        |
+| **Patient Demographics** (`/patients`)                       |     ✅ Full CRUD      |      ✅ Read      |  ✅ Full CRUD   |         ❌         | Scoped to `clinicId`                                    |
+| **Clinical EHR Notes** (`/patients/:id/history`)             |          ❌           |     ✅ Write      |       ❌        |         ❌         | Doctor must belong to same `clinicId`                   |
+| **Appointments** (`/appointments`)                           |     ✅ Full CRUD      | ✅ Doctor Scoped  |  ✅ Full CRUD   |         ❌         | Scoped to `clinicId`; Doctors view their assigned slots |
+| **Appointment Completion**                                   |          ❌           | ✅ Assigned Only  |       ❌        |         ❌         | Only assigned doctor can mark Completed                 |
+| **Billing & Payments** (`/bills`)                            |     ✅ Full CRUD      |        ❌         |  ✅ Full CRUD   |         ❌         | Scoped to `clinicId`                                    |
+| **Revenue Analytics** (`/bills/revenue`, `/reports/revenue`) |        ✅ Read        |        ❌         |       ❌        |         ❌         | Strictly Admin; grouped by `clinicId`                   |
+| **Pharmacy Suppliers** (`/suppliers`)                        |     ✅ Full CRUD      |        ❌         |       ❌        |    ✅ Full CRUD    | Scoped to `clinicId`                                    |
+| **Medicine Inventory** (`/medicines`)                        |     ✅ Full CRUD      |        ❌         |       ❌        |    ✅ Full CRUD    | Scoped to `clinicId`                                    |
+| **POS Medicine Sales** (`/sales`)                            |     ✅ Full CRUD      |        ❌         |       ❌        |   ✅ Create/Read   | Scoped to `clinicId`; FEFO auto-deduction               |
+| **Void Sale & Restock** (`/sales/:id/void`)                  |       ✅ Write        |        ❌         |       ❌        |         ❌         | Admin authorization required to reverse transaction     |
+| **Operations Dashboard** (`/dashboard`)                      | ✅ Overview/Rev/Pharm |   ✅ 'Your Day'   | ✅ Overview/Rev | ✅ Inventory/Sales | Zero 403s: Frontend views align with RBAC permissions   |
+| **Bilingual Gemini AI** (`/ai`)                              |        ✅ Full        | ✅ Clinical Notes | ✅ Daily Report | ✅ Stock Insights  | Multi-tenant audit trail with non-blocking logging      |
+| **Telemedicine** (`/telemedicine`)                           |     ✅ Read/Write     |   ✅ Read/Write   |       ❌        |         ❌         | WebRTC room generation; EHR masked for unauthenticated  |
 
 ---
 
@@ -114,7 +119,7 @@ patientSchema.index(
   {
     unique: true,
     partialFilterExpression: { cnic: { $type: "string" } },
-  }
+  },
 );
 patientSchema.index({ clinicId: 1, phone: 1 });
 patientSchema.index({ clinicId: 1, createdAt: -1 });
@@ -162,10 +167,13 @@ appointmentSchema.index({ clinicId: 1, appointmentDate: 1 });
 ## 7. Automated Test Verification Suite
 
 Run all verification test suites locally with:
+
 ```bash
 npm test
 ```
+
 Or run individual sub-suites:
+
 ```bash
 npm run test:auth       # Multi-tenant onboarding & JWT tests
 npm run test:rbac       # 96-endpoint RBAC security matrix

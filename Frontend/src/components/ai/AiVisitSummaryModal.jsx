@@ -426,8 +426,8 @@ const AiVisitSummaryModal = ({
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
                     <span>
-                      Operating in Fail-Safe Heuristic Mode (FYP Viva / Offline
-                      failover active)
+                      Operating in Fail-Safe Heuristic Mode (Autonomous Offline
+                      Failover Active)
                     </span>
                   </div>
                   <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">

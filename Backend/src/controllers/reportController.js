@@ -1,8 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+const mongoose = require("mongoose");
 const Bill = require("../models/Bill");
 const Appointment = require("../models/Appointment");
 const Patient = require("../models/Patient");
 const Medicine = require("../models/Medicine");
 const Sale = require("../models/Sale");
+const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
 // Helper to parse date bounds (defaults to current month)
@@ -25,10 +29,11 @@ const parseDateRange = (query) => {
 // @access  Private/Admin,Receptionist
 exports.getRevenueReport = catchAsync(async (req, res) => {
   const { dateFrom, dateTo } = parseDateRange(req.query);
+  const clinicObjectId = new mongoose.Types.ObjectId(req.user.clinicId);
 
   const [totals, dailyTrend, byMethod, bills] = await Promise.all([
     Bill.aggregate([
-      { $match: { clinicId: req.user.clinicId, createdAt: { $gte: dateFrom, $lte: dateTo } } },
+      { $match: { clinicId: clinicObjectId, createdAt: { $gte: dateFrom, $lte: dateTo } } },
       {
         $group: {
           _id: null,
@@ -50,7 +55,7 @@ exports.getRevenueReport = catchAsync(async (req, res) => {
       },
     ]),
     Bill.aggregate([
-      { $match: { clinicId: req.user.clinicId, createdAt: { $gte: dateFrom, $lte: dateTo } } },
+      { $match: { clinicId: clinicObjectId, createdAt: { $gte: dateFrom, $lte: dateTo } } },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
@@ -62,7 +67,7 @@ exports.getRevenueReport = catchAsync(async (req, res) => {
       { $sort: { _id: 1 } },
     ]),
     Bill.aggregate([
-      { $match: { clinicId: req.user.clinicId, "payments.date": { $gte: dateFrom, $lte: dateTo } } },
+      { $match: { clinicId: clinicObjectId, "payments.date": { $gte: dateFrom, $lte: dateTo } } },
       { $unwind: "$payments" },
       {
         $match: { "payments.date": { $gte: dateFrom, $lte: dateTo } },
@@ -114,17 +119,17 @@ exports.getRevenueReport = catchAsync(async (req, res) => {
 // @access  Private/Admin,Doctor,Receptionist
 exports.getAppointmentReport = catchAsync(async (req, res) => {
   const { dateFrom, dateTo } = parseDateRange(req.query);
+  const clinicObjectId = new mongoose.Types.ObjectId(req.user.clinicId);
 
   const matchFilter = {
-    clinicId: req.user.clinicId,
+    clinicId: clinicObjectId,
     appointmentDate: { $gte: dateFrom, $lte: dateTo },
   };
 
   // If doctor, force scope to their appointments
   if (req.user.role === "Doctor") {
-    matchFilter.doctor = req.user._id;
+    matchFilter.doctor = new mongoose.Types.ObjectId(req.user._id);
   } else if (req.query.doctor) {
-    const mongoose = require("mongoose");
     if (mongoose.Types.ObjectId.isValid(req.query.doctor)) {
       matchFilter.doctor = new mongoose.Types.ObjectId(req.query.doctor);
     }
@@ -242,6 +247,7 @@ exports.getAppointmentReport = catchAsync(async (req, res) => {
 // @access  Private/Admin,Doctor,Receptionist
 exports.getPatientReport = catchAsync(async (req, res) => {
   const { dateFrom, dateTo } = parseDateRange(req.query);
+  const clinicObjectId = new mongoose.Types.ObjectId(req.user.clinicId);
 
   const [
     newRegisteredInRange,
@@ -258,17 +264,17 @@ exports.getPatientReport = catchAsync(async (req, res) => {
     }),
     Patient.countDocuments({ clinicId: req.user.clinicId, isActive: true }),
     Patient.aggregate([
-      { $match: { clinicId: req.user.clinicId, isActive: true } },
+      { $match: { clinicId: clinicObjectId, isActive: true } },
       { $group: { _id: "$gender", count: { $sum: 1 } } },
     ]),
     Patient.aggregate([
-      { $match: { clinicId: req.user.clinicId, isActive: true, bloodGroup: { $ne: null } } },
+      { $match: { clinicId: clinicObjectId, isActive: true, bloodGroup: { $ne: null } } },
       { $group: { _id: "$bloodGroup", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
     ]),
     Patient.aggregate([
       {
-        $match: { clinicId: req.user.clinicId, createdAt: { $gte: dateFrom, $lte: dateTo }, isActive: true },
+        $match: { clinicId: clinicObjectId, createdAt: { $gte: dateFrom, $lte: dateTo }, isActive: true },
       },
       {
         $group: {
@@ -341,10 +347,11 @@ exports.getPatientReport = catchAsync(async (req, res) => {
 // @access  Private/Admin,Pharmacist
 exports.getPharmacyReport = catchAsync(async (req, res) => {
   const { dateFrom, dateTo } = parseDateRange(req.query);
+  const clinicObjectId = new mongoose.Types.ObjectId(req.user.clinicId);
 
   const [totals, dailyTrend, topMedicines, records] = await Promise.all([
     Sale.aggregate([
-      { $match: { clinicId: req.user.clinicId, createdAt: { $gte: dateFrom, $lte: dateTo } } },
+      { $match: { clinicId: clinicObjectId, createdAt: { $gte: dateFrom, $lte: dateTo } } },
       {
         $group: {
           _id: null,
@@ -366,7 +373,7 @@ exports.getPharmacyReport = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
-          clinicId: req.user.clinicId,
+          clinicId: clinicObjectId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },
@@ -383,7 +390,7 @@ exports.getPharmacyReport = catchAsync(async (req, res) => {
     Sale.aggregate([
       {
         $match: {
-          clinicId: req.user.clinicId,
+          clinicId: clinicObjectId,
           status: "Completed",
           createdAt: { $gte: dateFrom, $lte: dateTo },
         },
@@ -551,8 +558,6 @@ exports.getInventoryReport = catchAsync(async (req, res) => {
 // @route   GET /api/reports/docs/:type
 // @access  Public / All Devices
 exports.getDocumentationReport = catchAsync(async (req, res, next) => {
-  const fs = require("fs");
-  const path = require("path");
   const type = req.params.type?.toLowerCase();
 
   let targetFilename = "PROJECT_REPORT.md";
@@ -606,4 +611,3 @@ exports.getDocumentationReport = catchAsync(async (req, res, next) => {
     },
   });
 });
-

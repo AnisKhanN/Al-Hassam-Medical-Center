@@ -39,6 +39,44 @@ const userSchema = new mongoose.Schema(
       required: [true, "Role is required"],
       trim: true,
     },
+    specialty: {
+      type: String,
+      enum: [
+        "Child Care & Pediatrics",
+        "General Medicine",
+        "Cardiology",
+        "Gastroenterology",
+        "General Surgery",
+        "Gynecology & Obstetrics",
+        "Ophthalmology",
+        "General OPD",
+      ],
+      default: "General Medicine",
+      trim: true,
+    },
+    roomNumber: {
+      type: String,
+      default: "Room 101",
+      trim: true,
+    },
+    visitingDays: {
+      type: String,
+      default: "Monday - Sunday (24/7 OPD)",
+      trim: true,
+    },
+    consultationFee: {
+      type: Number,
+      default: 1500,
+    },
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    onDuty: {
+      type: Boolean,
+      default: true,
+    },
     isActive: {
       type: Boolean,
       default: true,

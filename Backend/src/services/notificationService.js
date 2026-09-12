@@ -1,9 +1,9 @@
 /**
- * Notification Service for SmartClinic SaaS
- * Handles WhatsApp alerts, SMS gateway dispatch, and simulated logging for Viva defense.
+ * Notification Service for Al-Hassam Medical Center
+ * Handles WhatsApp alerts, SMS gateway dispatch, and live operational audit logs.
  */
 
-// In-memory circular log buffer for demonstration and audit logs
+// In-memory circular log buffer for clinical and audit logs
 const notificationLogs = [];
 const MAX_LOGS = 100;
 

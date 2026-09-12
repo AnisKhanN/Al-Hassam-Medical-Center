@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Patient = require("../models/Patient");
 const Appointment = require("../models/Appointment");
 const Medicine = require("../models/Medicine");
@@ -393,7 +394,8 @@ exports.getSalesAnalysis = async ({ timeframe = "30d", user }) => {
   const days = timeframe === "7d" ? 7 : timeframe === "90d" ? 90 : 30;
   const dateFrom = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
-  const clinicFilter = user?.clinicId ? { clinicId: user.clinicId } : {};
+  const clinicObjectId = user?.clinicId && mongoose.Types.ObjectId.isValid(user.clinicId) ? new mongoose.Types.ObjectId(user.clinicId) : user?.clinicId;
+  const clinicFilter = clinicObjectId ? { clinicId: clinicObjectId } : {};
 
   const [salesAgg, billsAgg] = await Promise.all([
     Sale.aggregate([
@@ -450,7 +452,8 @@ exports.getSalesAnalysis = async ({ timeframe = "30d", user }) => {
 exports.executeNaturalLanguageQuery = async ({ query, user, userRole }) => {
   const startTime = Date.now();
 
-  const clinicFilter = user?.clinicId ? { clinicId: user.clinicId } : {};
+  const clinicObjectId = user?.clinicId && mongoose.Types.ObjectId.isValid(user.clinicId) ? new mongoose.Types.ObjectId(user.clinicId) : user?.clinicId;
+  const clinicFilter = clinicObjectId ? { clinicId: clinicObjectId } : {};
 
   // Gather light context
   const [totalRevenueAgg, salesTotalAgg, patientCount, appointmentCount, medicines] = await Promise.all([
@@ -653,6 +656,152 @@ Return JSON:
     });
 
     return { ...fallbackResult, isFallback: true, provider: "fallback" };
+  }
+};
+
+/**
+ * 7. AI PATIENT TRIAGE (Maps symptoms to the 7 Medical Specialties)
+ */
+exports.triagePatient = async ({ symptoms, age, gender, vitals = {}, user }) => {
+  const startTime = Date.now();
+
+  const systemPrompt = `You are a Senior Clinical Triage Officer for Al-Hassam Medical Center in Sanghar, Pakistan.
+Analyze the patient's symptoms, age, gender, and vitals. Recommend the most appropriate specialist from our 7 Medical Specialties:
+1. Child Care & Pediatrics
+2. General Medicine
+3. Cardiology
+4. Gastroenterology
+5. General Surgery
+6. Gynecology & Obstetrics
+7. Ophthalmology
+
+Return valid JSON:
+{
+  "recommendedSpecialty": string,
+  "urgency": "Emergency" | "Urgent" | "Routine OPD",
+  "confidenceScore": number,
+  "clinicalRationale": string,
+  "suggestedVitals": string[],
+  "primaryDoctorAdvice": string
+}`;
+
+  const userPrompt = `Patient Details:
+- Age: ${age || "Unknown"}
+- Gender: ${gender || "Unknown"}
+- Reported Symptoms / Complaint: ${symptoms}
+- Recorded Vitals: ${JSON.stringify(vitals)}`;
+
+  try {
+    const aiResult = await aiProvider.generateAICompletion({
+      systemPrompt,
+      userPrompt,
+      jsonMode: true,
+      maxTokens: 500,
+    });
+
+    const parsed = safeJsonParse(aiResult.content);
+    const latencyMs = Date.now() - startTime;
+
+    await logAiInteraction({
+      userId: user?._id || user?.id,
+      userRole: user?.role,
+      clinicId: user?.clinicId,
+      feature: "patient_triage",
+      promptSummary: `Triage: ${symptoms.slice(0, 100)}`,
+      tokensUsed: aiResult.tokensUsed,
+      latencyMs,
+      provider: aiResult.provider,
+      isFallback: false,
+    });
+
+    return { ...parsed, isFallback: false, provider: aiResult.provider };
+  } catch (err) {
+    const fallback = aiFallbackService.triageFallback({ symptoms, age, gender, vitals });
+    const latencyMs = Date.now() - startTime;
+
+    await logAiInteraction({
+      userId: user?._id || user?.id,
+      userRole: user?.role,
+      clinicId: user?.clinicId,
+      feature: "patient_triage",
+      promptSummary: `Triage (Fallback): ${symptoms.slice(0, 100)}`,
+      tokensUsed: 0,
+      latencyMs,
+      provider: "fallback",
+      isFallback: true,
+    });
+
+    return { ...fallback, isFallback: true, provider: "fallback" };
+  }
+};
+
+/**
+ * 8. AI CLINICAL PRESCRIPTION DRUG-INTERACTION SAFETY CHECK
+ */
+exports.checkClinicalPrescription = async ({ medications = [], patientAllergies = [], user }) => {
+  const startTime = Date.now();
+
+  const systemPrompt = `You are a Clinical Pharmacologist Assistant for Al-Hassam Medical Center.
+Review the proposed medications against each other and against the patient's reported allergies.
+Return valid JSON:
+{
+  "safetyScore": number,
+  "status": "Safe" | "Warning" | "Severe Interaction",
+  "alerts": [
+    {
+      "severity": "Warning" | "Severe Interaction" | "Critical Allergy Alert",
+      "medications": string[],
+      "description": string
+    }
+  ],
+  "totalMedicationsChecked": number,
+  "clinicalNotes": string
+}`;
+
+  const userPrompt = `Medications: ${JSON.stringify(medications)}
+Patient Allergies: ${JSON.stringify(patientAllergies)}`;
+
+  try {
+    const aiResult = await aiProvider.generateAICompletion({
+      systemPrompt,
+      userPrompt,
+      jsonMode: true,
+      maxTokens: 600,
+    });
+
+    const parsed = safeJsonParse(aiResult.content);
+    const latencyMs = Date.now() - startTime;
+
+    await logAiInteraction({
+      userId: user?._id || user?.id,
+      userRole: user?.role,
+      clinicId: user?.clinicId,
+      feature: "prescription_safety",
+      promptSummary: `Prescription Check for ${medications.length} meds`,
+      tokensUsed: aiResult.tokensUsed,
+      latencyMs,
+      provider: aiResult.provider,
+      isFallback: false,
+    });
+
+    return { ...parsed, isFallback: false, provider: aiResult.provider };
+  } catch (err) {
+    const fallback = aiFallbackService.prescriptionCheckFallback({ medications, patientAllergies });
+    const latencyMs = Date.now() - startTime;
+
+    await logAiInteraction({
+      userId: user?._id || user?.id,
+      userRole: user?.role,
+      clinicId: user?.clinicId,
+      feature: "prescription_safety",
+      promptSummary: `Prescription Check (Fallback) for ${medications.length} meds`,
+      tokensUsed: 0,
+      latencyMs,
+      provider: "fallback",
+      isFallback: true,
+    });
+
+    return { ...fallback, isFallback: true, provider: "fallback" };
   }
 };
 

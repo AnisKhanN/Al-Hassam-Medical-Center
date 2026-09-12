@@ -68,8 +68,8 @@ exports.createPatient = catchAsync(async (req, res, next) => {
 // @route   GET /api/patients?search=&page=&limit=&gender=&isActive=
 // @access  Private/Admin,Doctor,Receptionist
 exports.getPatients = catchAsync(async (req, res) => {
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100); // cap prevents accidental huge payloads
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100); // cap prevents accidental huge payloads
   const skip = (page - 1) * limit;
 
   const filter = {
@@ -224,15 +224,3 @@ exports.addMedicalHistoryEntry = catchAsync(async (req, res, next) => {
   if (!patient) return next(new AppError("Patient not found", 404));
   res.status(201).json({ success: true, data: patient });
 });
-/**
-| Endpoint            | Admin  | Doctor | Receptionist  |
-| ------------------- | ------ | ------ | ------------- |
-| Create patient      |   ✅   |   ❌   |     ✅       |
-| List patients       |   ✅   |   ✅   |     ✅       |
-| Get patient         |   ✅   |   ✅   |     ✅       |
-| Update patient      |   ✅   |   ❌   |     ✅       |
-| Archive patient     |   ✅   |   ❌   |     ❌       |
-| Add medical history |   ❌   |   ✅   |     ❌       |
-
-This is exactly the sort of RBAC you're trying to demonstrate in your FYP.
-*/

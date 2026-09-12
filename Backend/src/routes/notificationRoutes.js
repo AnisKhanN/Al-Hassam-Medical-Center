@@ -10,4 +10,3 @@ router.post("/send-sms", notificationController.sendSmsNotification);
 router.get("/logs", notificationController.getNotificationLogs);
 
 module.exports = router;
-

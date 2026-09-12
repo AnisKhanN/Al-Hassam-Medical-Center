@@ -84,8 +84,8 @@ exports.createMedicine = catchAsync(async (req, res, next) => {
 });
 
 exports.getMedicines = catchAsync(async (req, res) => {
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
   const skip = (page - 1) * limit;
 
   const filter = {
@@ -257,7 +257,7 @@ exports.getLowStock = catchAsync(async (req, res) => {
 });
 
 exports.getExpiringSoon = catchAsync(async (req, res) => {
-  const days = Math.max(parseInt(req.query.days) || 30, 1);
+  const days = Math.max(parseInt(req.query.days, 10) || 30, 1);
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() + days);
 

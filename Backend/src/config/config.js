@@ -10,7 +10,6 @@ if (missingEnvVars.length > 0) {
     `❌ Environment variable error: [${missingEnvVars.join(", ")}] is not defined in environment variables. Please check your .env file.`,
   );
 }
-
 const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: process.env.PORT || 5000,

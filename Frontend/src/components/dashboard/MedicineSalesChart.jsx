@@ -94,7 +94,11 @@ const MedicineSalesChart = () => {
               ) : (
                 <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#64748b" opacity={0.2} />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#64748b"
+                      opacity={0.2}
+                    />
                     <XAxis
                       dataKey="day"
                       tick={{ fontSize: 11, fill: "#94a3b8" }}
@@ -109,7 +113,10 @@ const MedicineSalesChart = () => {
                         fontSize: "12px",
                       }}
                       itemStyle={{ color: "#34d399" }}
-                      formatter={(v) => [`Rs. ${Number(v).toLocaleString()}`, "Sales"]}
+                      formatter={(v) => [
+                        `Rs. ${Number(v).toLocaleString()}`,
+                        "Sales",
+                      ]}
                     />
                     <Bar dataKey="total" fill="#059669" radius={[6, 6, 0, 0]} />
                   </BarChart>

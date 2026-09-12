@@ -160,7 +160,7 @@ const Reports = () => {
               className="flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition-all shadow-xs"
             >
               <FiBookOpen size={15} className="text-blue-500" />
-              <span>FYP &amp; RBAC Docs</span>
+              <span>System &amp; RBAC Docs</span>
             </Link>
 
             <button

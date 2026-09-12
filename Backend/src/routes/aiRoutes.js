@@ -57,4 +57,14 @@ router.post(
 // 8. AI Audit Logs (Admin only)
 router.get("/audit-logs", authorize("Admin"), aiController.getAuditLogs);
 
+// 9. AI Patient Triage across 7 Medical Specialties (All authenticated staff)
+router.post("/triage", aiController.triagePatient);
+
+// 10. AI Prescription Drug-Interaction Check (Admin, Doctor, Pharmacist)
+router.post(
+  "/prescription-check",
+  authorize("Admin", "Doctor", "Pharmacist"),
+  aiController.checkClinicalPrescription,
+);
+
 module.exports = router;

@@ -1,20 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiCalendar, FiVideo } from "react-icons/fi";
 import PatientSearchSelect from "../common/PatientSearchSelect";
 import { useDoctors } from "../../hooks/useDoctors";
 
-const BookAppointmentModal = ({ isOpen, onClose, onSubmit, defaultDate }) => {
+const BookAppointmentModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  defaultDate,
+  defaultDoctorId = "",
+  defaultReason = "",
+}) => {
   const { doctors, loading: doctorsLoading } = useDoctors();
   const [patient, setPatient] = useState(null);
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm({ defaultValues: { duration: 30 } });
+  } = useForm({
+    defaultValues: { duration: 30, doctor: defaultDoctorId, reason: defaultReason },
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      if (defaultDoctorId) setValue("doctor", defaultDoctorId);
+      if (defaultReason) setValue("reason", defaultReason);
+    }
+  }, [isOpen, defaultDoctorId, defaultReason, setValue]);
 
   const close = () => {
     setPatient(null);

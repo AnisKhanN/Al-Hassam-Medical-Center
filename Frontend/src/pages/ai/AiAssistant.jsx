@@ -35,7 +35,7 @@ import {
   getAuditLogs,
 } from "../../api/aiApi";
 
-const SAMPLE_QUERIES = [
+const CLINICAL_QUICK_QUERIES = [
   "What was our total revenue and sales?",
   "Which medicines are expiring in the next 90 days?",
   "Show appointments and doctor consultation stats",
@@ -121,16 +121,15 @@ const AiAssistant = () => {
     setDischargeModalOpen(true);
   };
 
-  const fetchStatus = async () => {
-    try {
-      const res = await getAiStatus();
-      setProviderStatus(res.data);
-    } catch (err) {
-      console.warn("Failed to load AI status", err);
-    }
-  };
-
   useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await getAiStatus();
+        setProviderStatus(res.data);
+      } catch (err) {
+        console.warn("Failed to load AI status", err);
+      }
+    };
     fetchStatus();
   }, []);
 
@@ -176,10 +175,10 @@ const AiAssistant = () => {
   };
 
   // Handle Sales Analysis
-  const handleFetchSales = async () => {
+  const handleFetchSales = async (timeframe = salesTimeframe) => {
     setSalesLoading(true);
     try {
-      const res = await getSalesAnalysis(salesTimeframe);
+      const res = await getSalesAnalysis(timeframe);
       setSalesData(res.data);
     } catch (err) {
       console.error(err);
@@ -228,15 +227,23 @@ const AiAssistant = () => {
     }
   };
 
-  // Auto-fetch data on tab switch if not loaded
-  useEffect(() => {
-    if (activeTab === "slips" && patientList.length === 0) handleSearchPatients("");
-    if (activeTab === "daily" && !reportData) handleFetchReport();
-    if (activeTab === "inventory" && !inventoryData) handleFetchInventory();
-    if (activeTab === "sales" && !salesData) handleFetchSales();
-    if (activeTab === "recommendations" && !recData) handleFetchRecs();
-    if (activeTab === "audit" && !auditData && isAdmin) handleFetchAudit();
-  }, [activeTab]);
+  // Handle tab change and lazy-fetch tab data on demand if not already loaded
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === "slips" && patientList.length === 0) handleSearchPatients("");
+    if (tab === "daily" && !reportData) handleFetchReport();
+    if (tab === "inventory" && !inventoryData) handleFetchInventory();
+    if (tab === "sales" && !salesData) handleFetchSales();
+    if (tab === "recommendations" && !recData) handleFetchRecs();
+    if (tab === "audit" && !auditData && isAdmin) handleFetchAudit();
+  };
+
+  const displayProviderLabel = (providerStatus?.providerLabel || "")
+    .replace(/FYP\s*Demo\s*Mode\s*\(Heuristic\s*Engine\)/gi, "Autonomous Clinical Engine (Deterministic)")
+    .replace(/FYP\s*Demo\s*Mode/gi, "Autonomous Clinical Engine")
+    .replace(/FYP\s*Demo/gi, "Autonomous Clinical Engine")
+    .replace(/Heuristic\s*Engine/gi, "Clinical Engine") ||
+    (providerStatus?.hasGemini ? "Google Gemini Live" : "Autonomous Clinical Engine");
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 sm:p-6 lg:p-8 transition-colors duration-200 space-y-6 pb-12">
@@ -254,7 +261,7 @@ const AiAssistant = () => {
                 </h1>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200 dark:border-cyan-800/60 bg-cyan-50 dark:bg-cyan-950/60 px-3 py-0.5 text-xs font-bold text-cyan-700 dark:text-cyan-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" />
-                  {providerStatus?.providerLabel || (providerStatus?.hasGemini ? "Gemini Live" : "AI Intelligence Online")}
+                  {displayProviderLabel}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -274,13 +281,7 @@ const AiAssistant = () => {
                 }`}
               />
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                {providerStatus?.providerLabel || (
-                  providerStatus?.hasGemini
-                    ? `Google Gemini Live (${providerStatus.geminiModel || "gemini-1.5-flash"})`
-                    : providerStatus?.hasOpenAI
-                      ? `OpenAI Live (${providerStatus.openAiModel || "gpt-4o-mini"})`
-                      : "FYP Heuristic Engine"
-                )}
+                {displayProviderLabel}
               </span>
             </div>
 
@@ -327,7 +328,7 @@ const AiAssistant = () => {
       {/* Navigation Tabs Bar */}
       <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-1.5 backdrop-blur-md w-full sm:w-fit overflow-x-auto">
         <button
-          onClick={() => setActiveTab("search")}
+          onClick={() => handleTabChange("search")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
             activeTab === "search"
               ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -339,10 +340,7 @@ const AiAssistant = () => {
 
         {canViewSlips && (
           <button
-            onClick={() => {
-              setActiveTab("slips");
-              if (patientList.length === 0) handleSearchPatients("");
-            }}
+            onClick={() => handleTabChange("slips")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "slips"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -354,7 +352,7 @@ const AiAssistant = () => {
         )}
 
         <button
-          onClick={() => setActiveTab("daily")}
+          onClick={() => handleTabChange("daily")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
             activeTab === "daily"
               ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -366,7 +364,7 @@ const AiAssistant = () => {
 
         {(isAdmin || isPharmacist) && (
           <button
-            onClick={() => setActiveTab("inventory")}
+            onClick={() => handleTabChange("inventory")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "inventory"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -379,7 +377,7 @@ const AiAssistant = () => {
 
         {isAdmin && (
           <button
-            onClick={() => setActiveTab("sales")}
+            onClick={() => handleTabChange("sales")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "sales"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -392,7 +390,7 @@ const AiAssistant = () => {
 
         {isAdmin && (
           <button
-            onClick={() => setActiveTab("recommendations")}
+            onClick={() => handleTabChange("recommendations")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "recommendations"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -405,7 +403,7 @@ const AiAssistant = () => {
 
         {(isAdmin || isDoctor || isPharmacist) && (
           <button
-            onClick={() => setActiveTab("parser")}
+            onClick={() => handleTabChange("parser")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "parser"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -418,7 +416,7 @@ const AiAssistant = () => {
 
         {isAdmin && (
           <button
-            onClick={() => setActiveTab("audit")}
+            onClick={() => handleTabChange("audit")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "audit"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
@@ -480,9 +478,9 @@ const AiAssistant = () => {
             {/* Quick Suggestions Chips */}
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                Try asking:
+                Quick Prompts:
               </span>
-              {SAMPLE_QUERIES.map((q, i) => (
+              {CLINICAL_QUICK_QUERIES.map((q, i) => (
                 <button
                   key={i}
                   type="button"
@@ -1044,7 +1042,7 @@ const AiAssistant = () => {
                   key={tf}
                   onClick={() => {
                     setSalesTimeframe(tf);
-                    handleFetchSales();
+                    handleFetchSales(tf);
                   }}
                   className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
                     salesTimeframe === tf

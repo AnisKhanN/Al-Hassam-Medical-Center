@@ -2,7 +2,7 @@
  * Multi-Provider LLM Client Adapter for SmartClinic SaaS
  * Supports Google Gemini (Google AI Pro / v1beta API) as primary provider,
  * OpenAI (v1 chat completions) as secondary adapter,
- * and automatic graceful degradation to Heuristic Fallback for FYP demonstrations.
+ * and automatic graceful degradation to Deterministic Clinical Heuristic Fallback.
  */
 
 const getProviderConfig = () => {
@@ -282,8 +282,8 @@ exports.getProviderStatus = () => {
   const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   const openAiModel = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
-  let activeModel = "Heuristic Viva Engine";
-  let providerLabel = "FYP Demo Mode (Heuristic Engine)";
+  let activeModel = "Autonomous Clinical Engine";
+  let providerLabel = "Autonomous Clinical Engine (Deterministic)";
 
   if (config.activeProvider === "gemini") {
     activeModel = geminiModel;

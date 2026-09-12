@@ -108,8 +108,8 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
 exports.getAppointments = catchAsync(async (req, res) => {
   const { date, dateFrom, dateTo, doctor, patient, status, isTelemedicine } =
     req.query;
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
   const skip = (page - 1) * limit;
 
   const filter = { clinicId: req.user.clinicId };

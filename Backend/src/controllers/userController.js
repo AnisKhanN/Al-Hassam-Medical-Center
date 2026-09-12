@@ -1,7 +1,7 @@
-// User controllers with profile picture uploads
 const User = require("../models/User");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
+const bcrypt = require("bcryptjs");
 
 const ALLOWED_ROLES = ["Admin", "Doctor", "Receptionist", "Pharmacist"];
 const CREATABLE_ROLES = ["Doctor", "Receptionist", "Pharmacist"];
@@ -10,7 +10,18 @@ const CREATABLE_ROLES = ["Doctor", "Receptionist", "Pharmacist"];
 // @route   POST /api/users
 // @access  Private/Admin
 exports.createUser = catchAsync(async (req, res, next) => {
-  const { name, email, password, role } = req.body;
+  const {
+    name,
+    email,
+    password,
+    role,
+    specialty,
+    roomNumber,
+    visitingDays,
+    consultationFee,
+    phone,
+    onDuty,
+  } = req.body;
 
   if (!name || !email || !password || !role) {
     return next(
@@ -54,6 +65,12 @@ exports.createUser = catchAsync(async (req, res, next) => {
     clinicName: req.user.clinicName || "SmartClinic",
     clinicDomain: req.user.clinicDomain || undefined,
     clinicStatus: req.user.clinicStatus || "active",
+    ...(specialty && { specialty }),
+    ...(roomNumber && { roomNumber }),
+    ...(visitingDays && { visitingDays }),
+    ...(consultationFee !== undefined && { consultationFee: Number(consultationFee) }),
+    ...(phone && { phone }),
+    ...(onDuty !== undefined && { onDuty: Boolean(onDuty) }),
     ...(profilePic && { profilePic }),
   });
 
@@ -83,8 +100,8 @@ exports.getUsers = catchAsync(async (req, res) => {
 
   const hasPagination =
     req.query.page !== undefined || req.query.limit !== undefined;
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
   const skip = (page - 1) * limit;
 
   const query = User.find(filter).select("-password").sort("-createdAt");
@@ -141,7 +158,21 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   if (name) updateData.name = name;
   if (role) updateData.role = role;
   if (isActive !== undefined) updateData.isActive = isActive;
+  if (req.body.specialty) updateData.specialty = req.body.specialty;
+  if (req.body.roomNumber) updateData.roomNumber = req.body.roomNumber;
+  if (req.body.visitingDays) updateData.visitingDays = req.body.visitingDays;
+  if (req.body.consultationFee !== undefined)
+    updateData.consultationFee = Number(req.body.consultationFee);
+  if (req.body.phone !== undefined) updateData.phone = req.body.phone;
+  if (req.body.onDuty !== undefined) updateData.onDuty = Boolean(req.body.onDuty);
   if (req.file) updateData.profilePic = `/uploads/profile/${req.file.filename}`;
+  if (req.body.password) {
+    if (req.body.password.length < 6) {
+      return next(new AppError("Password must be at least 6 characters", 400));
+    }
+    const salt = await bcrypt.genSalt(10);
+    updateData.password = await bcrypt.hash(req.body.password, salt);
+  }
 
   const user = await User.findOneAndUpdate(
     { _id: req.params.id, clinicId: req.user.clinicId },
@@ -176,16 +207,56 @@ exports.deactivateUser = catchAsync(async (req, res, next) => {
     .json({ success: true, message: "User deactivated", data: user });
 });
 
-// @desc    Lightweight doctor list for dropdowns (e.g. booking appointments)
+// @desc    Doctor list with specialties, timings & duty status
 // @route   GET /api/users/doctors
-// @access  Private/Admin,Receptionist
+// @access  Private
 exports.getDoctors = catchAsync(async (req, res) => {
-  const doctors = await User.find({
+  const filter = {
     clinicId: req.user.clinicId,
     role: "Doctor",
     isActive: true,
-  })
-    .select("name email")
+  };
+
+  if (req.query.specialty) {
+    filter.specialty = req.query.specialty;
+  }
+  if (req.query.onDuty !== undefined) {
+    filter.onDuty = req.query.onDuty === "true";
+  }
+
+  const doctors = await User.find(filter)
+    .select(
+      "name email role specialty roomNumber visitingDays consultationFee phone onDuty isActive profilePic createdAt",
+    )
     .sort("name");
-  res.status(200).json({ success: true, data: doctors });
+
+  res.status(200).json({ success: true, count: doctors.length, data: doctors });
+});
+
+// @desc    Toggle doctor on-duty / off-duty status
+// @route   PATCH /api/users/:id/duty
+// @access  Private/Admin,Doctor
+exports.toggleDoctorDuty = catchAsync(async (req, res, next) => {
+  const doctor = await User.findOne({
+    _id: req.params.id,
+    clinicId: req.user.clinicId,
+    role: "Doctor",
+  }).select("-password");
+
+  if (!doctor) return next(new AppError("Doctor not found", 404));
+
+  // If role is Doctor, only allow changing own duty status
+  if (req.user.role === "Doctor" && req.user.id !== req.params.id) {
+    return next(new AppError("Doctors can only toggle their own on-duty status", 403));
+  }
+
+  doctor.onDuty =
+    req.body.onDuty !== undefined ? Boolean(req.body.onDuty) : !doctor.onDuty;
+  await doctor.save();
+
+  res.status(200).json({
+    success: true,
+    message: `Doctor status updated to ${doctor.onDuty ? "On Duty" : "Off Duty"}`,
+    data: doctor,
+  });
 });

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Bill = require("../models/Bill");
 const Patient = require("../models/Patient");
 const Appointment = require("../models/Appointment");
@@ -72,8 +73,8 @@ exports.createBill = catchAsync(async (req, res, next) => {
 // @access  Private/Admin,Receptionist
 exports.getBills = catchAsync(async (req, res) => {
   const { patient, status, search, dateFrom, dateTo } = req.query;
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
   const skip = (page - 1) * limit;
 
   const filter = { clinicId: req.user.clinicId };
@@ -183,11 +184,13 @@ exports.getRevenueSummary = catchAsync(async (req, res) => {
     ? new Date(req.query.dateFrom)
     : new Date(dateTo.getFullYear(), dateTo.getMonth(), 1); // defaults to start of current month
 
+  const clinicObjectId = new mongoose.Types.ObjectId(req.user.clinicId);
+
   const [dailyRevenue, byMethod, outstanding] = await Promise.all([
     // Revenue is what was actually collected (payments), not what was billed —
     // billed-but-unpaid isn't revenue yet.
     Bill.aggregate([
-      { $match: { clinicId: req.user.clinicId, status: { $ne: "Cancelled" } } },
+      { $match: { clinicId: clinicObjectId, status: { $ne: "Cancelled" } } },
       { $unwind: "$payments" },
       { $match: { "payments.date": { $gte: dateFrom, $lte: dateTo } } },
       {
@@ -201,7 +204,7 @@ exports.getRevenueSummary = catchAsync(async (req, res) => {
       { $sort: { _id: 1 } },
     ]),
     Bill.aggregate([
-      { $match: { clinicId: req.user.clinicId, status: { $ne: "Cancelled" } } },
+      { $match: { clinicId: clinicObjectId, status: { $ne: "Cancelled" } } },
       { $unwind: "$payments" },
       { $match: { "payments.date": { $gte: dateFrom, $lte: dateTo } } },
       {
@@ -212,7 +215,7 @@ exports.getRevenueSummary = catchAsync(async (req, res) => {
       },
     ]),
     Bill.aggregate([
-      { $match: { clinicId: req.user.clinicId, status: { $in: ["Unpaid", "Partially Paid"] } } },
+      { $match: { clinicId: clinicObjectId, status: { $in: ["Unpaid", "Partially Paid"] } } },
       {
         $group: {
           _id: null,

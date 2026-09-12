@@ -194,3 +194,49 @@ exports.getAuditLogs = catchAsync(async (req, res, next) => {
     data: logs,
   });
 });
+
+/**
+ * @route   POST /api/ai/triage
+ * @access  Private (All Roles)
+ */
+exports.triagePatient = catchAsync(async (req, res, next) => {
+  const { symptoms, age, gender, vitals } = req.body;
+  if (!symptoms || !symptoms.trim()) {
+    return next(new AppError("Please provide patient symptoms or complaint", 400));
+  }
+
+  const result = await aiService.triagePatient({
+    symptoms: symptoms.trim(),
+    age,
+    gender,
+    vitals,
+    user: req.user,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+/**
+ * @route   POST /api/ai/prescription-check
+ * @access  Private (Doctor, Admin, Pharmacist)
+ */
+exports.checkClinicalPrescription = catchAsync(async (req, res, next) => {
+  const { medications, patientAllergies } = req.body;
+  if (!medications || !Array.isArray(medications)) {
+    return next(new AppError("Please provide an array of medications", 400));
+  }
+
+  const result = await aiService.checkClinicalPrescription({
+    medications,
+    patientAllergies: patientAllergies || [],
+    user: req.user,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
