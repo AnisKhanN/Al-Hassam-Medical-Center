@@ -6,14 +6,14 @@
 
 # The Intelligent Operating System for Modern Clinics & Pharmacies
 
-[![Status](https://img.shields.io/badge/Status-100%25%20Production%20Ready-emerald?style=for-the-badge&logo=checkmarx)](https://github.com/AnisKhanN/SmartClinic-SaaS)
+[![Status](https://img.shields.io/badge/Status-100%25%20Production%20Ready-emerald?style=for-the-badge&logo=checkmarx)](https://github.com/AnisKhanN/Al-Hassam-Medical-Center)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22.0.0-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Express](https://img.shields.io/badge/Express-5.2-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-v9.8-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
 [![Postman](https://img.shields.io/badge/Postman-51%20Requests%20%7C%20100%25%20Passing-FF6C37?style=for-the-badge&logo=postman&logoColor=white)](https://www.postman.com/)
-[![Visibility](https://img.shields.io/badge/Repository-Private-rose?style=for-the-badge&logo=github)](https://github.com/AnisKhanN/SmartClinic-SaaS)
+[![Visibility](https://img.shields.io/badge/Repository-Public-emerald?style=for-the-badge&logo=github)](https://github.com/AnisKhanN/Al-Hassam-Medical-Center)
 
 </div>
 
@@ -104,8 +104,8 @@ Developed by **Anis Khan Niazi** as a **BSIT Final Year Project**, SmartClinic d
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/AnisKhanN/SmartClinic-SaaS.git
-cd SmartClinic-SaaS
+git clone https://github.com/AnisKhanN/Al-Hassam-Medical-Center.git
+cd Al-Hassam-Medical-Center
 ```
 
 ### 2. Backend Setup

@@ -10,6 +10,10 @@ import {
   FiHeart,
   FiMessageCircle,
   FiCheckCircle,
+  FiAward,
+  FiUser,
+  FiFileText,
+  FiGithub,
 } from "react-icons/fi";
 import { useSmoothScroll } from "../../hooks/useSmoothScroll";
 
@@ -55,10 +59,10 @@ const Footer = () => {
             </Link>
 
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-sm">
-              Al-Hassam Medical Center is a dedicated 24-hour healthcare facility
-              providing around-the-clock emergency medical care, outpatient
-              clinics, on-site pharmacy, and visiting specialist doctor
-              consultations in Sanghar, Sindh.
+              Al-Hassam Medical Center is a dedicated 24-hour healthcare
+              facility providing around-the-clock emergency medical care,
+              outpatient clinics, on-site pharmacy, and visiting specialist
+              doctor consultations in Sanghar, Sindh.
             </p>
 
             {/* Operating Hours & Status */}
@@ -218,14 +222,117 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright, Location & Scroll to Top */}
-        <div className="mt-12 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 dark:text-slate-400">
-          <p className="text-center sm:text-left">
-            © {new Date().getFullYear()} Al-Hassam Medical Center. Nawabshah
-            Road, City Sanghar. All Rights Reserved.
-          </p>
+        {/* Developer & Architectural Attribution Showcase */}
+        <div className="mt-12 p-6 sm:p-7 rounded-3xl border border-slate-200/90 dark:border-slate-800/90 bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-slate-50/70 dark:from-slate-900/90 dark:via-blue-950/40 dark:to-slate-900/90 shadow-xs backdrop-blur-md">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            {/* Left: Avatar & Developer Bio */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
+              <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 font-black text-xl sm:text-2xl text-white shadow-md shadow-blue-500/25">
+                AKN
+                <span
+                  className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-slate-900 bg-emerald-500 animate-pulse"
+                  title="Lead Software Engineer"
+                />
+              </div>
 
-          <div className="flex items-center gap-4">
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Lead Software Architect &amp; Developer
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 px-2.5 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-300">
+                    <FiAward size={11} /> BSIT Final Year Project
+                  </span>
+                </div>
+                <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                  Engineered &amp; Developed by Anis Khan Niazi
+                </h4>
+                <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
+                  Full-Stack Multi-Tenant Healthcare SaaS engineered for
+                  outpatient clinics, rural medical centers, and community
+                  pharmacies in Sanghar &amp; Interior Sindh, Pakistan.
+                </p>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  <span className="inline-flex items-center gap-1">
+                    <FiMapPin size={12} className="text-emerald-500" /> Sanghar,
+                    Sindh, Pakistan
+                  </span>
+                  <span>•</span>
+                  <span>Express 5</span>
+                  <span>•</span>
+                  <span>React 19</span>
+                  <span>•</span>
+                  <span>MongoDB Atlas</span>
+                  <span>•</span>
+                  <span>Google Gemini AI</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Quick Links / Profile CTAs */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5 shrink-0">
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 transition-all shadow-xs hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <FiUser size={14} />
+                <span>About Developer</span>
+              </Link>
+              <Link
+                to="/docs"
+                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold px-4 py-2.5 transition-all shadow-xs hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <FiFileText size={14} className="text-emerald-500" />
+                <span>Technical Report</span>
+              </Link>
+              <a
+                href="https://github.com/AnisKhanN/Al-Hassam-Medical-Center"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 transition-all shadow-xs hover:scale-105 active:scale-95"
+              >
+                <FiGithub size={14} />
+                <span>GitHub</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar: Copyright, Developer Attribution & Scroll to Top */}
+        <div className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="text-center md:text-left space-y-1">
+            <p>
+              © {new Date().getFullYear()} Al-Hassam Medical Center •
+              SmartClinic SaaS. Nawabshah Road, City Sanghar, Sindh. All Rights
+              Reserved.
+            </p>
+            <p className="text-slate-600 dark:text-slate-300 font-semibold flex flex-wrap items-center justify-center md:justify-start gap-1.5">
+              <span>Designed, Architected &amp; Developed with</span>
+              <FiHeart size={12} className="text-red-500 fill-red-500 inline" />
+              <span>by</span>
+              <Link
+                to="/about"
+                className="text-blue-600 dark:text-blue-400 font-bold hover:underline"
+              >
+                Anis Khan Niazi
+              </Link>
+              <span>(BSIT Final Year Project, Sanghar, Sindh)</span>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/about"
+              className="hover:text-slate-900 dark:hover:text-white transition-colors"
+            >
+              Developer Profile
+            </Link>
+            <Link
+              to="/docs"
+              className="hover:text-slate-900 dark:hover:text-white transition-colors"
+            >
+              Project Docs
+            </Link>
             <button
               onClick={() => handleScrollTo("#faq")}
               className="hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"

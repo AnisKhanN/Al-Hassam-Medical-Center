@@ -302,7 +302,7 @@ const LandingPage = () => {
   const prevSlide = () => {
     setCurrentSlide(
       (prev) =>
-        (prev - 1 + HERO_FACILITY_SLIDES.length) % HERO_FACILITY_SLIDES.length
+        (prev - 1 + HERO_FACILITY_SLIDES.length) % HERO_FACILITY_SLIDES.length,
     );
   };
 
@@ -817,7 +817,7 @@ const LandingPage = () => {
                     </a>
                     <a
                       href={`https://wa.me/923325136733?text=Hello%20Al-Hassam%20Medical%20Center,%20I%20want%20to%20consult%20the%20${encodeURIComponent(
-                        spec.title
+                        spec.title,
                       )}%20doctor.`}
                       target="_blank"
                       rel="noreferrer"
@@ -937,7 +937,9 @@ const LandingPage = () => {
                     </p>
                   </div>
                   <div>
-                    <p className="text-lg font-black text-white">7 Disciplines</p>
+                    <p className="text-lg font-black text-white">
+                      7 Disciplines
+                    </p>
                     <p className="text-[11px] text-emerald-100">
                       Consulting Faculty
                     </p>
@@ -958,12 +960,12 @@ const LandingPage = () => {
               </h2>
 
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                Located prominently on Nawabshah Road, City Sanghar, Al-Hassam Medical
-                Center combines modern medical protocols with warm, personal
-                attention. Whether you need immediate emergency assistance late
-                at night, routine checkups for chronic ailments, or a scheduled
-                consultation with visiting specialists, our center is ready to
-                serve you.
+                Located prominently on Nawabshah Road, City Sanghar, Al-Hassam
+                Medical Center combines modern medical protocols with warm,
+                personal attention. Whether you need immediate emergency
+                assistance late at night, routine checkups for chronic ailments,
+                or a scheduled consultation with visiting specialists, our
+                center is ready to serve you.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1035,10 +1037,9 @@ const LandingPage = () => {
                   Visit Us on Nawabshah Road
                 </h3>
                 <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Al-Hassam Medical Center is conveniently situated on
-                  Nawabshah Road in Sanghar, offering prompt access for
-                  outpatients, emergency cases, and families consulting visiting
-                  specialists.
+                  Al-Hassam Medical Center is conveniently situated on Nawabshah
+                  Road in Sanghar, offering prompt access for outpatients,
+                  emergency cases, and families consulting visiting specialists.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1208,9 +1209,8 @@ const LandingPage = () => {
             Need Immediate Medical Assistance or Doctor Consultation?
           </h2>
           <p className="text-sm sm:text-base text-emerald-50 max-w-xl mx-auto leading-relaxed">
-            Al-Hassam Medical Center is always ready to receive you on
-            Nawabshah Road in Sanghar. Call our 24/7 hotline or visit us
-            directly.
+            Al-Hassam Medical Center is always ready to receive you on Nawabshah
+            Road in Sanghar. Call our 24/7 hotline or visit us directly.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <a
