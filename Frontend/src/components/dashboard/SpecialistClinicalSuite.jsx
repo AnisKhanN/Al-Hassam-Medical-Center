@@ -66,7 +66,7 @@ export default function SpecialistClinicalSuite({ currentDoctorSpecialty, active
     const w = parseFloat(pedWeight) || 0;
     if (w <= 0) return null;
     switch (pedDrug) {
-      case "amoxicillin":
+      case "amoxicillin": {
         // 40 mg/kg/day divided tid (every 8 hrs)
         const dailyMg = Math.round(w * 40);
         const perDoseMg = Math.round(dailyMg / 3);
@@ -78,7 +78,8 @@ export default function SpecialistClinicalSuite({ currentDoctorSpecialty, active
           frequency: "Every 8 hours (TDS) for 5–7 days",
           indication: "Pediatric respiratory / ENT / skin bacterial infections",
         };
-      case "paracetamol":
+      }
+      case "paracetamol": {
         // 15 mg/kg/dose every 6 hrs prn
         const pDoseMg = Math.round(w * 15);
         const pDoseMl = ((pDoseMg / 120) * 5).toFixed(1); // 120mg/5ml syrup
@@ -89,7 +90,8 @@ export default function SpecialistClinicalSuite({ currentDoctorSpecialty, active
           frequency: "Every 6 hours PRN for fever > 100°F (Max 4 times/day)",
           indication: "Antipyretic & analgesic for fever/pain",
         };
-      case "ibuprofen":
+      }
+      case "ibuprofen": {
         const iDoseMg = Math.round(w * 10);
         const iDoseMl = ((iDoseMg / 100) * 5).toFixed(1); // 100mg/5ml syrup
         return {
@@ -99,7 +101,8 @@ export default function SpecialistClinicalSuite({ currentDoctorSpecialty, active
           frequency: "Every 8 hours with milk/meals for high fever",
           indication: "Anti-inflammatory & high fever relief (>6 months age)",
         };
-      case "cefixime":
+      }
+      case "cefixime": {
         const cDoseMg = Math.round(w * 8);
         const cDoseMl = ((cDoseMg / 100) * 5).toFixed(1); // 100mg/5ml syrup
         return {
@@ -109,6 +112,7 @@ export default function SpecialistClinicalSuite({ currentDoctorSpecialty, active
           frequency: "Once daily (OD) or divided BID for 7 days",
           indication: "Enteric fever (Typhoid) & pediatric urinary/otitis infections",
         };
+      }
       default:
         return null;
     }
