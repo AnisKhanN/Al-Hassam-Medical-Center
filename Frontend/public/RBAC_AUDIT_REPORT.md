@@ -5,7 +5,7 @@
 **Evaluation Date:** September 2026 (Comprehensive Final Production Audit)  
 **System Status:** 🟢 **100% Operational & Verified Passing (Backend & Frontend Live)**  
 **GitHub Repository:** [https://github.com/AnisKhanN/Al-Hassam-Medical-Center](https://github.com/AnisKhanN/Al-Hassam-Medical-Center)  
-**Postman Suite:** UID `55354836-b09b272e-d854-476f-a230-5ded96ab7e05` (*Anis Khan Niazi's Team*)
+**Postman Suite:** UID `55354836-56de28c5-6ff1-4f3e-b657-0c32fc001432` (*Anis Khan Niazi's Team*)
 
 ---
 
@@ -238,7 +238,7 @@ The front-end user interface enforces role-based dashboard views with zero cross
 1. **RBAC & Multi-Tenant Integrity:** Every role (`Admin`, `Doctor`, `Receptionist`, `Pharmacist`) strictly adheres to its operational boundary, and every tenant's data is isolated with compound unique indexes and scoped sequence counters.
 2. **Clinical Decision Safety:** The Specialist Clinical Suite and AI Clinical Co-Pilot provide medical calculators and contraindication checks while preventing unauthorized access to clinical actions.
 3. **Production Code Cleanliness:** All dead code files (`Ecosystem3D.jsx`, `Hero3D.jsx`, `DashboardNavbar.jsx`, `admin-cookies.txt`) and 21 redundant one-off test scripts were deleted, leaving an optimized, production-ready codebase.
-4. **Cloud & Version Control Integration:** Postman Cloud collection (`b09b272e-d854-476f-a230-5ded96ab7e05`) is synchronized via Postman MCP, and the repository is published on GitHub (`https://github.com/AnisKhanN/Al-Hassam-Medical-Center`).
+4. **Cloud & Version Control Integration:** Postman Cloud collection (`55354836-56de28c5-6ff1-4f3e-b657-0c32fc001432`) is synchronized via Postman MCP, and the repository is published on GitHub (`https://github.com/AnisKhanN/Al-Hassam-Medical-Center`).
 5. **Documentation Synchronization:** Both [`PROJECT_REPORT.md`](file:///d:/FYP%20Work/SmartClinic%20By%20Anis/PROJECT_REPORT.md) and [`RBAC_AUDIT_REPORT.md`](file:///d:/FYP%20Work/SmartClinic%20By%20Anis/RBAC_AUDIT_REPORT.md) are synchronized across root and `Frontend/public/` for direct in-app reading, markdown export, and PDF printing.
 
 ---

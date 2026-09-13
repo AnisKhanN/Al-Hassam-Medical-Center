@@ -190,14 +190,14 @@ The seeder script (`npm run seed` in `Backend/`) provisions a sample facility wi
 ## 🧪 Postman Cloud Automated Test Suite
 
 The entire backend API is validated via an automated Postman test suite:
-- **Collection Name:** `SmartClinic FYP - Complete Production API Test Suite`
-- **Cloud Collection UID:** `55354836-b09b272e-d854-476f-a230-5ded96ab7e05`
+- **Collection Name:** `Al-Hassam Medical Center - Complete API Test Suite`
+- **Cloud Collection UID:** `55354836-56de28c5-6ff1-4f3e-b657-0c32fc001432`
 - **Pass Rate:** 100% (51 automated requests across 14 functional folders)
-- **Local File:** [SmartClinic_FYP_Complete_API_Test_Suite_v2.json](SmartClinic_FYP_Complete_API_Test_Suite_v2.json)
+- **Local File:** [Al_Hassam_Medical_Center_API_Test_Suite.json](Al_Hassam_Medical_Center_API_Test_Suite.json)
 
 ```bash
 # Execute tests with Newman CLI (optional)
-npx newman run SmartClinic_FYP_Complete_API_Test_Suite_v2.json
+npx newman run Al_Hassam_Medical_Center_API_Test_Suite.json
 ```
 
 ---

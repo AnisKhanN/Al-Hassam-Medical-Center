@@ -9,7 +9,7 @@
 **Document Date:** September 2026 (Comprehensive Final Production Evaluation)  
 **System Status:** 🟢 **100% Production Ready & Fully Operational** (Atlas Cloud Connected, Postman Suite Verified, GitHub Synchronized, Zero Dead Code)  
 **GitHub Repository:** [https://github.com/AnisKhanN/Al-Hassam-Medical-Center](https://github.com/AnisKhanN/Al-Hassam-Medical-Center)  
-**Postman Cloud Suite:** UID `55354836-b09b272e-d854-476f-a230-5ded96ab7e05` (*Anis Khan Niazi's Team*)
+**Postman Cloud Suite:** UID `55354836-56de28c5-6ff1-4f3e-b657-0c32fc001432` (*Anis Khan Niazi's Team*)
 
 ---
 
@@ -296,11 +296,11 @@ SmartClinic implements a search and AI discovery architecture combining Search E
 ### 7.1 Postman Cloud MCP Integration
 - **Account:** Authenticated via Postman API Key for user `aniskhanniazi202` on team *"Anis Khan Niazi's Team"*.
 - **Collection Synchronized to Cloud:**
-  - **Collection UID:** `55354836-b09b272e-d854-476f-a230-5ded96ab7e05`
-  - **Collection Name:** `SmartClinic FYP - Complete Production API Test Suite`
+  - **Collection UID:** `55354836-56de28c5-6ff1-4f3e-b657-0c32fc001432`
+  - **Collection Name:** `Al-Hassam Medical Center - Complete API Test Suite`
   - **Modules (14 Folders):** 00-Onboarding, 01-Auth & RBAC, 02-Users, 03-Patients, 04-Appointments, 05-Suppliers, 06-Medicines & Batches, 07-Pharmacy POS (FEFO), 08-Billing & Invoices, 09-Analytics & Reports, 10-Role Dashboards, 11-Clinic Settings, 12-Gemini AI Assistant, 13-Telemedicine & Communication.
   - **Endpoints:** 51 fully automated requests with chained environment variables and assertion test scripts.
-  - **Local Export:** `SmartClinic_FYP_Complete_API_Test_Suite_v2.json`.
+  - **Local Export:** `Al_Hassam_Medical_Center_API_Test_Suite.json`.
 
 ### 7.2 GitHub MCP Integration & Version Control
 - **Account:** Authenticated user `AnisKhanN` (Anis Khan Niazi, ID: `141991856`).
